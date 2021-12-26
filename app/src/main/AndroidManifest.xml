@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.fahadandroid.groupchat">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".helpers.EUGroupChat"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_logo_icon"
+        android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_logo_icon_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.GroupChat">
+        <activity
+            android:name=".AddEmergencyActivity"
+            android:exported="false" />
+        <activity android:name=".LoadPdfActivity" />
+        <activity android:name=".ApprovedPlacesAdminActivity" />
+        <activity android:name=".PlacesDetailsActivity" />
+        <activity android:name=".CompanySettingsActivity" />
+        <activity android:name=".CompanyDetailActivity" />
+        <activity android:name=".ExploreInternshipActivity" />
+        <activity android:name=".NewsDetailActivity" />
+        <activity android:name=".AddCoordinatorActivity" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".ContactsInfoActivity" />
+        <activity android:name=".CategoriesActivity" />
+        <activity android:name=".WebViewActivity" />
+        <activity android:name=".NotificationsActivity" />
+        <activity android:name=".PlacesActivity" />
+        <activity android:name=".PdfViewerActivity" />
+        <activity android:name=".NewsActivity" />
+        <activity android:name=".OpenAttachmentActivity" />
+        <activity android:name=".ManageRequestsActivity" />
+        <activity android:name=".JoinGroupActivity" />
+        <activity android:name=".SelectBusinessListActivity" />
+        <activity android:name=".ChatActivity" />
+        <activity android:name=".GroupsActivity" />
+        <activity android:name=".AdminHomeActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".MyDocumentsActivity" />
+        <activity android:name=".PersonalInfoActivity" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".SelectCountryActivity" />
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".LoginActivity" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.fahad.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <service
+            android:name=".helpers.MyFirebaseMessagingService"
+            android:exported="false"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/logo_around" />
+    </application>
+
+</manifest>

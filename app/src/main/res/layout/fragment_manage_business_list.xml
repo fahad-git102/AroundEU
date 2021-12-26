@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".adminFragments.ManageBusinessListFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Business Lists"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="15dp"
+            android:textColor="@color/colorDarkGrey"
+            android:id="@+id/heading"/>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_below="@id/heading"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/recycler_businessLists"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_plus"
+            android:padding="3dp"
+            android:tint="@color/colorLightGrey"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dp"
+            android:id="@+id/btnAdd"
+            android:layout_marginRight="30dp"/>
+
+    </RelativeLayout>
+
+
+
+</FrameLayout>

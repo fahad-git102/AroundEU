@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="2dp"
+        app:civ_border_width="1dp"
+        app:civ_border_color="@color/colorDarkGrey"
+        android:id="@+id/profile_pic"
+        android:src="@drawable/default_user_img"/>
+
+    <LinearLayout
+        android:id="@+id/linear_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="10dp"
+        android:layout_toRightOf="@id/profile_pic"
+        android:background="@drawable/border_rectangle_2"
+        android:orientation="vertical"
+        android:paddingLeft="14dp"
+        android:paddingTop="9dp"
+        android:paddingRight="14dp"
+        android:paddingBottom="9dp">
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:textColor="@color/colorDarkGrey"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/users_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Message"
+            android:textIsSelectable="true"
+            android:textColor="@color/colorDarkGrey" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/users_imageView"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo_around"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/btnPlayUser"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerInParent="true"
+                android:background="@color/colorLightFaded"
+                android:padding="5dp"
+                android:src="@drawable/ic_play"
+                android:visibility="gone"
+                app:tint="@color/colorSilverLight" />
+
+        </RelativeLayout>
+
+        <me.jagar.chatvoiceplayerlibrary.VoicePlayerView
+            android:id="@+id/audioPlayerUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:enableVisualizer="false"
+            android:visibility="gone"
+            android:soundEffectsEnabled="true"
+            app:visualizationPlayedColor="@color/colorGreen"
+            app:visualizationNotPlayedColor="#F62727"
+            app:playPauseBackgroundColor="@color/colorMain"
+            app:timingBackgroundColor="#6AFF7700"
+            app:seekBarProgressColor="@color/colorMain"
+            app:showShareButton="false"
+            app:shareCornerRadius="100"
+            app:playPauseCornerRadius="100"
+            app:showTiming="true"
+            app:viewCornerRadius="100"
+            app:viewBackground="@android:color/transparent"
+            app:progressTimeColor="#6C0573"
+            app:seekBarThumbColor="#FFC107"
+            app:shareBackgroundColor="#90A808"
+            app:playProgressbarColor="#009688" />
+
+        <LinearLayout
+            android:id="@+id/linear_documents_others"
+            android:layout_width="170dp"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_3"
+                android:padding="5dp"
+                android:text="DOC"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/fileNameOther"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="file name"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/users_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Sept 25, 2020 11:30 AM"
+            android:textColor="@color/colorLightGrey"
+            android:textSize="8sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_me"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/border_rectangle_2"
+        android:backgroundTint="@color/colorMain"
+        android:gravity="end"
+        android:orientation="vertical"
+        android:paddingLeft="14dp"
+        android:paddingTop="9dp"
+        android:paddingRight="14dp"
+        android:paddingBottom="9dp"
+        android:text="Message">
+
+        <TextView
+            android:id="@+id/myname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:textColor="@color/colorDarkGrey"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/my_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textIsSelectable="true"
+            android:text="Message"
+            android:textColor="@color/colorDarkGrey" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/my_imageView"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo_around"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/btnPlayMy"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerInParent="true"
+                android:background="@color/colorLightFaded"
+                android:padding="5dp"
+                android:src="@drawable/ic_play"
+                android:visibility="gone"
+                app:tint="@color/colorSilverLight" />
+
+        </RelativeLayout>
+
+        <me.jagar.chatvoiceplayerlibrary.VoicePlayerView
+            android:id="@+id/audioPlayerMy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:soundEffectsEnabled="true"
+            android:visibility="gone"
+            app:enableVisualizer="false"
+            app:playPauseBackgroundColor="@color/colorDarkGrey"
+            app:playPauseCornerRadius="100"
+            app:playProgressbarColor="#009688"
+            app:progressTimeColor="#6C0573"
+            app:seekBarProgressColor="@color/colorDarkGrey"
+            app:seekBarThumbColor="@color/colorLightGrey"
+            app:shareBackgroundColor="#90A808"
+            app:shareCornerRadius="100"
+            app:showShareButton="false"
+            app:showTiming="true"
+            app:timingBackgroundColor="#6AFF7700"
+            app:viewBackground="@android:color/transparent"
+            app:viewCornerRadius="100"
+            app:visualizationNotPlayedColor="#F62727"
+            app:visualizationPlayedColor="@color/colorGreen" />
+
+        <LinearLayout
+            android:id="@+id/linear_documents_me"
+            android:layout_width="170dp"
+            android:layout_height="50dp"
+            android:gravity="center_vertical|end"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_3"
+                android:padding="5dp"
+                android:text="DOC"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/fileNameMy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="file name"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/my_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Sept 25, 2020 11:30 AM"
+            android:textColor="@color/colorLightGrey"
+            android:textSize="8sp" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

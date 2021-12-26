@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:layout_centerVertical="true"
+            android:text="Group Details"
+            android:textColor="@color/colorDarkGrey"
+            android:id="@+id/heading"/>
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/group_members"
+            android:padding="2dp"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/btnGroupMembers"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/border_rectangle_2"
+        android:hint="Name"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:textSize="14sp"
+        android:id="@+id/etName"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/border_rectangle_2"
+        android:layout_marginTop="15dp"
+        android:hint="Accomodation"
+        android:gravity="center_vertical"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:id="@+id/tvAccomodation"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:id="@+id/linear_file"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/border_rectangle_2"
+        android:gravity="center_vertical"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_rectangle_2"
+            android:text="PDF"
+            android:padding="5dp"
+            android:textSize="13sp"
+            android:textColor="@color/colorDarkGrey"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Open File"
+            android:layout_marginStart="15dp"
+            android:textSize="16sp"
+            android:id="@+id/tvSelectFile"
+            android:textColor="@color/colorLightGrey"/>
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/button_background"
+        android:text="OK"
+        android:textColor="@color/colorDarkGrey"
+        android:layout_marginTop="20dp"
+        android:id="@+id/btnOk"/>
+
+</LinearLayout>

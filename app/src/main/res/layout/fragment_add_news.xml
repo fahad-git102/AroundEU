@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".adminFragments.AddNewsFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="60dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Post"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="23sp"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/heading"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_below="@id/heading"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/shadow_white_backgroud"
+                android:padding="15dp"
+                android:id="@+id/linear"
+                android:layout_centerHorizontal="true"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_photo"
+                    android:id="@+id/add_image"/>
+
+            </LinearLayout>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/linear"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/border_rectangle_3"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:gravity="start"
+                android:hint="Title"
+                android:padding="13dp"
+                android:textSize="14sp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etTitle"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/etTitle"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/border_rectangle_3"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:minHeight="120dp"
+                android:gravity="start"
+                android:hint="Description"
+                android:padding="13dp"
+                android:textSize="14sp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etText"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/button_background"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_below="@id/etText"
+                android:layout_marginTop="30dp"
+                android:text="Submit"
+                android:id="@+id/btnSubmit"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</FrameLayout>

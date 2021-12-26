@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:background="@color/colorSilverLight"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="55dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Select Action"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/colorDarkGrey"
+            android:textSize="17sp"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/video"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:text="Video"
+        android:textSize="13sp"
+        android:textColor="@color/colorBlueLight"/>
+
+    <Button
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:text="Image"
+        android:textSize="13sp"
+        android:textColor="@color/colorBlueLight"/>
+
+    <Button
+        android:id="@+id/documents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:text="Documents"
+        android:layout_marginBottom="15dp"
+        android:textSize="13sp"
+        android:textColor="@color/colorBlueLight"/>
+
+</LinearLayout>

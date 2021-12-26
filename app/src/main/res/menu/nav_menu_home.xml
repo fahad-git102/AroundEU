@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/website"
+        android:icon="@drawable/ic_globe"
+        android:title="Website"/>
+
+    <item android:id="@+id/follow"
+        android:icon="@drawable/ic_follow"
+        android:title="Follow us on">
+
+        <menu>
+
+            <group android:checkableBehavior="single"
+                android:id="@+id/group1">
+
+                <item android:id="@+id/facebook"
+                    android:icon="@drawable/ic_facebook"
+                    android:title="Facebook"/>
+
+                <item android:id="@+id/instagram"
+                    android:icon="@drawable/ic_instagram"
+                    android:title="Instagram"/>
+
+                <item android:id="@+id/linkedIn"
+                    android:icon="@drawable/ic_linkedin"
+                    android:title="LinkedIn"/>
+
+                <item android:id="@+id/twitter"
+                    android:icon="@drawable/ic_twitter"
+                    android:title="Twitter"/>
+
+                <item android:id="@+id/youtube"
+                    android:icon="@drawable/ic_youtube"
+                    android:title="Youtube"/>
+
+<!--                <item android:id="@+id/pinterest"-->
+<!--                    android:icon="@drawable/ic_pinterest"-->
+<!--                    android:title="Pinterest"/>-->
+
+<!--                <item android:id="@+id/flickr"-->
+<!--                    android:icon="@drawable/ic_flickr"-->
+<!--                    android:title="Flickr"/>-->
+
+            </group>
+
+        </menu>
+
+    </item>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/group2">
+
+        <item android:title="Coordinators contact"
+            android:id="@+id/coordinators"
+            android:icon="@drawable/ic_coordinator"/>
+
+        <item android:title="Emergency contact"
+            android:id="@+id/emergency"
+            android:icon="@drawable/ic_emergency_call"/>
+
+        <item android:title="Office contact"
+            android:id="@+id/office_contact"
+            android:icon="@drawable/ic_phone_call"/>
+
+        <item android:title="Sign out"
+            android:id="@+id/signout"
+            android:icon="@drawable/ic_logout"/>
+
+    </group>
+
+
+
+
+</menu>

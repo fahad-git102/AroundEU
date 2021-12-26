@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/border_rectangle_2"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="7dp"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Company name"
+            android:textSize="17sp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorBlue"
+            android:fontFamily="@font/cera_pro_bold"
+            android:textStyle="bold"
+            android:id="@+id/tvCompanyName"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(Legal Representative)"
+            android:textSize="8sp"
+            android:visibility="gone"
+            android:id="@+id/legal"
+            android:textColor="@color/colorLightGrey"
+            android:fontFamily="@font/cera_pro_bold"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:layout_marginTop="5dp"
+            android:textSize="14sp"
+            android:textColor="@color/colorDarkGrey"
+            android:fontFamily="@font/cera_pro_bold"
+            android:textStyle="bold"
+            android:id="@+id/tvCompanyLocation"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Size"
+        android:textSize="12sp"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="10dp"
+        android:textColor="@color/colorDarkGrey"
+        android:id="@+id/tvCompanySize"/>
+
+</RelativeLayout>

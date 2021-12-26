@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/main_background"
+    android:layout_height="match_parent"
+    tools:context=".ChatActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_back"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:padding="7dp"
+                android:id="@+id/goBack"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:orientation="vertical"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/tvGroupName"
+                    android:textSize="17sp"
+                    android:textColor="@color/colorDarkGrey"/>
+
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="12dp"
+                    android:id="@+id/btnInfo"
+                    android:src="@drawable/ic_information"
+                    android:layout_alignParentEnd="true"
+                    android:scaleType="fitCenter"
+                    android:background="@android:color/transparent"
+                    android:padding="4dp"
+                    app:tint="@color/colorDarkGrey"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/toolbar"
+        android:layout_height="match_parent"
+        android:layout_above="@id/linear">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recycler_chat"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:id="@+id/linear"
+        android:paddingBottom="17dp"
+        android:paddingTop="22dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:background="@drawable/yellow_circle"
+            android:src="@drawable/ic_add"
+            android:scaleType="fitCenter"
+            android:padding="8dp"
+            app:tint="@color/colorDarkGrey"
+            android:id="@+id/btnAdd"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/border_rectangle_2"
+            android:layout_marginLeft="12dp"
+            android:hint="Type here.."
+            android:textSize="14sp"
+            android:maxHeight="120dp"
+            android:textColor="@color/colorDarkGrey"
+            android:padding="15dp"
+            android:id="@+id/etTypeHere"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="end|center_vertical">
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/yellow_circle"
+                android:src="@drawable/mic"
+                app:tint="@android:color/white"
+                android:scaleType="fitCenter"
+                android:padding="6dp"
+                android:id="@+id/btnRecord"/>
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/yellow_circle"
+                android:src="@drawable/ic_send"
+                android:scaleType="fitCenter"
+                android:padding="9dp"
+                android:id="@+id/btnSend"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/recycler_users_to_mention"
+        android:layout_above="@id/linear"
+        android:layout_marginStart="25dp"
+        android:visibility="gone"/>
+
+</RelativeLayout>

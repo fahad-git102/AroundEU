@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="20dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/default_user_img"
+        app:civ_border_color="@color/colorMain"
+        app:civ_border_width="2dp"
+        android:id="@+id/profilePic"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:layout_marginTop="25dp"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:gravity="start"
+        android:textColor="@color/colorDarkGrey" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/border_rectangle_2"
+        android:hint="Name"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:textSize="14sp"
+        android:id="@+id/etFirstName"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:layout_marginTop="10dp"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:gravity="start"
+        android:textColor="@color/colorDarkGrey" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/border_rectangle_2"
+        android:hint="Email"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:textSize="14sp"
+        android:id="@+id/tvEmail"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Phone Number"
+        android:layout_marginTop="10dp"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:gravity="start"
+        android:textColor="@color/colorDarkGrey" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/border_rectangle_2"
+        android:hint="Phone Number"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:textSize="14sp"
+        android:id="@+id/tvPhoneNumber"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Works At"
+        android:layout_marginTop="10dp"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:gravity="start"
+        android:textColor="@color/colorDarkGrey" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:paddingStart="15dp"
+        android:orientation="horizontal"
+        android:background="@drawable/border_rectangle_2"
+        android:paddingEnd="10dp"
+        android:id="@+id/linearWork"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:hint="Works at"
+            android:textSize="14sp"
+            android:id="@+id/tvWorksAt"/>
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/more_info"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            app:tint="@color/colorLightestGrey"
+            android:padding="5dp"
+            android:id="@+id/btnDetails"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="About"
+        android:layout_marginTop="10dp"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:gravity="start"
+        android:textColor="@color/colorDarkGrey" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/border_rectangle_2"
+        android:hint="About Me"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:gravity="start"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:textSize="14sp"
+        android:id="@+id/etAboutMe"/>
+</LinearLayout>

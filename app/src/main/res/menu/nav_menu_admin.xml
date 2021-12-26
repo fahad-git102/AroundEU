@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/manage_business_lists"
+        android:icon="@drawable/ic_briefcase"
+        android:title="Manage Business List"/>
+
+    <item android:id="@+id/add_country"
+        android:title="Add new Country"
+        android:icon="@drawable/ic_country"/>
+
+    <item android:id="@+id/add_news"
+        android:title="Add News"
+        android:icon="@drawable/ic_newspaper"/>
+
+    <item android:id="@+id/add_categories"
+        android:icon="@drawable/ic_menu"
+        android:title="Add Categories"/>
+
+    <item android:id="@+id/add_groups"
+        android:icon="@drawable/ic_group"
+        android:title="Add Groups"/>
+
+    <item android:id="@+id/manage_places"
+        android:icon="@drawable/ic_place_localizer"
+        android:title="Manage Places"/>
+
+    <item android:id="@+id/add_coordinators"
+        android:icon="@drawable/ic_coordinator"
+        android:title="Add Coordinators"/>
+
+    <item android:id="@+id/add_emergency"
+        android:icon="@drawable/sos"
+        android:title="Add Emergency Numbers"/>
+
+    <item android:id="@+id/add_companies"
+        android:icon="@drawable/ic_company"
+        android:title="Add new company"/>
+
+    <item android:id="@+id/signout"
+        android:icon="@drawable/ic_logout"
+        android:title="Sign Out"/>
+
+</menu>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter pincode :"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        android:textColor="@color/colorDarkGrey"
+        android:id="@+id/heading"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter the pincode of the group you want to join."
+        android:layout_marginTop="15dp"
+        android:textSize="14sp"
+        android:id="@+id/tvText"
+        android:visibility="gone"
+        android:textColor="@color/colorDarkGrey"
+        android:layout_marginBottom="5dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/border_rectangle_2"
+        android:hint="Pincode"
+        android:gravity="center"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:textSize="14sp"
+        android:inputType="numberPassword"
+        android:maxLength="5"
+        android:id="@+id/etPincode"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/button_background"
+        android:text="JOIN"
+        android:textColor="@color/colorDarkGrey"
+        android:layout_marginTop="20dp"
+        android:id="@+id/btnJoin"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:id="@+id/progress"
+        android:visibility="gone"/>
+
+</LinearLayout>

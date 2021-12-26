@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".adminFragments.AddCompanyFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:padding="20dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add new company"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="25sp"/>
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:id="@+id/spinner"
+                android:minHeight="45dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginTop="30dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:hint="Full Legal Name"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etFullLegalName"/>
+
+<!--            <EditText-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/border_rectangle_2"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:paddingTop="13dp"-->
+<!--                android:paddingBottom="13dp"-->
+<!--                android:hint="Size"-->
+<!--                android:textSize="14sp"-->
+<!--                android:paddingStart="14dp"-->
+<!--                android:paddingEnd="14dp"-->
+<!--                android:textColor="@color/colorDarkGrey"-->
+<!--                android:id="@+id/etSize"/>-->
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:hint="Legal Address"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etLegalAddress"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:hint="Postal Code"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etPostalCode"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:hint="City"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etCity"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:hint="Country"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etCountry"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:hint="Phone"
+                android:inputType="number"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etTelephone"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:hint="Email"
+                android:textSize="14sp"
+                android:inputType="textEmailAddress"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etEmail"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:hint="Contact Person"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etContactPerson"/>
+
+<!--            <EditText-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/border_rectangle_2"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:paddingTop="13dp"-->
+<!--                android:paddingBottom="13dp"-->
+<!--                android:hint="P.I.V.A"-->
+<!--                android:textSize="14sp"-->
+<!--                android:paddingStart="14dp"-->
+<!--                android:paddingEnd="14dp"-->
+<!--                android:textColor="@color/colorDarkGrey"-->
+<!--                android:id="@+id/etPiva"/>-->
+
+<!--            <EditText-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/border_rectangle_2"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:paddingTop="13dp"-->
+<!--                android:paddingBottom="13dp"-->
+<!--                android:hint="Legal Representative"-->
+<!--                android:textSize="14sp"-->
+<!--                android:paddingStart="14dp"-->
+<!--                android:paddingEnd="14dp"-->
+<!--                android:textColor="@color/colorDarkGrey"-->
+<!--                android:id="@+id/etLegalRepresentative"/>-->
+
+<!--            <EditText-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/border_rectangle_2"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:paddingTop="13dp"-->
+<!--                android:paddingBottom="13dp"-->
+<!--                android:hint="Legal Representative ID"-->
+<!--                android:textSize="14sp"-->
+<!--                android:paddingStart="14dp"-->
+<!--                android:paddingEnd="14dp"-->
+<!--                android:textColor="@color/colorDarkGrey"-->
+<!--                android:id="@+id/etIDLegalRepresentative"/>-->
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:paddingBottom="13dp"
+                android:hint="Website"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etwebsite"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:minHeight="100dp"
+                android:gravity="start"
+                android:paddingBottom="13dp"
+                android:hint="Company description"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etCompanyDescription"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:minHeight="100dp"
+                android:gravity="start"
+                android:paddingBottom="13dp"
+                android:hint="Company's Responsibility"
+                android:textSize="14sp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etCompanyResponsibility"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_2"
+                android:layout_marginTop="10dp"
+                android:paddingTop="13dp"
+                android:gravity="start"
+                android:paddingBottom="13dp"
+                android:hint="Tasks of Students"
+                android:textSize="14sp"
+                android:minHeight="100dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textColor="@color/colorDarkGrey"
+                android:id="@+id/etStudentsTasks"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:backgroundTint="@color/colorMain"
+                android:text="Save"
+                android:id="@+id/btnSave"/>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorDarkFaded"
+        android:visibility="gone"
+        android:id="@+id/progress">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

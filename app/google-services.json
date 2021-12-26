@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "942050510362",
+    "firebase_url": "https://eprojectconsult-9d70e-default-rtdb.firebaseio.com",
+    "project_id": "eprojectconsult-9d70e",
+    "storage_bucket": "eprojectconsult-9d70e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:942050510362:android:8ca22ab38aadedd148f3a3",
+        "android_client_info": {
+          "package_name": "com.fahadandroid.groupchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "942050510362-7s0amjki4i063ssqr856krk3ssapfush.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2ukLzcnUv4WLoqhFmX9fC79QCjZoG0lo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "942050510362-7s0amjki4i063ssqr856krk3ssapfush.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:942050510362:android:316f6fdba982a06648f3a3",
+        "android_client_info": {
+          "package_name": "com.fahaddev.groupchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "942050510362-7s0amjki4i063ssqr856krk3ssapfush.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2ukLzcnUv4WLoqhFmX9fC79QCjZoG0lo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "942050510362-7s0amjki4i063ssqr856krk3ssapfush.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

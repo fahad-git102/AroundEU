@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="7dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_height="wrap_content"
+                android:text="Federica Sottile, EU-project manager"
+                android:textSize="18sp"
+                android:id="@+id/tvText"
+                android:textStyle="bold"
+                android:textColor="@color/colorDarkGrey"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="mobile: +39 349 069 3698"
+                android:textSize="14sp"
+                android:id="@+id/tvPhone"
+                android:textColor="@color/colorLightGrey"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:src="@drawable/delete"
+            android:scaleType="fitCenter"
+            android:padding="5dp"
+            android:id="@+id/btnDelete"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.4dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/colorLightGrey"/>
+
+</LinearLayout>
