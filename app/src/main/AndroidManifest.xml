@@ -25,6 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GroupChat">
         <activity
+            android:name=".MakeCordinatorActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddEmergencyActivity"
             android:exported="false" />
         <activity android:name=".LoadPdfActivity" />

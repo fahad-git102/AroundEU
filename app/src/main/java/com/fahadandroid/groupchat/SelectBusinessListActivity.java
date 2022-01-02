@@ -36,6 +36,7 @@ public class SelectBusinessListActivity extends AppCompatActivity {
     List<String> businesKeys;
     ImageButton goBack;
     TextView tvLogout;
+    boolean isCordinator;
     DatabaseReference businessListRef, groupsRef;
 
     @Override
@@ -44,6 +45,7 @@ public class SelectBusinessListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_select_business_list);
         mAuth = FirebaseAuth.getInstance();
         goBack = findViewById(R.id.goBack);
+//        isCordinator = getIntent().getBooleanExtra("isCordinator", false);
         tvLogout = findViewById(R.id.tvLogout);
         tvLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,6 +96,7 @@ public class SelectBusinessListActivity extends AppCompatActivity {
             public void onItemClicked(RecyclerView recyclerView, int i, View view) {
                 Intent intent = new Intent(SelectBusinessListActivity.this, JoinGroupActivity.class);
                 intent.putExtra("businessList", businessListList.get(i));
+//                intent.putExtra("isCordinator", isCordinator);
                 startActivity(intent);
             }
         });

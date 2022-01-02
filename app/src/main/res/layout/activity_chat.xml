@@ -96,10 +96,10 @@
             android:layout_width="27dp"
             android:layout_height="27dp"
             android:background="@drawable/yellow_circle"
-            android:src="@drawable/ic_add"
+            android:src="@drawable/attached"
             android:scaleType="fitCenter"
+            app:tint="@android:color/white"
             android:padding="8dp"
-            app:tint="@color/colorDarkGrey"
             android:id="@+id/btnAdd"/>
 
         <EditText

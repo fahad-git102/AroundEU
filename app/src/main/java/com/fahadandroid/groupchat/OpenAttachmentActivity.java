@@ -61,7 +61,6 @@ public class OpenAttachmentActivity extends AppCompatActivity implements View.On
     Request request;
     String url;
     NotificationCompat.Builder builder;
-    NotificationManagerCompat nmc;
     NotificationManager mNotificationManager;
     ImageButton btnDownload ;
     boolean isVideo = false;
@@ -202,7 +201,6 @@ public class OpenAttachmentActivity extends AppCompatActivity implements View.On
 
     @Override
     public void onAdded(@NonNull Download download) {
-        Toast.makeText(this, "Notification started...", Toast.LENGTH_SHORT).show();
         showNotification(download.getId());
     }
 

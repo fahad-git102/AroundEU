@@ -594,8 +594,44 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     startActivity(intent);
                 }
 
+            }else if (EUGroupChat.currentUser.getUserType().toLowerCase().equals("cordinator")){
+
+                if (EUGroupChat.currentUser.getSelectedCountry()!=null){
+                    countriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                try {
+                                    CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
+                                    countryModel.setKey(dataSnapshot.getKey());
+                                    if (EUGroupChat.currentUser.getSelectedCountry()!=null){
+                                        if (countryModel.getCountryName().equals(EUGroupChat.currentUser.getSelectedCountry())){
+                                            Intent intent = new Intent(HomeActivity.this, SelectBusinessListActivity.class);
+                                            intent.putExtra("country", countryModel.getKey());
+                                            startActivity(intent);
+                                        }
+                                    }else {
+                                        Intent intent = new Intent(HomeActivity.this, SelectCountryActivity.class);
+                                        startActivity(intent);
+                                    }
+
+                                }catch (Exception e){}
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+                }else {
+                    Intent intent = new Intent(HomeActivity.this, SelectCountryActivity.class);
+                    intent.putExtra("cordinator", true);
+                    startActivity(intent);
+                }
             }
         }
-    }
+
 
 }

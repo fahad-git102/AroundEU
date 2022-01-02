@@ -95,6 +95,16 @@
             android:text="Save"
             android:id="@+id/btnSave"/>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/colorMain"
+            android:text="View All Teachers"
+            android:id="@+id/btnViewAllTeachers"/>
+
     </LinearLayout>
 
     <TextView

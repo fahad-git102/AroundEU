@@ -1,6 +1,7 @@
 package com.fahadandroid.groupchat.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.fahadandroid.groupchat.ChatActivity;
+import com.fahadandroid.groupchat.JoinGroupActivity;
 import com.fahadandroid.groupchat.R;
+import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.models.GroupsModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -125,93 +129,127 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GHolder> {
             holder.btnJoin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    View view1 = LayoutInflater.from(context).inflate(R.layout.pincode_dialog_layout, null);
-                    EditText etPincode = view1.findViewById(R.id.etPincode);
-                    Button btnJoin = view1.findViewById(R.id.btnJoin);
-                    builder.setView(view1);
-                    AlertDialog alertDialog = builder.create();
-                    btnJoin.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String pincode = etPincode.getText().toString();
-                            if (pincode.isEmpty()){
-                                etPincode.setError("Pincode Required");
-                                return;
-                            }
-                            int pin = Integer.parseInt(pincode);
-                            if (groupsModelList.get(position).getPincode().equals(pincode)){
-                                Toast.makeText(context, "Pin matched", Toast.LENGTH_SHORT).show();
-                                groupsRef.child(groupsModelList.get(position).getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        try{
-                                            GroupsModel groupsModel = snapshot.getValue(GroupsModel.class);
-                                            if (groupsModel.getKey()==null){
-                                                groupsModel.setKey(snapshot.getKey());
-                                            }
-                                            List<String> approvedMembers = new ArrayList<>();
-//                                            List<String> pendingMembers = new ArrayList<>();
-//                                            if (groupsModel.getPendingMembers()!=null){
-//                                                pendingMembers = groupsModel.getPendingMembers();
-//                                                if (!pendingMembers.contains(mAuth.getCurrentUser().getUid())){
-//                                                    pendingMembers.add(mAuth.getCurrentUser().getUid());
-//                                                }
-//                                            }else {
-//                                                pendingMembers.add(mAuth.getCurrentUser().getUid());
-//                                            }
-//                                            Map<String, Object> map = new HashMap<>();
-//                                            map.put("pendingMembers", pendingMembers);
-//                                            groupsRef.child(groupsModelList.get(position).getKey()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                                @Override
-//                                                public void onComplete(@NonNull Task<Void> task) {
-//                                                    alertDialog.dismiss();
-//                                                    Toast.makeText(context, "Request Sent !", Toast.LENGTH_SHORT).show();
-//                                                }
-//                                            });
-                                            if (groupsModel.getApprovedMembers()!=null){
-                                                approvedMembers = groupsModel.getApprovedMembers();
-                                                if (!approvedMembers.contains(mAuth.getCurrentUser().getUid())){
-                                                    approvedMembers.add(mAuth.getCurrentUser().getUid());
-                                                }
-                                            }else {
-                                                approvedMembers.add(mAuth.getCurrentUser().getUid());
-                                            }
+
+                    if (EUGroupChat.currentUser.getUserType().equals("Cordinator")){
+                        groupsRef.child(groupsModelList.get(position).getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                try{
+                                    GroupsModel groupsModel = snapshot.getValue(GroupsModel.class);
+                                    if (groupsModel.getKey()==null){
+                                        groupsModel.setKey(snapshot.getKey());
+                                    }
+                                    List<String> approvedMembers = new ArrayList<>();
+                                    if (groupsModel.getApprovedMembers()!=null){
+                                        approvedMembers = groupsModel.getApprovedMembers();
+                                        if (!approvedMembers.contains(mAuth.getCurrentUser().getUid())){
+                                            approvedMembers.add(mAuth.getCurrentUser().getUid());
+                                        }
+                                    }else {
+                                        approvedMembers.add(mAuth.getCurrentUser().getUid());
+                                    }
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("approvedMembers", approvedMembers);
+                                    groupsRef.child(groupsModelList.get(position).getKey()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
                                             Map<String, Object> map = new HashMap<>();
-                                            map.put("approvedMembers", approvedMembers);
-                                            groupsRef.child(groupsModelList.get(position).getKey()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            map.put("joined", true);
+                                            usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
-                                                    Map<String, Object> map = new HashMap<>();
-                                                    map.put("joined", true);
-                                                    usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            alertDialog.dismiss();
-                                                            Toast.makeText(context, "Group Joined !", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    });
-                                                    alertDialog.dismiss();
                                                     Toast.makeText(context, "Group Joined !", Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(context, ChatActivity.class);
+                                                    intent.putExtra("group",groupsModelList.get(position).getKey());
+                                                    context.startActivity(intent);
                                                 }
                                             });
-                                        }catch (Exception e){
-                                            alertDialog.dismiss();
-                                            Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Toast.makeText(context, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }else {
-                                Toast.makeText(context, "Wrong Pincode", Toast.LENGTH_SHORT).show();
+                                    });
+                                }catch (Exception e){
+                                    Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        }
-                    });
-                    alertDialog.show();
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(context, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        View view1 = LayoutInflater.from(context).inflate(R.layout.pincode_dialog_layout, null);
+                        EditText etPincode = view1.findViewById(R.id.etPincode);
+                        Button btnJoin = view1.findViewById(R.id.btnJoin);
+                        builder.setView(view1);
+                        AlertDialog alertDialog = builder.create();
+                        btnJoin.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String pincode = etPincode.getText().toString();
+                                if (pincode.isEmpty()){
+                                    etPincode.setError("Pincode Required");
+                                    return;
+                                }
+                                int pin = Integer.parseInt(pincode);
+                                if (groupsModelList.get(position).getPincode().equals(pincode)){
+                                    Toast.makeText(context, "Pin matched", Toast.LENGTH_SHORT).show();
+                                    groupsRef.child(groupsModelList.get(position).getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            try{
+                                                GroupsModel groupsModel = snapshot.getValue(GroupsModel.class);
+                                                if (groupsModel.getKey()==null){
+                                                    groupsModel.setKey(snapshot.getKey());
+                                                }
+                                                List<String> approvedMembers = new ArrayList<>();
+                                                if (groupsModel.getApprovedMembers()!=null){
+                                                    approvedMembers = groupsModel.getApprovedMembers();
+                                                    if (!approvedMembers.contains(mAuth.getCurrentUser().getUid())){
+                                                        approvedMembers.add(mAuth.getCurrentUser().getUid());
+                                                    }
+                                                }else {
+                                                    approvedMembers.add(mAuth.getCurrentUser().getUid());
+                                                }
+                                                Map<String, Object> map = new HashMap<>();
+                                                map.put("approvedMembers", approvedMembers);
+                                                groupsRef.child(groupsModelList.get(position).getKey()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        Map<String, Object> map = new HashMap<>();
+                                                        map.put("joined", true);
+                                                        usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                alertDialog.dismiss();
+                                                                Toast.makeText(context, "Group Joined !", Toast.LENGTH_SHORT).show();
+                                                                Intent intent = new Intent(context, ChatActivity.class);
+                                                                intent.putExtra("group",groupsModelList.get(position).getKey());
+                                                                context.startActivity(intent);
+                                                            }
+                                                        });
+                                                        alertDialog.dismiss();
+                                                        Toast.makeText(context, "Group Joined !", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }catch (Exception e){
+                                                alertDialog.dismiss();
+                                                Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(context, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }else {
+                                    Toast.makeText(context, "Wrong Pincode", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                        alertDialog.show();
+                    }
                 }
             });
         }else {

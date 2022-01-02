@@ -36,17 +36,20 @@
         app:layout_constraintTop_toTopOf="@+id/video_player_view" />
 
     <ImageButton
+        android:id="@+id/btnDownload"
         android:layout_width="34dp"
         android:layout_height="34dp"
         android:layout_alignParentEnd="true"
-        android:backgroundTint="@color/colorGreen"
-        android:id="@+id/btnDownload"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/yellow_circle"
-        android:layout_margin="20dp"
-        android:src="@drawable/download"
+        android:backgroundTint="@color/colorGreen"
+        android:padding="8dp"
         android:scaleType="fitCenter"
-        app:tint="@android:color/white"
-        android:padding="8dp"/>
+        android:src="@drawable/download"
+        app:tint="@android:color/white" />
 
 
 </RelativeLayout>

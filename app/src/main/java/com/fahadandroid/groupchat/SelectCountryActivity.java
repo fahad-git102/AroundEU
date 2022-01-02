@@ -42,7 +42,7 @@ public class SelectCountryActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference usersRef, countriesRef;
-    boolean fromSignUp;
+    boolean isCordinator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,7 @@ public class SelectCountryActivity extends AppCompatActivity {
         goBack = findViewById(R.id.goBack);
         countriesList = new ArrayList<>();
         mAuth = FirebaseAuth.getInstance();
-        fromSignUp = getIntent().getBooleanExtra("fromSignUp", false);
+        isCordinator = getIntent().getBooleanExtra("cordinator", false);
         firebaseDatabase = FirebaseDatabase.getInstance();
         usersRef = firebaseDatabase.getReference("Users");
         countriesRef = firebaseDatabase.getReference("countries");
@@ -63,8 +63,6 @@ public class SelectCountryActivity extends AppCompatActivity {
                 finish();
             }
         });
-//        countriesList.add(new CountryModel("Barcelona P.G", "11111"));
-//        countriesList.add(new CountryModel("Catania", "22222"));
         getCountries();
     }
 
@@ -109,48 +107,18 @@ public class SelectCountryActivity extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()){
-                                                    if (fromSignUp){
-//                                                        AlertDialog.Builder builder = new AlertDialog.Builder(SelectCountryActivity.this);
-//                                                        builder.setMessage("User created successfully ! Now login to your account to continue.");
-//                                                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                                                            @Override
-//                                                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                                                mAuth.signOut();
-//                                                                Intent intent = new Intent(SelectCountryActivity.this, LoginActivity.class);
-//                                                                startActivity(intent);
-//                                                                finish();
-//                                                            }
-//                                                        });
-//                                                        AlertDialog alertDialog = builder.create();
-//                                                        alertDialog.setCancelable(false);
-//                                                        alertDialog.setCanceledOnTouchOutside(false);
-//                                                        alertDialog.show();
+//                                                    if (fromSignUp){
+//                                                        Intent intent = new Intent(SelectCountryActivity.this, SelectBusinessListActivity.class);
+//                                                        intent.putExtra("country", countriesList.get(i).getKey());
+//                                                        startActivity(intent);
+//
+//                                                    }else {
                                                         Intent intent = new Intent(SelectCountryActivity.this, SelectBusinessListActivity.class);
                                                         intent.putExtra("country", countriesList.get(i).getKey());
+                                                        intent.putExtra("isCordinator", isCordinator);
                                                         startActivity(intent);
 
-                                                    }else {
-                                                        Intent intent = new Intent(SelectCountryActivity.this, SelectBusinessListActivity.class);
-                                                        intent.putExtra("country", countriesList.get(i).getKey());
-                                                        startActivity(intent);
-//                                                        AlertDialog.Builder builder = new AlertDialog.Builder(SelectCountryActivity.this);
-//                                                        builder.setTitle("Success");
-//                                                        builder.setMessage("User registeration completed successfully. Now login again to continue.");
-//                                                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                                                            @Override
-//                                                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                                                dialogInterface.dismiss();
-//                                                                mAuth.signOut();
-//                                                                Intent intent = new Intent(SelectCountryActivity.this, LoginActivity.class);
-//                                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                                                                startActivity(intent);
-//                                                                finish();
-//                                                            }
-//                                                        });
-//                                                        AlertDialog alertDialog1 = builder.create();
-//                                                        alertDialog1.show();
-
-                                                    }
+//                                                    }
 
                                                 }else {
                                                     Toast.makeText(SelectCountryActivity.this, "Something went wrong !", Toast.LENGTH_SHORT).show();

@@ -27,7 +27,7 @@ public class AddCoordinatorActivity extends AppCompatActivity implements View.On
     EditText etDetails;
     CountryCodePicker countryCodePicker;
     EditText etPhone;
-    Button btnSave;
+    Button btnSave, btnViewAllTeachers;
     String text, phone;
     TextView btnViewAll;
 
@@ -43,6 +43,8 @@ public class AddCoordinatorActivity extends AppCompatActivity implements View.On
         btnSave.setOnClickListener(this);
         btnViewAll = findViewById(R.id.btnViewAll);
         btnViewAll.setOnClickListener(this);
+        btnViewAllTeachers = findViewById(R.id.btnViewAllTeachers);
+        btnViewAllTeachers.setOnClickListener(this);
         etDetails = findViewById(R.id.etDetails);
         countryCodePicker = findViewById(R.id.countryCodePicker);
         etPhone = findViewById(R.id.phone_number_edt);
@@ -70,6 +72,9 @@ public class AddCoordinatorActivity extends AppCompatActivity implements View.On
             Intent intent = new Intent(AddCoordinatorActivity.this, ContactsInfoActivity.class);
             intent.putExtra("fromAdmin", true);
             intent.putExtra("from", "coordinate");
+            startActivity(intent);
+        }else if (view.getId()==R.id.btnViewAllTeachers){
+            Intent intent = new Intent(AddCoordinatorActivity.this, MakeCordinatorActivity.class);
             startActivity(intent);
         }
     }
