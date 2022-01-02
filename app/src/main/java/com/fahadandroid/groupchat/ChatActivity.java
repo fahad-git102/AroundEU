@@ -995,6 +995,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void sendNotification(List<String> stringList){
 
+        for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
+            if (EUGroupChat.userModelList.get(i).isAdmin()){
+                stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+            }
+        }
+
         Map<String, Object> map = new HashMap<>();
         String title = thisgroupsModel.getName();
         String message = EUGroupChat.currentUser.getFirstName()+" sent a message in your group";
