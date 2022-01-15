@@ -36,6 +36,7 @@ public class JoinGroupActivity extends AppCompatActivity implements View.OnClick
     List<GroupsModel> groupsModelList;
     List<String> groupKeys;
     DatabaseReference groupsRef;
+    boolean isCoountryCordinator = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +48,7 @@ public class JoinGroupActivity extends AppCompatActivity implements View.OnClick
         tvBusinessName = findViewById(R.id.tvBusinessName);
         groupsRef = firebaseDatabase.getReference("groups");
         businessList = getIntent().getParcelableExtra("businessList");
+        isCoountryCordinator = getIntent().getBooleanExtra("isCoountryCordinator", false);
         tvBusinessName.setText(businessList.getName());
         recyclerGroups = findViewById(R.id.recycler_groups);
         recyclerGroups.setLayoutManager(new LinearLayoutManager(this));
@@ -60,13 +62,20 @@ public class JoinGroupActivity extends AppCompatActivity implements View.OnClick
         RecycleClick.addTo(recyclerGroups).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int i, View view) {
-                if (groupsModelList.get(i).getJoined()!=null){
-                    if (groupsModelList.get(i).getJoined().equals("yes")){
-                        Intent intent = new Intent(JoinGroupActivity.this, ChatActivity.class);
-                        intent.putExtra("group",groupsModelList.get(i).getKey());
-                        startActivity(intent);
+                if (isCoountryCordinator){
+                    Intent intent = new Intent(JoinGroupActivity.this, ChatActivity.class);
+                    intent.putExtra("group",groupsModelList.get(i).getKey());
+                    startActivity(intent);
+                }else {
+                    if (groupsModelList.get(i).getJoined()!=null){
+                        if (groupsModelList.get(i).getJoined().equals("yes")){
+                            Intent intent = new Intent(JoinGroupActivity.this, ChatActivity.class);
+                            intent.putExtra("group",groupsModelList.get(i).getKey());
+                            startActivity(intent);
+                        }
                     }
                 }
+
             }
         });
         groupsRef.addChildEventListener(new ChildEventListener() {

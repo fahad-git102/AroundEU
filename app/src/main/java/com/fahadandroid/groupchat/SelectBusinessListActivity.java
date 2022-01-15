@@ -7,8 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -35,9 +37,10 @@ public class SelectBusinessListActivity extends AppCompatActivity {
     List<BusinessList> businessListList ;
     List<String> businesKeys;
     ImageButton goBack;
+    boolean isCordinatorCountry;
     TextView tvLogout;
-    boolean isCordinator;
     DatabaseReference businessListRef, groupsRef;
+    String countryOfCordinator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +48,11 @@ public class SelectBusinessListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_select_business_list);
         mAuth = FirebaseAuth.getInstance();
         goBack = findViewById(R.id.goBack);
-//        isCordinator = getIntent().getBooleanExtra("isCordinator", false);
+        isCordinatorCountry = getIntent().getBooleanExtra("cordinatorCountry", false);
+        if (isCordinatorCountry){
+            SharedPreferences prfs = getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE);
+            countryOfCordinator = prfs.getString("country", "");
+        }
         tvLogout = findViewById(R.id.tvLogout);
         tvLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +63,7 @@ public class SelectBusinessListActivity extends AppCompatActivity {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE).edit().clear().apply();
                         mAuth.signOut();
                         startActivity(new Intent(SelectBusinessListActivity.this, LoginActivity.class));
                         finish();
@@ -85,6 +93,12 @@ public class SelectBusinessListActivity extends AppCompatActivity {
         recyclerBusinessList = findViewById(R.id.recycler_businessLists);
         recyclerBusinessList.setLayoutManager(new LinearLayoutManager(this));
         businesKeys = new ArrayList<>();
+
+        if (isCordinatorCountry){
+            SharedPreferences prfs = getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE);
+            countryKey = prfs.getString("countryKey", "");
+        }
+
         getBusinessLists(countryKey);
     }
 
@@ -96,7 +110,7 @@ public class SelectBusinessListActivity extends AppCompatActivity {
             public void onItemClicked(RecyclerView recyclerView, int i, View view) {
                 Intent intent = new Intent(SelectBusinessListActivity.this, JoinGroupActivity.class);
                 intent.putExtra("businessList", businessListList.get(i));
-//                intent.putExtra("isCordinator", isCordinator);
+                intent.putExtra("isCoountryCordinator", isCordinatorCountry);
                 startActivity(intent);
             }
         });

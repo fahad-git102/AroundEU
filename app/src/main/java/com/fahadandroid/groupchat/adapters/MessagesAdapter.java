@@ -7,6 +7,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,7 +85,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             holder.linearUser.setVisibility(View.GONE);
             holder.linearMe.setVisibility(View.VISIBLE);
             holder.profilePic.setVisibility(View.GONE);
-            holder.tvMyMessage.setText(messageModelList.get(position).getMessage());
+            if (messageModelList.get(position).getMessage()!=null){
+                holder.tvMyMessage.setText(Html.fromHtml(messageModelList.get(position).getMessage()));
+            }
 
             holder.tvMyTime.setText(HelperClass.getFormattedDateTime(messageModelList.get(position).getTimeStamp(), "MMM dd, yyyy hh:mm a"));
 
@@ -141,6 +144,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.tvMyMessage.setVisibility(View.GONE);
                 holder.audioPlayerMy.setVisibility(View.VISIBLE);
                 holder.audioPlayerMy.setAudio(messageModelList.get(position).getAudio());
+            }else if (messageModelList.get(position).getLatitude()>0&&messageModelList.get(position).getLongitude()>0){
+                holder.myImageView.setVisibility(View.VISIBLE);
+                holder.tvMyMessage.setVisibility(View.GONE);
+                holder.btnPlayMe.setVisibility(View.GONE);
+                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).placeholder(R.drawable.default_image).into(holder.myImageView);
+                holder.myImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String uri = "http://maps.google.com/maps?q=loc:" + messageModelList.get(position).getLatitude() + "," + messageModelList.get(position).getLongitude();
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                        intent.setPackage("com.google.android.apps.maps");
+                        context.startActivity(intent);
+                    }
+                });
             }else {
                 holder.btnPlayMe.setVisibility(View.GONE);
                 holder.myImageView.setVisibility(View.GONE);
@@ -151,7 +168,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             holder.linearMe.setVisibility(View.GONE);
             holder.linearUser.setVisibility(View.VISIBLE);
             holder.profilePic.setVisibility(View.VISIBLE);
-            holder.tvUserMessage.setText(messageModelList.get(position).getMessage());
+            if (messageModelList.get(position).getMessage()!=null){
+                holder.tvUserMessage.setText(Html.fromHtml(messageModelList.get(position).getMessage()));
+            }
             holder.tvUserTime.setText(HelperClass.getFormattedDateTime(messageModelList.get(position).getTimeStamp(), "MMM dd, yyyy hh:mm a"));
             for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
                 if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(position).getUid())){
@@ -212,6 +231,21 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.audioPlayerUser.setVisibility(View.VISIBLE);
                 holder.audioPlayerUser.setAudio(messageModelList.get(position).getAudio());
 
+            }else if (messageModelList.get(position).getLatitude()>0&&messageModelList.get(position).getLongitude()>0){
+                holder.usersImageView.setVisibility(View.VISIBLE);
+                holder.tvUserMessage.setVisibility(View.GONE);
+                holder.btnPlayUsers.setVisibility(View.GONE);
+                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).
+                        placeholder(R.drawable.default_image).override(150,150).into(holder.usersImageView);
+                holder.usersImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String uri = "http://maps.google.com/maps?q=loc:" + messageModelList.get(position).getLatitude() + "," + messageModelList.get(position).getLongitude();
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                        intent.setPackage("com.google.android.apps.maps");
+                        context.startActivity(intent);
+                    }
+                });
             } else {
                 holder.tvUserMessage.setVisibility(View.VISIBLE);
                 holder.usersImageView.setVisibility(View.GONE);

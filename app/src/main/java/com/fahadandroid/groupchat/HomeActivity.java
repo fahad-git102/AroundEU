@@ -10,12 +10,15 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -60,8 +63,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ActionBarDrawerToggle t;
     private NavigationView nv;
     FirebaseAuth mAuth;
+    TextView tvCordinatorsCountry;
     CardView progress;
     CompanyModel myCompany;
+    String cordinatorCountry;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference usersRef, groupsRef, countriesRef, companyTimeScheduledRef;
     boolean groupMatched = false;
@@ -95,6 +100,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         { }
         dl.addDrawerListener(t);
         t.syncState();
+        try {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         usersRef = firebaseDatabase.getReference("Users");
@@ -163,6 +175,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE).edit().clear().apply();
                                 mAuth.signOut();
                                 deleteDeviceToken();
                                 startActivity(new Intent(HomeActivity.this, LoginActivity.class));
@@ -192,6 +205,33 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         btnPlaces.setOnClickListener(this);
         btnNews = findViewById(R.id.btnNews);
         btnNews.setOnClickListener(this);
+        tvCordinatorsCountry = findViewById(R.id.tvCordinatorsCountry);
+
+        if (EUGroupChat.currentUser!=null){
+            if (EUGroupChat.currentUser.getUserType().equals("Cordinator")){
+                SharedPreferences prfs = getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE);
+                cordinatorCountry = prfs.getString("country", "");
+                if (cordinatorCountry!=null){
+                    if (cordinatorCountry.equals("")){
+                        getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE).edit().clear().apply();
+                        mAuth.signOut();
+                        deleteDeviceToken();
+                        startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                        finish();
+                    }else {
+                        tvCordinatorsCountry.setVisibility(View.VISIBLE);
+                        String text = "<u>Cordinator's Country: <b>"+cordinatorCountry+"</b></u>";
+                        tvCordinatorsCountry.setText(Html.fromHtml(text));
+                    }
+                }else {
+                    getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE).edit().clear().apply();
+                    mAuth.signOut();
+                    deleteDeviceToken();
+                    startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                    finish();
+                }
+            }
+        }
 
         requestAppPermissions();
     }
@@ -596,42 +636,49 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             }else if (EUGroupChat.currentUser.getUserType().toLowerCase().equals("cordinator")){
 
-                if (EUGroupChat.currentUser.getSelectedCountry()!=null){
-                    countriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                                try {
-                                    CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
-                                    countryModel.setKey(dataSnapshot.getKey());
-                                    if (EUGroupChat.currentUser.getSelectedCountry()!=null){
-                                        if (countryModel.getCountryName().equals(EUGroupChat.currentUser.getSelectedCountry())){
-                                            Intent intent = new Intent(HomeActivity.this, SelectBusinessListActivity.class);
-                                            intent.putExtra("country", countryModel.getKey());
-                                            startActivity(intent);
-                                        }
-                                    }else {
-                                        Intent intent = new Intent(HomeActivity.this, SelectCountryActivity.class);
-                                        startActivity(intent);
-                                    }
-
-                                }catch (Exception e){}
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-                }
-                }else {
-                    Intent intent = new Intent(HomeActivity.this, SelectCountryActivity.class);
-                    intent.putExtra("cordinator", true);
+                if (cordinatorCountry!=null){
+                    Intent intent = new Intent(HomeActivity.this, SelectBusinessListActivity.class);
+                    intent.putExtra("cordinatorCountry", true);
                     startActivity(intent);
                 }
+//                if (EUGroupChat.currentUser.getSelectedCountry()!=null){
+//                    countriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+//                                try {
+//                                    CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
+//                                    countryModel.setKey(dataSnapshot.getKey());
+//                                    if (EUGroupChat.currentUser.getSelectedCountry()!=null){
+//                                        if (countryModel.getCountryName().equals(EUGroupChat.currentUser.getSelectedCountry())){
+//                                            Intent intent = new Intent(HomeActivity.this, SelectBusinessListActivity.class);
+//                                            intent.putExtra("country", countryModel.getKey());
+//                                            startActivity(intent);
+//                                        }
+//                                    }else {
+//                                        Intent intent = new Intent(HomeActivity.this, SelectCountryActivity.class);
+//                                        startActivity(intent);
+//                                    }
+//
+//                                }catch (Exception e){}
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError error) {
+//
+//                        }
+//                    });
+//                }
+            }else {
+                getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE).edit().clear().apply();
+                mAuth.signOut();
+                deleteDeviceToken();
+                startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                finish();
             }
         }
+    }
 
 
 }

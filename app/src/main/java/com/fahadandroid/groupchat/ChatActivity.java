@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.LocationManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,8 +26,10 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -317,10 +321,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             RecycleClick.addTo(recyclerUsersToMention).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
                 @Override
                 public void onItemClicked(RecyclerView recyclerView, int i, View view) {
-                    String text = "<b>" + refinedUsers.get(i).getFirstName()+" "+refinedUsers.get(i).getSurName() + "</b>";
+                    String text = "<b>@" + refinedUsers.get(i).getFirstName()+"</b>";
                     etTypeHere.setText(Html.fromHtml(text));
-                    refinedUsers.clear();
                     mentionedUser = refinedUsers.get(i);
+                    refinedUsers.clear();
                     recyclerUsersToMention.setVisibility(View.GONE);
                 }
             });
@@ -543,6 +547,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }else if (view.getId()==R.id.btnSend){
 
             String message = etTypeHere.getText().toString();
+            String mes = "";
+
+            Pattern pattern = Pattern.compile("@\\w+");
+
+            Matcher matcher = pattern.matcher(message);
+            while (matcher.find())
+            {
+                mes = matcher.group();
+            }
+
+            message = message.replace(mes, "<b>"+mes+"</b>");
+
             if (!message.isEmpty()){
                 final Map<String, Object> map = new HashMap<>();
                 map.put("timeStamp", ServerValue.TIMESTAMP);
@@ -560,7 +576,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                     if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
                                         for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
                                             if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-                                                list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                    list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                }
                                             }else {
                                                 if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
                                                     if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
@@ -624,7 +642,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(ChatActivity.this);
+                    builder1.setTitle("Current Location");
+                    builder1.setMessage("Do you want to share your current location ?");
+                    builder1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            sendLocation();
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    builder1.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    AlertDialog alertDialog1 = builder1.create();
+                    alertDialog1.show();
 
+                    alertDialog.dismiss();
                 }
             });
             alertDialog.show();
@@ -833,7 +870,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                             if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
                                                 for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
                                                     if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-                                                        list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                        }
+
                                                     }else {
                                                         if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
                                                             if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
@@ -888,7 +928,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                             if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
                                                 for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
                                                     if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-                                                        list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                        }
                                                     }else {
                                                         if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
                                                             if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
@@ -942,7 +984,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                             if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
                                                 for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
                                                     if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-                                                        list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                        }
                                                     }else {
                                                         if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
                                                             if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
@@ -1264,7 +1308,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                                 if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
                                                     for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
                                                         if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-                                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                            if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                                list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                            }
                                                         }else {
                                                             if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
                                                                 if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
@@ -1289,6 +1335,54 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             });
 
         }
+
+    }
+
+    private void sendLocation(){
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        String locationProvider = LocationManager.NETWORK_PROVIDER;
+        @SuppressLint("MissingPermission") android.location.Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+        double userLat = lastKnownLocation.getLatitude();
+        double userLong = lastKnownLocation.getLongitude();
+
+        final Map<String, Object> map = new HashMap<>();
+        map.put("timeStamp", ServerValue.TIMESTAMP);
+        map.put("uid", mAuth.getCurrentUser().getUid());
+        map.put("longitude", userLong);
+        map.put("latitude", userLat);
+
+        chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    etTypeHere.setText("");
+                    if (thisgroupsModel.getApprovedMembers()!=null){
+                        List<String> list = new ArrayList<>();
+                        for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
+                            if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
+                                for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
+                                    if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
+                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                        }
+                                    }else {
+                                        if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
+                                            if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        sendNotification(list);
+                        if (mentionedUser!=null){
+                            sendMentionNotification();
+                        }
+                    }
+                }
+            }
+        });
 
     }
 
