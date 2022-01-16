@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -28,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fahadandroid.groupchat.adapters.StringHorizontalAdapter;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.ComapnyTimeScheduledModel;
@@ -50,8 +53,10 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -70,9 +75,11 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     CircleImageView profilePic, mainPic;
     StorageReference storageReference;
     FirebaseDatabase firebaseDatabase;
+    TextView tvMorningStart, tvMorningTo, tvNoonStart, tvNoonTo;
     DatabaseReference usersRef, companyTimeScheduledRef;
     Uri contentUri;
     FirebaseAuth mAuth;
+    RecyclerView recyclerWorkingDays;
     CompanyModel myCompany;
 
     @Override
@@ -82,6 +89,12 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         mainPic = findViewById(R.id.mainPic);
+        tvMorningStart = findViewById(R.id.tvMorningStartTime);
+        tvMorningTo = findViewById(R.id.tvMorningToTime);
+        tvNoonStart = findViewById(R.id.tvNoonStart);
+        tvNoonTo = findViewById(R.id.tvNoonTo);
+        recyclerWorkingDays = findViewById(R.id.recycler_working_days);
+        recyclerWorkingDays.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         tvWorksAt = findViewById(R.id.tvWorksAt);
         tvAbout = findViewById(R.id.tvAbout);
         tvWorkTitle = findViewById(R.id.tvWorkTitle);
@@ -274,6 +287,20 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                                         }else if (!myCompany.getLegalRepresentative().isEmpty()){
                                             tvWorksAt.setText(myCompany.getLegalRepresentative());
                                         }
+                                        tvMorningStart.setText(companyTimeScheduledModel.getMorningFrom());
+                                        tvMorningTo.setText(companyTimeScheduledModel.getMorningTo());
+                                        tvNoonStart.setText(companyTimeScheduledModel.getNoonFrom());
+                                        tvNoonTo.setText(companyTimeScheduledModel.getNoonTo());
+                                        if (companyTimeScheduledModel.getSelectedDays()!=null){
+                                            List<String> list = new ArrayList<>();
+                                            for (int i = 0; i<companyTimeScheduledModel.getSelectedDays().size(); i++){
+                                                list.add(companyTimeScheduledModel.getSelectedDays().get(i).name());
+                                            }
+                                            StringHorizontalAdapter adapter = new StringHorizontalAdapter(list,
+                                                    PersonalInfoActivity.this);
+                                            recyclerWorkingDays.setAdapter(adapter);
+                                        }
+
                                     }catch (Exception e){
                                         tvWorksAt.setText("Company name not found !");
                                     }

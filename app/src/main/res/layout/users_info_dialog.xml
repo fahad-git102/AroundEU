@@ -4,141 +4,324 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="20dp">
+    android:gravity="center">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/default_user_img"
-        app:civ_border_color="@color/colorMain"
-        app:civ_border_width="2dp"
-        android:id="@+id/profilePic"/>
-
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Name"
-        android:layout_marginTop="25dp"
-        android:textSize="14sp"
-        android:textAllCaps="true"
-        android:gravity="start"
-        android:textColor="@color/colorDarkGrey" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center_vertical"
-        android:background="@drawable/border_rectangle_2"
-        android:hint="Name"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        android:textSize="14sp"
-        android:id="@+id/etFirstName"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="20dp"
+            android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:layout_marginTop="10dp"
-        android:textSize="14sp"
-        android:textAllCaps="true"
-        android:gravity="start"
-        android:textColor="@color/colorDarkGrey" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/default_user_img"
+                app:civ_border_color="@color/colorMain"
+                app:civ_border_width="2dp"
+                android:id="@+id/profilePic"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center_vertical"
-        android:background="@drawable/border_rectangle_2"
-        android:hint="Email"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        android:textSize="14sp"
-        android:id="@+id/tvEmail"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:layout_marginTop="25dp"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textAllCaps="true"
+                android:gravity="start"
+                android:textColor="@color/colorDarkGrey" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Phone Number"
-        android:layout_marginTop="10dp"
-        android:textSize="14sp"
-        android:textAllCaps="true"
-        android:gravity="start"
-        android:textColor="@color/colorDarkGrey" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/border_rectangle_2"
+                android:hint="Name"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textSize="14sp"
+                android:id="@+id/etFirstName"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center_vertical"
-        android:background="@drawable/border_rectangle_2"
-        android:hint="Phone Number"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        android:textSize="14sp"
-        android:id="@+id/tvPhoneNumber"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textAllCaps="true"
+                android:gravity="start"
+                android:textColor="@color/colorDarkGrey" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Works At"
-        android:layout_marginTop="10dp"
-        android:textSize="14sp"
-        android:textAllCaps="true"
-        android:gravity="start"
-        android:textColor="@color/colorDarkGrey" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/border_rectangle_2"
+                android:hint="Email"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textSize="14sp"
+                android:id="@+id/tvEmail"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:paddingStart="15dp"
-        android:orientation="horizontal"
-        android:background="@drawable/border_rectangle_2"
-        android:paddingEnd="10dp"
-        android:id="@+id/linearWork"
-        android:gravity="center_vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Phone Number"
+                android:layout_marginTop="10dp"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:gravity="start"
+                android:textColor="@color/colorDarkGrey" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:hint="Works at"
-            android:textSize="14sp"
-            android:id="@+id/tvWorksAt"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical"
+                android:background="@drawable/border_rectangle_2"
+                android:hint="Phone Number"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textSize="14sp"
+                android:id="@+id/tvPhoneNumber"/>
 
-        <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/more_info"
-            android:scaleType="fitCenter"
-            android:background="@android:color/transparent"
-            app:tint="@color/colorLightestGrey"
-            android:padding="5dp"
-            android:id="@+id/btnDetails"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Works At"
+                android:layout_marginTop="10dp"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:gravity="start"
+                android:textColor="@color/colorDarkGrey" />
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:paddingStart="15dp"
+                android:orientation="horizontal"
+                android:background="@drawable/border_rectangle_2"
+                android:paddingEnd="10dp"
+                android:id="@+id/linearWork"
+                android:gravity="center_vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="About"
-        android:layout_marginTop="10dp"
-        android:textSize="14sp"
-        android:textAllCaps="true"
-        android:gravity="start"
-        android:textColor="@color/colorDarkGrey" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:hint="Works at"
+                    android:textSize="14sp"
+                    android:id="@+id/tvWorksAt"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="@drawable/border_rectangle_2"
-        android:hint="About Me"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
-        android:gravity="start"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
-        android:textSize="14sp"
-        android:id="@+id/etAboutMe"/>
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/more_info"
+                    android:scaleType="fitCenter"
+                    android:background="@android:color/transparent"
+                    app:tint="@color/colorLightestGrey"
+                    android:padding="5dp"
+                    android:id="@+id/btnDetails"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Working Days"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:layout_marginTop="10dp"
+                android:gravity="start"
+                android:textColor="@color/colorDarkGrey" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:id="@+id/recycler_working_days"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Morning: "
+                android:layout_marginTop="20dp"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="14sp"/>
+
+            <LinearLayout
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="From: "
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorDarkGrey"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Not selected"
+                        android:id="@+id/tvMorningStartTime"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:layout_marginStart="15dp"
+                        android:textColor="@color/colorBlue"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical|end">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="To: "
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorDarkGrey"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Not selected"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:id="@+id/tvMorningToTime"
+                        android:layout_marginStart="15dp"
+                        android:textColor="@color/colorBlue"/>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Afternoon: "
+                android:layout_marginTop="20dp"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="14sp"/>
+
+            <LinearLayout
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="From: "
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorDarkGrey"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Not selected"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:id="@+id/tvNoonStart"
+                        android:layout_marginStart="15dp"
+                        android:textColor="@color/colorBlue"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical|end">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="To: "
+                        android:textSize="18sp"
+                        android:textColor="@color/colorDarkGrey"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Not selected"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:id="@+id/tvNoonTo"
+                        android:layout_marginStart="15dp"
+                        android:textColor="@color/colorBlue"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="About"
+                android:layout_marginTop="15dp"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:gravity="start"
+                android:textColor="@color/colorDarkGrey" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:background="@drawable/border_rectangle_2"
+                android:hint="About Me"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:gravity="start"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:textSize="14sp"
+                android:id="@+id/etAboutMe"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
 </LinearLayout>

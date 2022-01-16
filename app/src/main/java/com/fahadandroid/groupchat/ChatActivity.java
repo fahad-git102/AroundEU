@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -92,12 +94,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     ImageButton goBack, btnRecord;
     GroupsModel thisgroupsModel;
+    ItemTouchHelper itemTouchHelper;
     String key;
     UserModel mentionedUser;
     MediaRecorder recorder;
     String fileName;
     public static final int GALLERY = 31, CAMERA = 32;
     DatabaseReference usersRef;
+    String replyId;
     RecyclerView recyclerUsersToMention;
     TextView tvGroupName;
     FirebaseFunctions mFunctions;
@@ -119,6 +123,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     FirebaseDatabase firebaseDatabase;
     DatabaseReference groupsRef, chatRef;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    CardView cardReply;
+    TextView tvReplyUsername, tvReplyMessageType;
+    ImageView replyImage, btnCloseReply;
 
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
@@ -134,6 +141,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         btnInfo.setOnClickListener(this);
         recycler_chat = findViewById(R.id.recycler_chat);
         etTypeHere = findViewById(R.id.etTypeHere);
+        btnCloseReply = findViewById(R.id.btnCloseReply);
+        btnCloseReply.setOnClickListener(this);
+        cardReply = findViewById(R.id.card_reply);
+        tvReplyUsername = findViewById(R.id.tvReplyUserName);
+        tvReplyMessageType = findViewById(R.id.tvReplyMessageType);
+        replyImage = findViewById(R.id.replyImage);
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
         storageReference = FirebaseStorage.getInstance().getReference().child("media");
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
@@ -175,6 +188,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        setupRecyclerView();
+
         etTypeHere.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -203,6 +218,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             break;
                         }
                     }
+
                 }else {
                     recyclerUsersToMention.setVisibility(View.GONE);
                 }
@@ -455,7 +471,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
 
-        if (view.getId()==R.id.btnInfo){
+        if (view.getId()==R.id.btnCloseReply){
+
+            if (replyId!=null){
+                cardReply.setVisibility(View.GONE);
+                replyId = null;
+            }
+
+        }else if (view.getId()==R.id.btnInfo){
+
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View view1 = LayoutInflater.from(this).inflate(R.layout.group_info_dialog, null);
             TextView tvName = view1.findViewById(R.id.etName);
@@ -547,6 +571,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }else if (view.getId()==R.id.btnSend){
 
             String message = etTypeHere.getText().toString();
+            if (message.isEmpty()) return;
             String mes = "";
 
             Pattern pattern = Pattern.compile("@\\w+");
@@ -564,10 +589,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 map.put("timeStamp", ServerValue.TIMESTAMP);
                 map.put("uid", mAuth.getCurrentUser().getUid());
                 map.put("message", message);
+                if (replyId!=null){
+                    map.put("replyId", replyId);
+                }
 
                 chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        cardReply.setVisibility(View.GONE);
+                        replyId = null;
                         if (task.isSuccessful()){
                             etTypeHere.setText("");
                             if (thisgroupsModel.getApprovedMembers()!=null){
@@ -858,9 +888,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         map.put("timeStamp", ServerValue.TIMESTAMP);
                         map.put("uid", mAuth.getCurrentUser().getUid());
                         map.put("image", url);
+                        if (replyId!=null){
+                            map.put("replyId", replyId);
+                        }
                         chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
+                                cardReply.setVisibility(View.GONE);
+                                replyId = null;
                                 progressDialog.dismiss();
                                 if (task.isSuccessful()){
                                     etTypeHere.setText("");
@@ -916,9 +951,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         map.put("timeStamp", ServerValue.TIMESTAMP);
                         map.put("uid", mAuth.getCurrentUser().getUid());
                         map.put("document", url);
+                        if (replyId!=null){
+                            map.put("replyId", replyId);
+                        }
                         chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
+                                cardReply.setVisibility(View.GONE);
+                                replyId = null;
                                 progressDialog.dismiss();
                                 if (task.isSuccessful()){
                                     etTypeHere.setText("");
@@ -972,9 +1012,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         map.put("timeStamp", ServerValue.TIMESTAMP);
                         map.put("uid", mAuth.getCurrentUser().getUid());
                         map.put("video", url);
+                        if (replyId!=null){
+                            map.put("replyId", replyId);
+                        }
                         chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
+                                cardReply.setVisibility(View.GONE);
+                                replyId = null;
                                 progressDialog.dismiss();
                                 if (task.isSuccessful()){
                                     etTypeHere.setText("");
@@ -1296,9 +1341,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             map.put("timeStamp", ServerValue.TIMESTAMP);
                             map.put("uid", mAuth.getCurrentUser().getUid());
                             map.put("audio", url);
+                            if (replyId!=null){
+                                map.put("replyId", replyId);
+                            }
                             chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
+                                    cardReply.setVisibility(View.GONE);
+                                    replyId = null;
                                     progressDialog.dismiss();
                                     if (task.isSuccessful()){
                                         etTypeHere.setText("");
@@ -1350,11 +1400,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         map.put("uid", mAuth.getCurrentUser().getUid());
         map.put("longitude", userLong);
         map.put("latitude", userLat);
+        if (replyId!=null){
+            map.put("replyId", replyId);
+        }
 
         chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
+                    cardReply.setVisibility(View.GONE);
+                    replyId = null;
                     etTypeHere.setText("");
                     if (thisgroupsModel.getApprovedMembers()!=null){
                         List<String> list = new ArrayList<>();
@@ -1384,6 +1439,60 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+    }
+
+
+    private void setupRecyclerView(){
+
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,  ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                //awesome code when user grabs recycler card to reorder
+                return false;
+            }
+
+            @Override
+            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                //awesome code to run when user drops card and completes reorder
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                if (direction == ItemTouchHelper.RIGHT) {
+                    MessagesModel messagesModel = messagesModelList.get(viewHolder.getAdapterPosition());
+                    replyId = messagesModel.getKey();
+                    cardReply.setVisibility(View.VISIBLE);
+                    for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
+                        if (EUGroupChat.userModelList.get(i).getUid().equals(messagesModel.getUid())){
+                            tvReplyUsername.setText(EUGroupChat.userModelList.get(i).getFirstName());
+                        }
+                    }
+                    if (messagesModel.getMessage()!=null&&!messagesModel.getMessage().isEmpty()){
+                        tvReplyMessageType.setText(Html.fromHtml(messagesModel.getMessage()));
+                        replyImage.setImageBitmap(null);
+                    }else if (messagesModel.getAudio()!=null){
+                        tvReplyMessageType.setText("Audio");
+                        Glide.with(ChatActivity.this).load(getResources().getDrawable(R.drawable.mic)).override(100,100).into(replyImage);
+                    }else if (messagesModel.getLatitude()>0&&messagesModel.getLongitude()>0){
+                        tvReplyMessageType.setText("Location");
+                        Glide.with(ChatActivity.this).load(getResources().getDrawable(R.drawable.google_maps)).into(replyImage);
+                    }else if (messagesModel.getImage()!=null){
+                        tvReplyMessageType.setText("Image");
+                        Glide.with(ChatActivity.this).load(messagesModel.getImage()).fitCenter().placeholder(R.drawable.default_image).into(replyImage);
+                    }else if (messagesModel.getDocument()!=null){
+                        tvReplyMessageType.setText("Document");
+                        Glide.with(ChatActivity.this).load(getResources().getDrawable(R.drawable.doc)).into(replyImage);
+                    }else if (messagesModel.getVideo()!=null){
+                        tvReplyMessageType.setText("Video");
+                        Glide.with(ChatActivity.this).load(getResources().getDrawable(android.R.drawable.presence_video_online)).into(replyImage);
+                    }
+                }
+                adapter.notifyItemChanged(viewHolder.getAdapterPosition());
+            }
+        };
+        itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recycler_chat);
     }
 
 }

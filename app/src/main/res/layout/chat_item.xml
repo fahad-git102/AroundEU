@@ -40,17 +40,81 @@
             android:textSize="11sp"
             android:textStyle="bold" />
 
-        <TextView
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_other_reply"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="3dp"
+            android:visibility="gone"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorSilverLight"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorOrange" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvOtherReplyUserName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="UserName"
+                        android:textColor="@color/colorOrange"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvOtherReplyMessageType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="UserName"
+                        android:textColor="@color/colorDarkGrey"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/otherReplyImage"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="4dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <com.fahadandroid.groupchat.helpers.HyperlinkTextView
             android:id="@+id/users_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:autoLink="web"
+            android:linksClickable="true"
             android:text="Message"
-            android:textIsSelectable="true"
-            android:textColor="@color/colorDarkGrey" />
+            android:textColor="@color/colorDarkGrey"
+            android:textColorLink="@color/colorBlue"
+            android:textIsSelectable="true" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
+            android:layout_marginTop="4dp"
             android:layout_height="wrap_content">
 
             <ImageView
@@ -78,24 +142,24 @@
             android:id="@+id/audioPlayerUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:enableVisualizer="false"
-            android:visibility="gone"
             android:soundEffectsEnabled="true"
-            app:visualizationPlayedColor="@color/colorGreen"
-            app:visualizationNotPlayedColor="#F62727"
+            android:visibility="gone"
+            app:enableVisualizer="false"
             app:playPauseBackgroundColor="@color/colorMain"
-            app:timingBackgroundColor="#6AFF7700"
-            app:seekBarProgressColor="@color/colorMain"
-            app:showShareButton="false"
-            app:shareCornerRadius="100"
             app:playPauseCornerRadius="100"
-            app:showTiming="true"
-            app:viewCornerRadius="100"
-            app:viewBackground="@android:color/transparent"
+            app:playProgressbarColor="#009688"
             app:progressTimeColor="#6C0573"
+            app:seekBarProgressColor="@color/colorMain"
             app:seekBarThumbColor="#FFC107"
             app:shareBackgroundColor="#90A808"
-            app:playProgressbarColor="#009688" />
+            app:shareCornerRadius="100"
+            app:showShareButton="false"
+            app:showTiming="true"
+            app:timingBackgroundColor="#6AFF7700"
+            app:viewBackground="@android:color/transparent"
+            app:viewCornerRadius="100"
+            app:visualizationNotPlayedColor="#F62727"
+            app:visualizationPlayedColor="@color/colorGreen" />
 
         <LinearLayout
             android:id="@+id/linear_documents_others"
@@ -164,17 +228,81 @@
             android:textSize="11sp"
             android:textStyle="bold" />
 
-        <TextView
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_my_reply"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="3dp"
+            android:visibility="gone"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorSilverLight"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorOrange" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvMyReplyUserName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="UserName"
+                        android:textColor="@color/colorOrange"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvMyReplyMessageType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="UserName"
+                        android:textColor="@color/colorDarkGrey"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/myReplyImage"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="4dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <com.fahadandroid.groupchat.helpers.HyperlinkTextView
             android:id="@+id/my_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:textIsSelectable="true"
             android:text="Message"
-            android:textColor="@color/colorDarkGrey" />
+            android:autoLink="web"
+            android:textColorLink="@color/colorBlue"
+            android:linksClickable="true"
+            android:textColor="@color/colorDarkGrey"
+            android:textIsSelectable="true" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
+            android:layout_marginTop="4dp"
             android:layout_height="wrap_content">
 
             <ImageView

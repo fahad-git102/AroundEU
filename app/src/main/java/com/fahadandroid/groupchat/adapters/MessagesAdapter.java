@@ -8,6 +8,8 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +22,18 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.fahadandroid.groupchat.LoadPdfActivity;
 import com.fahadandroid.groupchat.OpenAttachmentActivity;
+import com.fahadandroid.groupchat.PersonalInfoActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
+import com.fahadandroid.groupchat.helpers.HyperlinkTextView;
 import com.fahadandroid.groupchat.models.ComapnyTimeScheduledModel;
 import com.fahadandroid.groupchat.models.CompanyModel;
 import com.fahadandroid.groupchat.models.MessagesModel;
@@ -82,11 +88,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
     public void onBindViewHolder(@NonNull MHolder holder, int position) {
         mAuth = FirebaseAuth.getInstance();
         if (messageModelList.get(position).getUid().equals(mAuth.getCurrentUser().getUid())){
+
+            holder.tvMyMessage.setMovementMethod(LinkMovementMethod.getInstance());
+            Linkify.addLinks(holder.tvMyMessage, Linkify.WEB_URLS);
+
             holder.linearUser.setVisibility(View.GONE);
             holder.linearMe.setVisibility(View.VISIBLE);
             holder.profilePic.setVisibility(View.GONE);
             if (messageModelList.get(position).getMessage()!=null){
                 holder.tvMyMessage.setText(Html.fromHtml(messageModelList.get(position).getMessage()));
+                holder.tvMyMessage.setMovementMethod(LinkMovementMethod.getInstance());
+                Linkify.addLinks(holder.tvMyMessage, Linkify.WEB_URLS);
             }
 
             holder.tvMyTime.setText(HelperClass.getFormattedDateTime(messageModelList.get(position).getTimeStamp(), "MMM dd, yyyy hh:mm a"));
@@ -95,6 +107,39 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(position).getUid())){
                     holder.tvMyName.setText(EUGroupChat.userModelList.get(i).getFirstName() +" "+EUGroupChat.userModelList.get(i).getSurName());
                 }
+            }
+
+            if (messageModelList.get(position).getReplyId()!=null){
+                holder.cardMyReply.setVisibility(View.VISIBLE);
+                for (int a = 0 ; a<messageModelList.size(); a++){
+                    if (messageModelList.get(a).getKey().equals(messageModelList.get(position).getReplyId())){
+                        for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
+                            if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
+                                holder.tvMyReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
+                            }
+                        }
+                        if (messageModelList.get(a).getMessage()!=null&&!messageModelList.get(a).getMessage().isEmpty()){
+                            holder.tvMyReplyMessageType.setText(Html.fromHtml(messageModelList.get(a).getMessage()));
+                        }else if (messageModelList.get(a).getAudio()!=null){
+                            holder.tvMyReplyMessageType.setText("Audio");
+                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.myReplyImage);
+                        }else if (messageModelList.get(a).getLatitude()>0&&messageModelList.get(a).getLongitude()>0){
+                            holder.tvMyReplyMessageType.setText("Location");
+                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.myReplyImage);
+                        }else if (messageModelList.get(a).getImage()!=null){
+                            holder.tvMyReplyMessageType.setText("Image");
+                            Glide.with(context).load(messageModelList.get(a).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.myReplyImage);
+                        }else if (messageModelList.get(a).getDocument()!=null){
+                            holder.tvMyReplyMessageType.setText("Document");
+                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.myReplyImage);
+                        }else if (messageModelList.get(a).getVideo()!=null){
+                            holder.tvMyReplyMessageType.setText("Video");
+                            Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.myReplyImage);
+                        }
+                    }
+                }
+            }else {
+                holder.cardMyReply.setVisibility(View.GONE);
             }
 
             if (messageModelList.get(position).getImage()!=null){
@@ -165,11 +210,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             }
 
         }else {
+
             holder.linearMe.setVisibility(View.GONE);
             holder.linearUser.setVisibility(View.VISIBLE);
             holder.profilePic.setVisibility(View.VISIBLE);
             if (messageModelList.get(position).getMessage()!=null){
                 holder.tvUserMessage.setText(Html.fromHtml(messageModelList.get(position).getMessage()));
+                holder.tvUserMessage.setMovementMethod(LinkMovementMethod.getInstance());
+                Linkify.addLinks(holder.tvUserMessage, Linkify.WEB_URLS);
             }
             holder.tvUserTime.setText(HelperClass.getFormattedDateTime(messageModelList.get(position).getTimeStamp(), "MMM dd, yyyy hh:mm a"));
             for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
@@ -179,6 +227,39 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                         Glide.with(context).load(EUGroupChat.userModelList.get(i).getProfileUrl()).placeholder(R.drawable.default_user_img).override(150, 150).into(holder.profilePic);
                     }
                 }
+            }
+
+            if (messageModelList.get(position).getReplyId()!=null){
+                holder.cardOtherReply.setVisibility(View.VISIBLE);
+                for (int a = 0 ; a<messageModelList.size(); a++){
+                    if (messageModelList.get(a).getKey().equals(messageModelList.get(position).getReplyId())){
+                        for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
+                            if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
+                                holder.tvOtherReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
+                            }
+                        }
+                        if (messageModelList.get(a).getMessage()!=null&&!messageModelList.get(a).getMessage().isEmpty()){
+                            holder.tvOtherReplyMessageType.setText(Html.fromHtml(messageModelList.get(a).getMessage()));
+                        }else if (messageModelList.get(a).getAudio()!=null){
+                            holder.tvMyReplyMessageType.setText("Audio");
+                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.otherReplyImage);
+                        }else if (messageModelList.get(a).getLatitude()>0&&messageModelList.get(a).getLongitude()>0){
+                            holder.tvOtherReplyMessageType.setText("Location");
+                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.otherReplyImage);
+                        }else if (messageModelList.get(a).getImage()!=null){
+                            holder.tvOtherReplyMessageType.setText("Image");
+                            Glide.with(context).load(messageModelList.get(a).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.otherReplyImage);
+                        }else if (messageModelList.get(a).getDocument()!=null){
+                            holder.tvOtherReplyMessageType.setText("Document");
+                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.otherReplyImage);
+                        }else if (messageModelList.get(a).getVideo()!=null){
+                            holder.tvOtherReplyMessageType.setText("Video");
+                            Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.otherReplyImage);
+                        }
+                    }
+                }
+            }else {
+                holder.cardOtherReply.setVisibility(View.GONE);
             }
 
             if (messageModelList.get(position).getImage()!=null){
@@ -291,6 +372,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
         TextView tvAbout = view.findViewById(R.id.etAboutMe);
         TextView tvEmail = view.findViewById(R.id.tvEmail);
         TextView tvPhone = view.findViewById(R.id.tvPhoneNumber);
+        TextView tvMorningStart = view.findViewById(R.id.tvMorningStartTime);
+        TextView tvMorningTo = view.findViewById(R.id.tvMorningToTime);
+        TextView tvNoonStart = view.findViewById(R.id.tvNoonStart);
+        TextView tvNoonTo = view.findViewById(R.id.tvNoonTo);
+        RecyclerView recyclerWorkingDays = view.findViewById(R.id.recycler_working_days);
+        recyclerWorkingDays.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
 
         LinearLayout linearWork = view.findViewById(R.id.linearWork);
         ImageView btnDetails = view.findViewById(R.id.btnDetails);
@@ -358,6 +445,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                                             tvWorksAt.setText(myCompany[0].getFullLegalName());
                                         }else if (!myCompany[0].getLegalRepresentative().isEmpty()){
                                             tvWorksAt.setText(myCompany[0].getLegalRepresentative());
+                                        }
+                                        tvMorningStart.setText(companyTimeScheduledModel.getMorningFrom());
+                                        tvMorningTo.setText(companyTimeScheduledModel.getMorningTo());
+                                        tvNoonStart.setText(companyTimeScheduledModel.getNoonFrom());
+                                        tvNoonTo.setText(companyTimeScheduledModel.getNoonTo());
+                                        if (companyTimeScheduledModel.getSelectedDays()!=null){
+                                            List<String> list = new ArrayList<>();
+                                            for (int i = 0; i<companyTimeScheduledModel.getSelectedDays().size(); i++){
+                                                list.add(companyTimeScheduledModel.getSelectedDays().get(i).name());
+                                            }
+                                            StringHorizontalAdapter adapter = new StringHorizontalAdapter(list,
+                                                    context);
+                                            recyclerWorkingDays.setAdapter(adapter);
                                         }
                                     }catch (Exception e){
                                         tvWorksAt.setText("Company name not found !");
@@ -449,17 +549,27 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
     public class MHolder extends RecyclerView.ViewHolder{
 
         LinearLayout linearUser, linearMe;
-        TextView tvUserMessage, tvMyMessage, tvMyName, tvUserName;
-        TextView tvUserTime, tvMyTime;
+        HyperlinkTextView tvUserMessage, tvMyMessage;
+        TextView tvMyName, tvUserName;
+        TextView tvUserTime, tvMyTime, tvMyReplyUserName, tvOtherReplyUserName, tvMyReplyMessageType, tvOtherReplyMessageType;
         CircleImageView profilePic;
         LinearLayout linear_documents_Me, linear_documents_other;
         ImageView usersImageView, myImageView;
-        ImageView btnPlayMe, btnPlayUsers;
+        ImageView btnPlayMe, btnPlayUsers, myReplyImage, otherReplyImage;
+        CardView cardMyReply, cardOtherReply;
         VoicePlayerView audioPlayerMy, audioPlayerUser;
 
         public MHolder(@NonNull View itemView) {
             super(itemView);
             linearUser = itemView.findViewById(R.id.linear_user);
+            cardOtherReply = itemView.findViewById(R.id.card_other_reply);
+            cardMyReply = itemView.findViewById(R.id.card_my_reply);
+            myReplyImage = itemView.findViewById(R.id.myReplyImage);
+            otherReplyImage = itemView.findViewById(R.id.otherReplyImage);
+            tvMyReplyUserName = itemView.findViewById(R.id.tvMyReplyUserName);
+            tvOtherReplyUserName = itemView.findViewById(R.id.tvOtherReplyUserName);
+            tvMyReplyMessageType = itemView.findViewById(R.id.tvMyReplyMessageType);
+            tvOtherReplyMessageType = itemView.findViewById(R.id.tvOtherReplyMessageType);
             linearMe = itemView.findViewById(R.id.linear_me);
             tvUserMessage = itemView.findViewById(R.id.users_message);
             tvUserName = itemView.findViewById(R.id.username);

@@ -7,7 +7,16 @@ public class MessagesModel {
     String video;
     String audio;
     String key;
+    String replyId;
     double latitude, longitude;
+
+    public String getReplyId() {
+        return replyId;
+    }
+
+    public void setReplyId(String replyId) {
+        this.replyId = replyId;
+    }
 
     public double getLatitude() {
         return latitude;
