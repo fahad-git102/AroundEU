@@ -3,6 +3,7 @@ package com.fahadandroid.groupchat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +26,7 @@ import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
 import com.androidbuts.multispinnerfilter.MultiSpinnerSearch;
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.adapters.GroupsAdapter;
+import com.fahadandroid.groupchat.adapters.UriSmallAdapter;
 import com.fahadandroid.groupchat.models.BusinessList;
 import com.fahadandroid.groupchat.models.GroupsModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,7 +56,9 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
     BusinessList businessList;
     String selectedCategory ;
     FirebaseAuth mAuth;
+    UriSmallAdapter uriAdapter;
     TextView tvBusinessName;
+    List<Uri> uriList;
     StorageReference storageReference;
     FirebaseDatabase firebaseDatabase;
     List<GroupsModel> groupsModelList;
@@ -70,6 +74,7 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
         storageReference = FirebaseStorage.getInstance().getReference().child("media");
         groupsModelList = new ArrayList<>();
         groupKeys = new ArrayList<>();
+        uriList = new ArrayList<>();
         tvBusinessName = findViewById(R.id.tvBusinessName);
         groupsRef = firebaseDatabase.getReference("groups");
         businessList = getIntent().getParcelableExtra("businessList");
@@ -167,13 +172,27 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
             tvHeading.setText("Add new Group");
             EditText etName = view1.findViewById(R.id.etName);
             EditText etPincode = view1.findViewById(R.id.etPincode);
+            CardView btnPdf = view1.findViewById(R.id.btnPdf);
+            btnPdf.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("application/pdf");
+                    startActivityForResult(intent, 1234);
+                }
+            });
+            RecyclerView recyclerItems = view1.findViewById(R.id.recycler_items);
+            recyclerItems.setLayoutManager(new LinearLayoutManager(GroupsActivity.this, LinearLayoutManager.HORIZONTAL, false));
+            uriAdapter = new UriSmallAdapter(uriList, GroupsActivity.this);
+            recyclerItems.setAdapter(uriAdapter);
             MultiSpinnerSearch singleSpinnerSearch = view1.findViewById(R.id.singleItemSelectionSpinner);
             List<String> selectedItems = new ArrayList<>();
             List<KeyPairBoolData> keyPairBoolDataList = new ArrayList<>();
-            keyPairBoolDataList.add(new KeyPairBoolData("Group info", false));
-//            keyPairBoolDataList.add(new KeyPairBoolData("Food", false));
-//            keyPairBoolDataList.add(new KeyPairBoolData("Classes", false));
-//            keyPairBoolDataList.add(new KeyPairBoolData("Others", false));
+            keyPairBoolDataList.add(new KeyPairBoolData("Accommodation", false));
+            keyPairBoolDataList.add(new KeyPairBoolData("Food", false));
+            keyPairBoolDataList.add(new KeyPairBoolData("Classes", false));
+            keyPairBoolDataList.add(new KeyPairBoolData("Others", false));
             singleSpinnerSearch.setItems(keyPairBoolDataList, new MultiSpinnerListener() {
                 @Override
                 public void onItemsSelected(List<KeyPairBoolData> items) {
@@ -186,16 +205,6 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
                 }
             });
 
-            LinearLayout linearFile = view1.findViewById(R.id.linear_file);
-            linearFile.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("application/pdf");
-                    startActivityForResult(intent, 1234);
-                }
-            });
             Button btnSave = view1.findViewById(R.id.btnSave);
             builder.setView(view1);
             AlertDialog alertDialog = builder.create();
@@ -204,41 +213,43 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
                 public void onClick(View view) {
                     String name = etName.getText().toString();
                     String pincodeSting = etPincode.getText().toString();
-                    if (!name.isEmpty()&&!pincodeSting.isEmpty()&&selectedItems.size()>0&&fileUri!=null){
-                        final ProgressDialog progressDialog = new ProgressDialog(GroupsActivity.this);
-                        progressDialog.setMessage("Please wait....");
-                        progressDialog.setCancelable(false);
-                        progressDialog.setCanceledOnTouchOutside(false);
-                        progressDialog.show();
-                        File file = new File(fileUri.toString());
-                        storageReference.child(file.getName()).putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                storageReference.child(file.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        progressDialog.dismiss();
-                                        String url = uri.toString();
-                                        int pincode = Integer.parseInt(pincodeSting);
-                                        GroupsModel groupsModel = new GroupsModel(System.currentTimeMillis(), businessList.getKey(),
-                                                name, mAuth.getCurrentUser().getUid(), String.valueOf(pincode), selectedItems);
-                                        groupsModel.setFileUrl(url);
-                                        groupsModel.setCategory(selectedCategory);
-                                        String key = groupsRef.push().getKey();
-                                        groupsModel.setKey(key);
-                                        groupsRef.child(key).setValue(groupsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                alertDialog.dismiss();
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    }else {
-                        Toast.makeText(GroupsActivity.this, "Full Data required", Toast.LENGTH_SHORT).show();
-                    }
+                    saveNewGroup(name, pincodeSting, selectedItems, alertDialog);
+//                    if (!name.isEmpty()&&!pincodeSting.isEmpty()&&selectedItems.size()>0&&uriList!=null){
+//                        final ProgressDialog progressDialog = new ProgressDialog(GroupsActivity.this);
+//                        progressDialog.setMessage("Please wait....");
+//                        progressDialog.setCancelable(false);
+//                        progressDialog.setCanceledOnTouchOutside(false);
+//                        progressDialog.show();
+//
+//                        File file = new File(fileUri.toString());
+//                        storageReference.child(file.getName()).putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                            @Override
+//                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                                storageReference.child(file.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                                    @Override
+//                                    public void onSuccess(Uri uri) {
+//                                        progressDialog.dismiss();
+//                                        String url = uri.toString();
+//                                        int pincode = Integer.parseInt(pincodeSting);
+//                                        GroupsModel groupsModel = new GroupsModel(System.currentTimeMillis(), businessList.getKey(),
+//                                                name, mAuth.getCurrentUser().getUid(), String.valueOf(pincode), selectedItems);
+//                                        groupsModel.setFileUrl(url);
+//                                        groupsModel.setCategory(selectedCategory);
+//                                        String key = groupsRef.push().getKey();
+//                                        groupsModel.setKey(key);
+//                                        groupsRef.child(key).setValue(groupsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                            @Override
+//                                            public void onComplete(@NonNull Task<Void> task) {
+//                                                alertDialog.dismiss();
+//                                            }
+//                                        });
+//                                    }
+//                                });
+//                            }
+//                        });
+//                    }else {
+//                        Toast.makeText(GroupsActivity.this, "Full Data required", Toast.LENGTH_SHORT).show();
+//                    }
                 }
             });
             alertDialog.show();
@@ -251,7 +262,61 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
         if (requestCode == 1234){
             try {
                 fileUri = data.getData();
+                uriList.add(fileUri);
+                uriAdapter.notifyDataSetChanged();
             }catch (Exception e){}
         }
     }
+
+    private void saveNewGroup(String name, String pincodeSting, List<String> selectedItems, AlertDialog alertDialog){
+        if (!name.isEmpty()&&!pincodeSting.isEmpty()&&selectedItems.size()>0&&uriList!=null){
+
+            if (selectedItems.size()!=uriList.size()){
+                Toast.makeText(GroupsActivity.this, "You must attach a file for each category", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            final ProgressDialog progressDialog = new ProgressDialog(GroupsActivity.this);
+            progressDialog.setMessage("Please wait....");
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+
+            List<String> urls = new ArrayList<>();
+            for (int i = 0; i<uriList.size(); i++){
+                File file = new File(fileUri.toString());
+                storageReference.child(file.getName()).putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        storageReference.child(file.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String url = uri.toString();
+                                urls.add(url);
+                                if (urls.size()>=uriList.size()){
+                                    int pincode = Integer.parseInt(pincodeSting);
+                                    GroupsModel groupsModel = new GroupsModel(System.currentTimeMillis(), businessList.getKey(),
+                                            name, mAuth.getCurrentUser().getUid(), String.valueOf(pincode), selectedItems);
+                                    groupsModel.setFileUrls(urls);
+                                    groupsModel.setCategory(selectedCategory);
+                                    String key = groupsRef.push().getKey();
+                                    groupsModel.setKey(key);
+                                    groupsRef.child(key).setValue(groupsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            progressDialog.dismiss();
+                                            alertDialog.dismiss();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }else {
+            Toast.makeText(GroupsActivity.this, "Full Data required", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

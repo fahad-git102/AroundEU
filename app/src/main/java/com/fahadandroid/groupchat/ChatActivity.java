@@ -47,6 +47,7 @@ import com.bumptech.glide.Glide;
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.adapters.MentionUserAdapter;
 import com.fahadandroid.groupchat.adapters.MessagesAdapter;
+import com.fahadandroid.groupchat.adapters.StringPdfsAdapter;
 import com.fahadandroid.groupchat.adapters.UsersAdapter;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
@@ -73,6 +74,7 @@ import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.rygelouv.audiosensei.player.AudioSenseiListObserver;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,15 +128,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     CardView cardReply;
     TextView tvReplyUsername, tvReplyMessageType;
     ImageView replyImage, btnCloseReply;
-
-    // Requesting permission to RECORD_AUDIO
-    private boolean permissionToRecordAccepted = false;
+     private boolean permissionToRecordAccepted = false;
     private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        AudioSenseiListObserver.getInstance().registerLifecycle(getLifecycle());
         messagesModelList = new ArrayList<>();
         goBack = findViewById(R.id.goBack);
         btnInfo = findViewById(R.id.btnInfo);
@@ -483,7 +484,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View view1 = LayoutInflater.from(this).inflate(R.layout.group_info_dialog, null);
             TextView tvName = view1.findViewById(R.id.etName);
-            LinearLayout linear_file = view1.findViewById(R.id.linear_file);
+//            LinearLayout linear_file = view1.findViewById(R.id.linear_file);
+            RecyclerView recyclerPdfs = view1.findViewById(R.id.recycler_items);
+            recyclerPdfs.setLayoutManager(new LinearLayoutManager(ChatActivity.this, RecyclerView.HORIZONTAL, false));
             ImageButton btnGroupMembers = view1.findViewById(R.id.btnGroupMembers);
             TextView tvAccomodation = view1.findViewById(R.id.tvAccomodation);
 
@@ -538,12 +541,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             if (groupsModel.getCategory()!=null){
                                 tvAccomodation.setText(groupsModel.getCategory());
                             }
-                            if (groupsModel.getFileUrl()!=null){
-                                linear_file.setOnClickListener(new View.OnClickListener() {
+                            if (groupsModel.getFileUrls()!=null){
+
+                                StringPdfsAdapter adapter = new StringPdfsAdapter(groupsModel.getFileUrls(), ChatActivity.this);
+                                recyclerPdfs.setAdapter(adapter);
+                                RecycleClick.addTo(recyclerPdfs).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
                                     @Override
-                                    public void onClick(View view) {
+                                    public void onItemClicked(RecyclerView recyclerView, int i, View view) {
                                         Intent intent = new Intent(ChatActivity.this, LoadPdfActivity.class);
-                                        intent.putExtra("url", groupsModel.getFileUrl());
+                                        intent.putExtra("url", groupsModel.getFileUrls().get(i));
                                         startActivity(intent);
                                     }
                                 });

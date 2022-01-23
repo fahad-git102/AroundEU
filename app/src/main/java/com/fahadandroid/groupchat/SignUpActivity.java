@@ -1,11 +1,15 @@
 package com.fahadandroid.groupchat;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -16,7 +20,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chootdev.recycleclick.RecycleClick;
+import com.fahadandroid.groupchat.adapters.CountrySmallDialogAdapter;
 import com.fahadandroid.groupchat.helpers.HelperClass;
+import com.fahadandroid.groupchat.models.CountryModel;
 import com.fahadandroid.groupchat.models.GroupsModel;
 import com.fahadandroid.groupchat.models.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,9 +31,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -68,6 +81,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         etSurName = findViewById(R.id.etSurName);
         etEmail = findViewById(R.id.etEmail);
         etCountry = findViewById(R.id.etCountry);
+        etCountry.setFocusableInTouchMode(false);
+        etCountry.setFocusable(false);
+        etCountry.setOnClickListener(this);
         etPassword = findViewById(R.id.etPassword);
         etRetypePassword = findViewById(R.id.etConfirmPassword);
         countryCodePicker.registerPhoneNumberTextView(edtPhoneNumber);
@@ -75,10 +91,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
-    public void onClick(View view) {
-        if (view.getId()==R.id.tvGoToLogin){
+    public void onClick(View v) {
+        if (v.getId()==R.id.tvGoToLogin){
             startActivity(new Intent(this, LoginActivity.class));
-        }else if (view.getId()==R.id.btnSignUp){
+        }else if (v.getId()==R.id.btnSignUp){
             firstName = etFirstName.getText().toString();
             surName = etSurName.getText().toString();
             email = etEmail.getText().toString();
@@ -88,7 +104,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             confirmPass = etRetypePassword.getText().toString();
             dob = etDob.getText().toString();
             int selectedId=radioGroup.getCheckedRadioButtonId();
-            RadioButton radioButton =(RadioButton)findViewById(selectedId);
+            RadioButton radioButton = findViewById(selectedId);
             userType = radioButton.getText().toString();
             if (firstName.isEmpty()||surName.isEmpty()||email.isEmpty()||phone.isEmpty()||
                     country.isEmpty()||password.isEmpty()||confirmPass.isEmpty()||dob.isEmpty()||userType.isEmpty()){
@@ -125,9 +141,47 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             }
             signUp();
 
-        }else if (view.getId()==R.id.etDob){
+        }else if (v.getId()==R.id.etDob){
             HelperClass.datePicker(etDob, this);
 //            datePickerDialog.show();
+        }else if (v.getId()==R.id.etCountry){
+            AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+            View view = LayoutInflater.from(SignUpActivity.this).inflate(R.layout.country_select_dialog, null);
+            RecyclerView recyclerCountries = view.findViewById(R.id.recycler_countries);
+            recyclerCountries.setLayoutManager(new LinearLayoutManager(SignUpActivity.this));
+            List<CountryModel> countriesList = new ArrayList<>();
+            builder.setView(view);
+            AlertDialog alertDia = builder.create();
+            DatabaseReference countriesRef = FirebaseDatabase.getInstance().getReference("countries");
+            countriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        try{
+                            CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
+                            countryModel.setKey(dataSnapshot.getKey());
+                            if (!countryModel.isDeleted()){
+                                countriesList.add(countryModel);
+                            }
+                        }catch (Exception e){}
+                    }
+                    CountrySmallDialogAdapter adapter = new CountrySmallDialogAdapter(countriesList, SignUpActivity.this);
+                    recyclerCountries.setAdapter(adapter);
+                    RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+                        @Override
+                        public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+                            etCountry.setText(countriesList.get(i).getCountryName());
+                            alertDia.dismiss();
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+            alertDia.show();
         }
     }
 

@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.fahadandroid.groupchat"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 3
         versionName "1.2"
@@ -69,6 +69,7 @@ dependencies {
 
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
     implementation 'com.github.pratikbutani:MultiSelectSpinner:1.0.1'
+    implementation 'com.github.rygelouv:android-audio-sensei:0.1.2'
 
     //Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'

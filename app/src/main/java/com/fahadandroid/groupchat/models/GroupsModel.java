@@ -6,9 +6,9 @@ import java.util.List;
 public class GroupsModel {
     long createdOn;
     String joined;
-    String key, businessKey, name, createdBy, category, fileUrl;
+    String key, businessKey, name, createdBy, category;
     String pincode;
-    List<String> categoryList;
+    List<String> categoryList, fileUrls;
     HashMap<String, MessagesModel> messages;
     boolean deleted;
     List<String> approvedMembers, pendingMembers;
@@ -19,6 +19,14 @@ public class GroupsModel {
 
     public void setCategoryList(List<String> categoryList) {
         this.categoryList = categoryList;
+    }
+
+    public List<String> getFileUrls() {
+        return fileUrls;
+    }
+
+    public void setFileUrls(List<String> fileUrls) {
+        this.fileUrls = fileUrls;
     }
 
     public GroupsModel() {
@@ -55,14 +63,6 @@ public class GroupsModel {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public String getFileUrl() {
-        return fileUrl;
-    }
-
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
     }
 
     public HashMap<String, MessagesModel> getMessages() {

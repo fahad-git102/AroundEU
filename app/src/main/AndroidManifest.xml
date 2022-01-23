@@ -27,6 +27,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GroupChat">
         <activity
+            android:name=".PdfsListActivity"
+            android:exported="false" />
+        <activity
             android:name=".MakeCordinatorActivity"
             android:exported="false" />
         <activity

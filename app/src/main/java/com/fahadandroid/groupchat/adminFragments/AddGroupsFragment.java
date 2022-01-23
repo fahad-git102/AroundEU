@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +29,7 @@ import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.GroupsActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.BusinessListAdapter;
+import com.fahadandroid.groupchat.adapters.UriSmallAdapter;
 import com.fahadandroid.groupchat.models.BusinessList;
 import com.fahadandroid.groupchat.models.GroupsModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -63,6 +65,8 @@ public class AddGroupsFragment extends Fragment {
     FirebaseAuth mAuth;
     String selectedCategory;
     Uri fileUri;
+    UriSmallAdapter uriAdapter;
+    List<Uri> uriList;
     StorageReference storageReference;
     FirebaseDatabase firebaseDatabase;
     RecyclerView recyclerBusinessList;
@@ -117,13 +121,27 @@ public class AddGroupsFragment extends Fragment {
                 tvHeading.setText("Add new Group");
                 EditText etName = view1.findViewById(R.id.etName);
                 EditText etPincode = view1.findViewById(R.id.etPincode);
+                CardView btnPdf = view1.findViewById(R.id.btnPdf);
+                btnPdf.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        intent.setType("application/pdf");
+                        startActivityForResult(intent, 1234);
+                    }
+                });
+                RecyclerView recyclerItems = view1.findViewById(R.id.recycler_items);
+                recyclerItems.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+                uriAdapter = new UriSmallAdapter(uriList, requireContext());
+                recyclerItems.setAdapter(uriAdapter);
                 MultiSpinnerSearch singleSpinnerSearch = view1.findViewById(R.id.singleItemSelectionSpinner);
                 List<String> selectedItems = new ArrayList<>();
                 List<KeyPairBoolData> keyPairBoolDataList = new ArrayList<>();
-                keyPairBoolDataList.add(new KeyPairBoolData("Group info", false));
-//                keyPairBoolDataList.add(new KeyPairBoolData("Food", false));
-//                keyPairBoolDataList.add(new KeyPairBoolData("Classes", false));
-//                keyPairBoolDataList.add(new KeyPairBoolData("Others", false));
+                keyPairBoolDataList.add(new KeyPairBoolData("Accommodation", false));
+                keyPairBoolDataList.add(new KeyPairBoolData("Food", false));
+                keyPairBoolDataList.add(new KeyPairBoolData("Classes", false));
+                keyPairBoolDataList.add(new KeyPairBoolData("Others", false));
                 singleSpinnerSearch.setItems(keyPairBoolDataList, new MultiSpinnerListener() {
                     @Override
                     public void onItemsSelected(List<KeyPairBoolData> items) {
@@ -135,16 +153,6 @@ public class AddGroupsFragment extends Fragment {
                         selectedCategory = selectedItems.toString();
                     }
                 });
-                LinearLayout linearFile = view1.findViewById(R.id.linear_file);
-                linearFile.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                        intent.setType("application/pdf");
-                        startActivityForResult(intent, 1234);
-                    }
-                });
                 Button btnSave = view1.findViewById(R.id.btnSave);
                 builder.setView(view1);
                 AlertDialog alertDialog = builder.create();
@@ -153,46 +161,45 @@ public class AddGroupsFragment extends Fragment {
                     public void onClick(View view) {
                         String name = etName.getText().toString();
                         String pincodeSting = etPincode.getText().toString();
-                        if (!name.isEmpty()&&!pincodeSting.isEmpty()&&selectedItems.size()>0&&fileUri!=null){
-
-//                            int pincode = getRandomNumber(10000, 99999);
-
-                            final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-                            progressDialog.setMessage("Please wait....");
-                            progressDialog.setCancelable(false);
-                            progressDialog.setCanceledOnTouchOutside(false);
-                            progressDialog.show();
-                            File file = new File(fileUri.toString());
-                            storageReference.child(file.getName()).putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    storageReference.child(file.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            progressDialog.dismiss();
-                                            String url = uri.toString();
-                                            GroupsModel groupsModel = new GroupsModel(System.currentTimeMillis(), businessListList.get(i).getKey(),
-                                                    name, mAuth.getCurrentUser().getUid(), pincodeSting, selectedItems);
-                                            groupsModel.setFileUrl(url);
-                                            groupsModel.setCategory(selectedCategory);
-                                            String key = groupsRef.push().getKey();
-                                            groupsModel.setKey(key);
-                                            groupsRef.child(key).setValue(groupsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    alertDialog.dismiss();
-                                                    Intent intent = new Intent(getActivity(), GroupsActivity.class);
-                                                    intent.putExtra("businessList", businessListList.get(i));
-                                                    startActivity(intent);
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }else {
-                            Toast.makeText(getActivity(), "Please provide full data", Toast.LENGTH_SHORT).show();
-                        }
+                        saveNewGroup(businessListList.get(i), name, pincodeSting, selectedItems, alertDialog);
+//                        if (!name.isEmpty()&&!pincodeSting.isEmpty()&&selectedItems.size()>0&&fileUri!=null){
+//                            final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+//                            progressDialog.setMessage("Please wait....");
+//                            progressDialog.setCancelable(false);
+//                            progressDialog.setCanceledOnTouchOutside(false);
+//                            progressDialog.show();
+//                            File file = new File(fileUri.toString());
+//                            storageReference.child(file.getName()).putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                                @Override
+//                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                                    storageReference.child(file.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                                        @Override
+//                                        public void onSuccess(Uri uri) {
+//                                            progressDialog.dismiss();
+//                                            String url = uri.toString();
+//                                            GroupsModel groupsModel = new GroupsModel(System.currentTimeMillis(), businessListList.get(i).getKey(),
+//                                                    name, mAuth.getCurrentUser().getUid(), pincodeSting, selectedItems);
+//                                            groupsModel.setFileUrl(url);
+//                                            groupsModel.setCategory(selectedCategory);
+//                                            String key = groupsRef.push().getKey();
+//                                            groupsModel.setKey(key);
+//                                            groupsRef.child(key).setValue(groupsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                @Override
+//                                                public void onComplete(@NonNull Task<Void> task) {
+//                                                    alertDialog.dismiss();
+//                                                    Intent intent = new Intent(getActivity(), GroupsActivity.class);
+//                                                    intent.putExtra("businessList", businessListList.get(i));
+//                                                    startActivity(intent);
+//                                                }
+//                                            });
+//                                        }
+//                                    });
+//                                }
+//                            });
+//
+//                        }else {
+//                            Toast.makeText(getActivity(), "Please provide full data", Toast.LENGTH_SHORT).show();
+//                        }
                     }
                 });
                 alertDialog.show();
@@ -276,6 +283,7 @@ public class AddGroupsFragment extends Fragment {
         businessListRef = firebaseDatabase.getReference("businessList");
         storageReference = FirebaseStorage.getInstance().getReference().child("media");
         businessListList = new ArrayList<>();
+        uriList = new ArrayList<>();
         recyclerBusinessList = view.findViewById(R.id.recycler_businessLists);
         recyclerBusinessList.setLayoutManager(new LinearLayoutManager(getActivity()));
         businesKeys = new ArrayList<>();
@@ -288,6 +296,63 @@ public class AddGroupsFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1234){
             fileUri = data.getData();
+            uriList.add(fileUri);
+            uriAdapter.notifyDataSetChanged();
         }
     }
+
+    private void saveNewGroup(BusinessList businessList, String name, String pincodeSting, List<String> selectedItems, AlertDialog alertDialog){
+        if (!name.isEmpty()&&!pincodeSting.isEmpty()&&selectedItems.size()>0&&uriList!=null){
+
+            if (selectedItems.size()!=uriList.size()){
+                Toast.makeText(requireContext(), "You must attach a file for each category", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            final ProgressDialog progressDialog = new ProgressDialog(requireContext());
+            progressDialog.setMessage("Please wait....");
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+
+            List<String> urls = new ArrayList<>();
+            for (int i = 0; i<uriList.size(); i++){
+                File file = new File(fileUri.toString());
+                storageReference.child(file.getName()).putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        storageReference.child(file.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String url = uri.toString();
+                                urls.add(url);
+                                if (urls.size()>=uriList.size()){
+                                    int pincode = Integer.parseInt(pincodeSting);
+                                    GroupsModel groupsModel = new GroupsModel(System.currentTimeMillis(), businessList.getKey(),
+                                            name, mAuth.getCurrentUser().getUid(), String.valueOf(pincode), selectedItems);
+                                    groupsModel.setFileUrls(urls);
+                                    groupsModel.setCategory(selectedCategory);
+                                    String key = groupsRef.push().getKey();
+                                    groupsModel.setKey(key);
+                                    groupsRef.child(key).setValue(groupsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            progressDialog.dismiss();
+                                            alertDialog.dismiss();
+                                            Intent intent = new Intent(getActivity(), GroupsActivity.class);
+                                            intent.putExtra("businessList", businessList);
+                                            startActivity(intent);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }else {
+            Toast.makeText(requireContext(), "Full Data required", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

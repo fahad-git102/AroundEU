@@ -81,6 +81,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
     FirebaseAuth mAuth;
     RecyclerView recyclerWorkingDays;
     CompanyModel myCompany;
+    LinearLayout linear_work;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +94,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         tvMorningTo = findViewById(R.id.tvMorningToTime);
         tvNoonStart = findViewById(R.id.tvNoonStart);
         tvNoonTo = findViewById(R.id.tvNoonTo);
+        linear_work = findViewById(R.id.linear_work);
         recyclerWorkingDays = findViewById(R.id.recycler_working_days);
         recyclerWorkingDays.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         tvWorksAt = findViewById(R.id.tvWorksAt);
@@ -180,7 +182,13 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                     String firstName = etFirstName.getText().toString();
                     String secondName = etSecondName.getText().toString();
                     String aboutMe = etAboutMe.getText().toString();
-                    if (TextUtils.isEmpty(firstName)||TextUtils.isEmpty(secondName)||TextUtils.isEmpty(aboutMe)){
+                    if (TextUtils.isEmpty(firstName)||TextUtils.isEmpty(secondName)){
+                        if (TextUtils.isEmpty(firstName)){
+                            etFirstName.setError("First name required !");
+                        }
+                        if (TextUtils.isEmpty(secondName)){
+                            etSecondName.setError("Second name required !");
+                        }
                         return;
                     }
 
@@ -279,6 +287,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                                     }
                                 }
                                 if (myCompany!=null){
+                                    linear_work.setVisibility(View.VISIBLE);
                                     tvWorksAt.setVisibility(View.VISIBLE);
                                     tvWorkTitle.setVisibility(View.VISIBLE);
                                     try {
@@ -307,6 +316,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
                                 }else {
                                     tvWorksAt.setVisibility(View.GONE);
                                     tvWorkTitle.setVisibility(View.GONE);
+                                    linear_work.setVisibility(View.GONE);
                                 }
                             }
                         }

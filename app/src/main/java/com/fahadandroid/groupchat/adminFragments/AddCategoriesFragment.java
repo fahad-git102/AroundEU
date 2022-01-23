@@ -1,20 +1,24 @@
 package com.fahadandroid.groupchat.adminFragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chootdev.recycleclick.RecycleClick;
+import com.fahadandroid.groupchat.PdfsListActivity;
 import com.fahadandroid.groupchat.R;
+import com.fahadandroid.groupchat.adapters.StringSelectAdapter;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AddCategoriesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class AddCategoriesFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -25,20 +29,12 @@ public class AddCategoriesFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    RecyclerView recyclerView;
 
     public AddCategoriesFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AddCategoriesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static AddCategoriesFragment newInstance(String param1, String param2) {
         AddCategoriesFragment fragment = new AddCategoriesFragment();
         Bundle args = new Bundle();
@@ -61,6 +57,23 @@ public class AddCategoriesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_categories, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_categories, container, false);
+        recyclerView= view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        List<String> stringList = new ArrayList<>();
+        stringList.add("General Information");
+        stringList.add("Excursions");
+        stringList.add("Cultural Activities");
+        StringSelectAdapter stringSelectAdapter = new StringSelectAdapter(stringList, requireContext());
+        recyclerView.setAdapter(stringSelectAdapter);
+        RecycleClick.addTo(recyclerView).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+                Intent intent = new Intent(requireContext(), PdfsListActivity.class);
+                intent.putExtra("type", stringList.get(i));
+                startActivity(intent);
+            }
+        });
+        return view;
     }
 }

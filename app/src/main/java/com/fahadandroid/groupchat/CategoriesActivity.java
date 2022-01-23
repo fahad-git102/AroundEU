@@ -42,23 +42,9 @@ public class CategoriesActivity extends AppCompatActivity {
         RecycleClick.addTo(recyclerView).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int i, View view) {
-                switch (i){
-                    case 0:
-                        Intent intent = new Intent(CategoriesActivity.this, PdfViewerActivity.class);
-                        intent.putExtra("type", "general");
-                        startActivity(intent);
-                        break;
-                    case 1:
-                        Intent intent2 = new Intent(CategoriesActivity.this, PdfViewerActivity.class);
-                        intent2.putExtra("type", "excursion");
-                        startActivity(intent2);
-                        break;
-                    case 2:
-                        Intent intent1 = new Intent(CategoriesActivity.this, PdfViewerActivity.class);
-                        intent1.putExtra("type", "cultural");
-                        startActivity(intent1);
-                        break;
-                }
+                Intent intent = new Intent(CategoriesActivity.this, PdfsListActivity.class);
+                intent.putExtra("type", stringList.get(i));
+                startActivity(intent);
             }
         });
 

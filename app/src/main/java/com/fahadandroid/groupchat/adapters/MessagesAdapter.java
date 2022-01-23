@@ -1,5 +1,6 @@
 package com.fahadandroid.groupchat.adapters;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -44,9 +45,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -586,6 +584,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             btnPlayUsers = itemView.findViewById(R.id.btnPlayUser);
             audioPlayerMy = itemView.findViewById(R.id.audioPlayerMy);
             audioPlayerUser = itemView.findViewById(R.id.audioPlayerUser);
+
         }
     }
 

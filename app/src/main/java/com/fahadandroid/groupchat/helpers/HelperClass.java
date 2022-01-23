@@ -170,7 +170,7 @@ public class HelperClass {
         int mYear = c.get(Calendar.YEAR);
         int mMonth = c.get(Calendar.MONTH);
         int mDay = c.get(Calendar.DAY_OF_MONTH);
-        int style = AlertDialog.THEME_HOLO_LIGHT;
+        int style = AlertDialog.THEME_DEVICE_DEFAULT_DARK;
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(context, style,
                 new DatePickerDialog.OnDateSetListener() {
