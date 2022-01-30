@@ -1,5 +1,6 @@
 package com.fahadandroid.groupchat.adminFragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,10 +13,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.fahadandroid.groupchat.ExploreInternshipActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.models.CompanyModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +35,7 @@ public class AddCompanyFragment extends Fragment implements View.OnClickListener
 
     Spinner spinner;
     String selectedCountry;
+    ImageButton btnViewAll;
     EditText etFullName, etLegalAddress, etPostalCode, etCity, etCountry, etTelephone, etEmail, etWebsite,
             etCompanyDescription, etCompanyResponsibility, etStudentTasks, etContactPerson;
     Button btnSave;
@@ -75,10 +79,10 @@ public class AddCompanyFragment extends Fragment implements View.OnClickListener
         companyRef = FirebaseDatabase.getInstance().getReference("companies");
         selectedCountry = "Barcelona P.G";
         String[] items = new String[]{"Barcelona P.G", "Catania"};
+        btnViewAll = view.findViewById(R.id.btnViewAll);
+        btnViewAll.setOnClickListener(this);
         etFullName = view.findViewById(R.id.etFullLegalName);
-//        etSize = view.findViewById(R.id.etSize);
         etLegalAddress = view.findViewById(R.id.etLegalAddress);
-//        etLegalRepresentative = view.findViewById(R.id.etLegalRepresentative);
         etPostalCode = view.findViewById(R.id.etPostalCode);
         progress = view.findViewById(R.id.progress);
         etCity = view.findViewById(R.id.etCity);
@@ -86,8 +90,6 @@ public class AddCompanyFragment extends Fragment implements View.OnClickListener
         etTelephone = view.findViewById(R.id.etTelephone);
         etEmail = view.findViewById(R.id.etEmail);
         etContactPerson = view.findViewById(R.id.etContactPerson);
-//        etPiva = view.findViewById(R.id.etPiva);
-//        etIdRepresentative = view.findViewById(R.id.etIDLegalRepresentative);
         etWebsite = view.findViewById(R.id.etwebsite);
         etCompanyDescription = view.findViewById(R.id.etCompanyDescription);
         etCompanyResponsibility = view.findViewById(R.id.etCompanyResponsibility);
@@ -111,9 +113,12 @@ public class AddCompanyFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.btnSave){
+        if (view.getId()==R.id.btnViewAll){
+            Intent intent = new Intent(getActivity(), ExploreInternshipActivity.class);
+            intent.putExtra("fromAdmin", true);
+            startActivity(intent);
+        }else if (view.getId() == R.id.btnSave){
             String fullLegalName = etFullName.getText().toString();
-//            String size = etSize.getText().toString();
             String legalAddress = etLegalAddress.getText().toString();
             String city = etCity.getText().toString();
             String country = etCountry.getText().toString();
@@ -121,16 +126,12 @@ public class AddCompanyFragment extends Fragment implements View.OnClickListener
             String postalCode = etPostalCode.getText().toString();
             String telephone = etTelephone.getText().toString();
             String contactPerson = etContactPerson.getText().toString();
-//            String piva = etPiva.getText().toString();
-//            String legalRepresentative = etLegalRepresentative.getText().toString();
-//            String idRepresentative = etIdRepresentative.getText().toString();
             String website = etWebsite.getText().toString();
             String companyDescription = etCompanyDescription.getText().toString();
             String companyResponsibility = etCompanyResponsibility.getText().toString();
             String tasksOfStudents = etStudentTasks.getText().toString();
             CompanyModel companyModel = new CompanyModel();
             companyModel.setFullLegalName(fullLegalName);
-//            companyModel.setSize(size);
             companyModel.setLegalAddress(legalAddress);
             companyModel.setCity(city);
             companyModel.setContactPerson(contactPerson);
@@ -138,9 +139,6 @@ public class AddCompanyFragment extends Fragment implements View.OnClickListener
             companyModel.setEmail(email);
             companyModel.setPoastalCode(postalCode);
             companyModel.setTelephone(telephone);
-//            companyModel.setPiva(piva);
-//            companyModel.setLegalRepresentative(legalRepresentative);
-//            companyModel.setIdLegalRepresent(idRepresentative);
             companyModel.setWebsite(website);
             companyModel.setCompanyDescription(companyDescription);
             companyModel.setCompanyResponsibility(companyResponsibility);
@@ -154,7 +152,6 @@ public class AddCompanyFragment extends Fragment implements View.OnClickListener
                     if (task.isSuccessful()){
                         Toast.makeText(getActivity(), "New company added !", Toast.LENGTH_SHORT).show();
                         etFullName.setText("");
-//                        etSize.setText("");
                         etLegalAddress.setText("");
                         etCity.setText("");
                         etCountry.setText("");

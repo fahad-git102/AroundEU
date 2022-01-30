@@ -1092,7 +1092,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
             if (EUGroupChat.userModelList.get(i).isAdmin()){
-                stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+                if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
+                    stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+                }
             }
         }
 

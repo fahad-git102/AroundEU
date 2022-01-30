@@ -38,6 +38,23 @@ import com.fahadandroid.groupchat.helpers.HyperlinkTextView;
 import com.fahadandroid.groupchat.models.ComapnyTimeScheduledModel;
 import com.fahadandroid.groupchat.models.CompanyModel;
 import com.fahadandroid.groupchat.models.MessagesModel;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,6 +62,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -187,6 +208,34 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.tvMyMessage.setVisibility(View.GONE);
                 holder.audioPlayerMy.setVisibility(View.VISIBLE);
                 holder.audioPlayerMy.setAudio(messageModelList.get(position).getAudio());
+
+//                holder.itemView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+////                        try {
+////                            String url = messageModelList.get(position).getAudio();
+////                            Uri uri = Uri.parse(url);
+////                            MediaPlayer player = new MediaPlayer();
+////                            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+////                            player.setDataSource(context, uri);
+////                            player.prepare();
+////                            player.start();
+////                        } catch(Exception e) {
+////
+////                        }
+//                        String url = messageModelList.get(position).getAudio();
+//                        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+//                        TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
+//                        SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+//                        Uri videouri = Uri.parse(url);
+//                        DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
+//                        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+//                        MediaSource mediaSource = new ExtractorMediaSource(videouri, dataSourceFactory, extractorsFactory, null, null);
+//                        player.prepare(mediaSource);
+//                        player.setPlayWhenReady(true);
+//                    }
+//                });
+
             }else if (messageModelList.get(position).getLatitude()>0&&messageModelList.get(position).getLongitude()>0){
                 holder.myImageView.setVisibility(View.VISIBLE);
                 holder.tvMyMessage.setVisibility(View.GONE);

@@ -35,7 +35,7 @@
 
     <item android:id="@+id/add_companies"
         android:icon="@drawable/ic_company"
-        android:title="Add new company"/>
+        android:title="Add new Company"/>
 
     <item android:id="@+id/signout"
         android:icon="@drawable/ic_logout"

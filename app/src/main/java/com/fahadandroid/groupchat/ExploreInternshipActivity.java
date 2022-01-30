@@ -28,12 +28,23 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
     SearchView searchView;
     RecyclerView recycler_companies;
     String selectedCountry;
+    boolean fromAdmin = false;
     ImageButton goBack;
+    CompanyAdapter adapter;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adapter!=null){
+            adapter.notifyDataSetChanged();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore_internship);
+        fromAdmin = getIntent().getBooleanExtra("fromAdmin", false);
         spinner = findViewById(R.id.spinner);
         searchView = findViewById(R.id.search);
         searchView.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +80,7 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
                 selectedCountry = items[i];
                 if (selectedCountry.equals("Barcelona P.G")){
                     recycler_companies.setAdapter(null);
-                    CompanyAdapter adapter = new CompanyAdapter(EUGroupChat.barcelonaCompanyList, ExploreInternshipActivity.this);
+                    adapter = new CompanyAdapter(EUGroupChat.barcelonaCompanyList, ExploreInternshipActivity.this, fromAdmin);
                     recycler_companies.setAdapter(adapter);
                     RecycleClick.addTo(recycler_companies).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
                         @Override
@@ -77,12 +88,13 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
                             Intent intent = new Intent(ExploreInternshipActivity.this, CompanyDetailActivity.class);
                             intent.putExtra("company", EUGroupChat.barcelonaCompanyList.get(i));
                             intent.putExtra("companyID", EUGroupChat.barcelonaCompanyList.get(i).getKey());
+                            intent.putExtra("fromAdmin", fromAdmin);
                             startActivity(intent);
                         }
                     });
                 }else if (selectedCountry.equals("Catania")){
                     recycler_companies.setAdapter(null);
-                    CompanyAdapter adapter = new CompanyAdapter(EUGroupChat.cataniaCompanyList, ExploreInternshipActivity.this);
+                    adapter = new CompanyAdapter(EUGroupChat.cataniaCompanyList, ExploreInternshipActivity.this, fromAdmin);
                     recycler_companies.setAdapter(adapter);
                     RecycleClick.addTo(recycler_companies).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
                         @Override
@@ -90,6 +102,7 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
                             Intent intent = new Intent(ExploreInternshipActivity.this, CompanyDetailActivity.class);
                             intent.putExtra("company", EUGroupChat.cataniaCompanyList.get(i));
                             intent.putExtra("companyID", EUGroupChat.cataniaCompanyList.get(i).getKey());
+                            intent.putExtra("fromAdmin", fromAdmin);
                             startActivity(intent);
                         }
                     });
@@ -124,7 +137,7 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
                     companyModelList.add(companyModel);
                 }
                 recycler_companies.setAdapter(null);
-                CompanyAdapter adapter = new CompanyAdapter(companyModelList, ExploreInternshipActivity.this);
+                adapter = new CompanyAdapter(companyModelList, ExploreInternshipActivity.this, fromAdmin);
                 recycler_companies.setAdapter(adapter);
                 RecycleClick.addTo(recycler_companies).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
                     @Override
@@ -132,6 +145,7 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
                         Intent intent = new Intent(ExploreInternshipActivity.this, CompanyDetailActivity.class);
                         intent.putExtra("company", companyModelList.get(i));
                         intent.putExtra("companyID", companyModelList.get(i).getKey());
+                        intent.putExtra("fromAdmin", fromAdmin);
                         startActivity(intent);
                     }
                 });
@@ -150,7 +164,7 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
                     companyModelList.add(companyModel);
                 }
                 recycler_companies.setAdapter(null);
-                CompanyAdapter adapter = new CompanyAdapter(companyModelList, ExploreInternshipActivity.this);
+                adapter = new CompanyAdapter(companyModelList, ExploreInternshipActivity.this, fromAdmin);
                 recycler_companies.setAdapter(adapter);
                 RecycleClick.addTo(recycler_companies).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
                     @Override
@@ -158,6 +172,7 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
                         Intent intent = new Intent(ExploreInternshipActivity.this, CompanyDetailActivity.class);
                         intent.putExtra("company", companyModelList.get(i));
                         intent.putExtra("companyID", companyModelList.get(i).getKey());
+                        intent.putExtra("fromAdmin", fromAdmin);
                         startActivity(intent);
                     }
                 });

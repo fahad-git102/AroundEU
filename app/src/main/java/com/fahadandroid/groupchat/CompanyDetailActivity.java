@@ -1,16 +1,24 @@
 package com.fahadandroid.groupchat;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fahadandroid.groupchat.models.ComapnyTimeScheduledModel;
 import com.fahadandroid.groupchat.models.CompanyModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,13 +32,18 @@ public class CompanyDetailActivity extends AppCompatActivity implements View.OnC
             tvPiva, tvLegalRep, tvLegalRepID, tvWebsite, tvCompnayDesc, tvCompanyRespon, tvTaskOfStudents, tvContactPerson;
     CompanyModel companyModel;
     ImageButton goBack, btnSettings;
+    DatabaseReference companiesRef;
+    PopupMenu dropDownMenu;
+    boolean fromAdmin;
     DatabaseReference companyTimeScheduledRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_company_detail);
+        fromAdmin = getIntent().getBooleanExtra("fromAdmin", false);
         companyModel = getIntent().getParcelableExtra("company");
+        companiesRef = FirebaseDatabase.getInstance().getReference("companies");
         companyTimeScheduledRef = FirebaseDatabase.getInstance().getReference("companyTimeScheduled");
         String id = getIntent().getStringExtra("companyID");
         if (companyModel.getKey()==null){
@@ -46,6 +59,7 @@ public class CompanyDetailActivity extends AppCompatActivity implements View.OnC
         goBack.setOnClickListener(this);
         btnSettings = findViewById(R.id.btnSettings);
         btnSettings.setOnClickListener(this);
+
         tvCountry = findViewById(R.id.tvCountry);
         tvTelephone = findViewById(R.id.tvTelephone);
         tvEmail = findViewById(R.id.tvEmail);
@@ -129,6 +143,56 @@ public class CompanyDetailActivity extends AppCompatActivity implements View.OnC
                 }
             });
         }
+        if (fromAdmin){
+            dropDownMenu = new PopupMenu(CompanyDetailActivity.this, btnSettings);
+            final Menu menu = dropDownMenu.getMenu();
+            menu.add(0, 0, 0, "Delete Company");
+            menu.add(0, 1, 0, "Edit Company");
+            dropDownMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case 0:
+                            AlertDialog.Builder builder = new AlertDialog.Builder(CompanyDetailActivity.this);
+                            builder.setTitle("Delete Company ?");
+                            builder.setMessage("Are you sure you want to delete this company ?");
+                            builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    companiesRef.child(companyModel.getKey()).removeValue().
+                                            addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    dialogInterface.dismiss();
+                                                    Toast.makeText(CompanyDetailActivity.this, "Company Deleted !", Toast.LENGTH_SHORT).show();
+                                                    finish();
+                                                }
+                                            });
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            });
+                            AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+                            return true;
+
+                        case 1:
+                            Intent intent = new Intent(CompanyDetailActivity.this, EditCompanyActivity.class);
+                            intent.putExtra("company", companyModel);
+                            startActivity(intent);
+                            finish();
+                            return true;
+
+                    }
+                    return false;
+                }
+            });
+            btnSettings.setOnTouchListener(dropDownMenu.getDragToOpenListener());
+        }
     }
 
     @Override
@@ -136,10 +200,15 @@ public class CompanyDetailActivity extends AppCompatActivity implements View.OnC
         if (view.getId()==R.id.goBack){
             finish();
         }else if (view.getId()==R.id.btnSettings){
-            Intent intent = new Intent(CompanyDetailActivity.this, CompanySettingsActivity.class);
-            intent.putExtra("company", companyModel);
-            intent.putExtra("companyID", companyModel.getKey());
-            startActivity(intent);
+            if (fromAdmin){
+                dropDownMenu.show();
+            }else {
+                Intent intent = new Intent(CompanyDetailActivity.this, CompanySettingsActivity.class);
+                intent.putExtra("company", companyModel);
+                intent.putExtra("companyID", companyModel.getKey());
+                startActivity(intent);
+            }
+
         }
     }
 }

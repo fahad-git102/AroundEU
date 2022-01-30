@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -89,15 +90,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         btnNotifications = findViewById(R.id.notifications);
         btnNotifications.setOnClickListener(this);
         t = new ActionBarDrawerToggle(this, dl,R.string.Open, R.string.Close);
-        if (Build.VERSION.SDK_INT >= 23)
-        {
-            if (checkPermission())
-            { } else {
-                requestPermission();
-            }
-        }
-        else
-        { }
+        AutoRequestAllPermissions();
+//        if (Build.VERSION.SDK_INT >= 23)
+//        {
+//            if (checkPermission())
+//            { } else {
+//                requestPermission();
+//            }
+//        }
+//        else
+//        { }
         dl.addDrawerListener(t);
         t.syncState();
         try {
@@ -283,6 +285,27 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Log.e("value", "Permission Denied, You cannot use local drive .");
                 }
                 break;
+        }
+    }
+
+    void AutoRequestAllPermissions(){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){return;}
+        PackageInfo info = null;
+        try {
+            info = getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_PERMISSIONS);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if(info==null){return;}
+        String[] permissions = info.requestedPermissions;
+        boolean remained = false;
+        for (String permission : permissions) {
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                remained = true;
+            }
+        }
+        if(remained) {
+            requestPermissions(permissions, 0);
         }
     }
 

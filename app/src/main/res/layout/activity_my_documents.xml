@@ -8,16 +8,16 @@
     tools:context=".MyDocumentsActivity">
 
     <ImageButton
+        android:id="@+id/goBack"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:src="@drawable/ic_back"
-        android:id="@+id/goBack"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:background="@android:color/transparent"
-        android:scaleType="fitCenter"
         android:padding="4dp"
-        app:tint="@color/colorDarkGrey"/>
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_back"
+        app:tint="@color/colorDarkGrey" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"

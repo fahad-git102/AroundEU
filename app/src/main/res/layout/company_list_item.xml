@@ -57,4 +57,18 @@
         android:textColor="@color/colorDarkGrey"
         android:id="@+id/tvCompanySize"/>
 
+    <ImageButton
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/ic_more"
+        android:layout_below="@id/tvCompanySize"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="5dp"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        android:background="@android:color/transparent"
+        android:padding="5dp"
+        android:layout_marginTop="5dp"
+        android:id="@+id/btnMore"/>
+
 </RelativeLayout>

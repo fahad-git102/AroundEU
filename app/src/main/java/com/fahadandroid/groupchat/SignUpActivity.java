@@ -37,6 +37,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
+import com.yesterselga.countrypicker.CountryPicker;
+import com.yesterselga.countrypicker.CountryPickerListener;
+import com.yesterselga.countrypicker.Theme;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,43 +148,55 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             HelperClass.datePicker(etDob, this);
 //            datePickerDialog.show();
         }else if (v.getId()==R.id.etCountry){
-            AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-            View view = LayoutInflater.from(SignUpActivity.this).inflate(R.layout.country_select_dialog, null);
-            RecyclerView recyclerCountries = view.findViewById(R.id.recycler_countries);
-            recyclerCountries.setLayoutManager(new LinearLayoutManager(SignUpActivity.this));
-            List<CountryModel> countriesList = new ArrayList<>();
-            builder.setView(view);
-            AlertDialog alertDia = builder.create();
-            DatabaseReference countriesRef = FirebaseDatabase.getInstance().getReference("countries");
-            countriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            CountryPicker picker = CountryPicker.newInstance("Select Country", Theme.DARK);  // dialog title and theme
+            picker.setListener(new CountryPickerListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        try{
-                            CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
-                            countryModel.setKey(dataSnapshot.getKey());
-                            if (!countryModel.isDeleted()){
-                                countriesList.add(countryModel);
-                            }
-                        }catch (Exception e){}
-                    }
-                    CountrySmallDialogAdapter adapter = new CountrySmallDialogAdapter(countriesList, SignUpActivity.this);
-                    recyclerCountries.setAdapter(adapter);
-                    RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
-                        @Override
-                        public void onItemClicked(RecyclerView recyclerView, int i, View view) {
-                            etCountry.setText(countriesList.get(i).getCountryName());
-                            alertDia.dismiss();
-                        }
-                    });
-                }
+                public void onSelectCountry(String name, String code, String dialCode, int flagDrawableResID) {
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                    // Implement your code here
+                    etCountry.setText(name);
 
+                    picker.dismiss();
                 }
             });
-            alertDia.show();
+            picker.show(getSupportFragmentManager(), "COUNTRY_PICKER");
+//            AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+//            View view = LayoutInflater.from(SignUpActivity.this).inflate(R.layout.country_select_dialog, null);
+//            RecyclerView recyclerCountries = view.findViewById(R.id.recycler_countries);
+//            recyclerCountries.setLayoutManager(new LinearLayoutManager(SignUpActivity.this));
+//            List<CountryModel> countriesList = new ArrayList<>();
+//            builder.setView(view);
+//            AlertDialog alertDia = builder.create();
+//            DatabaseReference countriesRef = FirebaseDatabase.getInstance().getReference("countries");
+//            countriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+//                        try{
+//                            CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
+//                            countryModel.setKey(dataSnapshot.getKey());
+//                            if (!countryModel.isDeleted()){
+//                                countriesList.add(countryModel);
+//                            }
+//                        }catch (Exception e){}
+//                    }
+//                    CountrySmallDialogAdapter adapter = new CountrySmallDialogAdapter(countriesList, SignUpActivity.this);
+//                    recyclerCountries.setAdapter(adapter);
+//                    RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+//                            etCountry.setText(countriesList.get(i).getCountryName());
+//                            alertDia.dismiss();
+//                        }
+//                    });
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//
+//                }
+//            });
+//            alertDia.show();
         }
     }
 

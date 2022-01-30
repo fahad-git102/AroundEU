@@ -26,19 +26,24 @@
         <entry key="..\:/Users/FAHAD/Downloads/GroupChat_18-12/GroupChat/app/src/main/res/layout/users_to_mention_item.xml" value="0.18070652173913043" />
         <entry key="..\:/Users/FAHAD/Downloads/GroupChat_18-12/GroupChat/app/src/main/res/menu/nav_menu_admin.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/.gradle/caches/transforms-2/files-2.1/8316f98ed942403e30e6ac66395b19a7/jetified-materialdaypicker-0.7.4/res/drawable/circle_toggle_button.xml" value="0.2203125" />
+        <entry key="..\:/Users/HP/.gradle/caches/transforms-2/files-2.1/8d9f0e92e2ef58e435dc1966968b9a30/jetified-ChatVoicePlayer-1.1.0/res/drawable/main_layout_bg.xml" value="0.2203125" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/drawable/border_rectangle_2.xml" value="0.2203125" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/drawable/shadow_white_backgroud.xml" value="0.2203125" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_admin_home.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_categories.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_chat.xml" value="0.1956521739130435" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_company_settings.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_edit_company.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_groups.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_home.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_manage_requests.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_my_documents.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_pdfs_list.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_personal_info.xml" value="0.33" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_places.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_sign_up.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/chat_item.xml" value="0.1956521739130435" />
+        <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/company_list_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/countries_small_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/country_select_dialog.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/fragment_add_categories.xml" value="0.20416666666666666" />
@@ -54,6 +59,7 @@
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/string_list_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/users_info_dialog.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/menu/nav_menu_admin.xml" value="0.25" />
+        <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/xml/network_security_config.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Downloads/AroundEU-master (1)/AroundEU-master/app/src/main/res/layout/activity_home.xml" value="0.2033514492753623" />
         <entry key="..\:/Users/HP/Downloads/AroundEU-master (1)/AroundEU-master/app/src/main/res/layout/activity_select_country.xml" value="0.2033514492753623" />
         <entry key="..\:/Users/HP/Downloads/AroundEU-master (1)/AroundEU-master/app/src/main/res/layout/countries_select_item.xml" value="0.2033514492753623" />
