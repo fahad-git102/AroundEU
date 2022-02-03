@@ -45,7 +45,7 @@ public class CategoryPdfsAdapter extends RecyclerView.Adapter<CategoryPdfsAdapte
 
     @Override
     public void onBindViewHolder(@NonNull CatHolder holder, int position) {
-        holder.tvName.setText("Doc "+position);
+        holder.tvName.setText(list.get(position).getName());
         if (EUGroupChat.currentUser!=null){
             if (EUGroupChat.currentUser.isAdmin()){
                 holder.btnDelete.setVisibility(View.VISIBLE);

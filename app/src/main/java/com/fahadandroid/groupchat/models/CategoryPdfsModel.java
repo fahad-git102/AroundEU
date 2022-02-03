@@ -1,8 +1,16 @@
 package com.fahadandroid.groupchat.models;
 
 public class CategoryPdfsModel {
-    String category, categoryId, country, fileUrl;
+    String category, categoryId, country, fileUrl, name;
     long timeStamp;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getCategory() {
         return category;

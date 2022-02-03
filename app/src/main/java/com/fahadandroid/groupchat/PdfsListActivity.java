@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -88,6 +89,7 @@ public class PdfsListActivity extends AppCompatActivity implements View.OnClickL
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View v = LayoutInflater.from(this).inflate(R.layout.new_category_dialog, null);
             TextView tvCountry = v.findViewById(R.id.tvCountry);
+            EditText etName = v.findViewById(R.id.etName);
             LinearLayout linear_file = v.findViewById(R.id.linear_file);
             Button btnSave = v.findViewById(R.id.btnSave);
             builder.setView(v);
@@ -147,11 +149,12 @@ public class PdfsListActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public void onClick(View view) {
                     String country = tvCountry.getText().toString();
-                    if (country.isEmpty()||fileUri==null){
+                    String name = etName.getText().toString();
+                    if (name.isEmpty()||country.isEmpty()||fileUri==null){
                         Toast.makeText(PdfsListActivity.this, "Every field required", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    saveFile(country);
+                    saveFile(country, name);
                     alertDialog.dismiss();
                 }
             });
@@ -160,7 +163,7 @@ public class PdfsListActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-   private void saveFile(String country){
+   private void saveFile(String country, String name){
        final ProgressDialog progressDialog = new ProgressDialog(PdfsListActivity.this);
        progressDialog.setMessage("Please wait....");
        progressDialog.setCancelable(false);
@@ -180,6 +183,7 @@ public class PdfsListActivity extends AppCompatActivity implements View.OnClickL
                        model.setFileUrl(url);
                        model.setTimeStamp(System.currentTimeMillis());
                        model.setCountry(country);
+                       model.setName(name);
                        String key = categoriesRef.push().getKey();
                        model.setCategoryId(key);
                        categoriesRef.child(key).setValue(model).addOnCompleteListener(new OnCompleteListener<Void>() {

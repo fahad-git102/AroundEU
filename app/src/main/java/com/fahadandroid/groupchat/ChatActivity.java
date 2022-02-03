@@ -50,6 +50,7 @@ import com.fahadandroid.groupchat.adapters.MessagesAdapter;
 import com.fahadandroid.groupchat.adapters.StringPdfsAdapter;
 import com.fahadandroid.groupchat.adapters.UsersAdapter;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
+import com.fahadandroid.groupchat.helpers.EmojiUtils;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.ComapnyTimeScheduledModel;
 import com.fahadandroid.groupchat.models.CompanyModel;
@@ -580,15 +581,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if (message.isEmpty()) return;
             String mes = "";
 
-            Pattern pattern = Pattern.compile("@\\w+");
+            if (!EmojiUtils.containsEmoji(message)){
+                Pattern pattern = Pattern.compile("@\\w+");
 
-            Matcher matcher = pattern.matcher(message);
-            while (matcher.find())
-            {
-                mes = matcher.group();
+                Matcher matcher = pattern.matcher(message);
+
+                while (matcher.find())
+                {
+                    mes = matcher.group();
+                }
+
+                message = message.replace(mes, "<b>"+mes+"</b>");
             }
-
-            message = message.replace(mes, "<b>"+mes+"</b>");
 
             if (!message.isEmpty()){
                 final Map<String, Object> map = new HashMap<>();

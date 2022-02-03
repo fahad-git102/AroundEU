@@ -15,6 +15,18 @@
         android:textColor="@color/colorDarkGrey"
         android:id="@+id/heading"/>
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/border_rectangle_2"
+        android:hint="Name"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:textSize="14sp"
+        android:id="@+id/etName"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="50dp"

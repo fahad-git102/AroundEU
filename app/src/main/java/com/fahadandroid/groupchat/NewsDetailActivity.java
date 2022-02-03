@@ -3,6 +3,8 @@ package com.fahadandroid.groupchat;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -29,6 +31,8 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         textDate = findViewById(R.id.textDate);
         title = findViewById(R.id.title);
         NewsModel newsModel = getIntent().getParcelableExtra("news");
+        text.setMovementMethod(LinkMovementMethod.getInstance());
+        Linkify.addLinks(text, Linkify.WEB_URLS);
         if (newsModel!=null){
             if (newsModel.getTitle()!=null){
                 title.setVisibility(View.VISIBLE);
