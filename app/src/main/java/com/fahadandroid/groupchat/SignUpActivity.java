@@ -109,7 +109,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             int selectedId=radioGroup.getCheckedRadioButtonId();
             RadioButton radioButton = findViewById(selectedId);
             userType = radioButton.getText().toString();
-            if (firstName.isEmpty()||surName.isEmpty()||email.isEmpty()||phone.isEmpty()||
+            if (firstName.isEmpty()||email.isEmpty()||phone.isEmpty()||
                     country.isEmpty()||password.isEmpty()||confirmPass.isEmpty()||dob.isEmpty()||userType.isEmpty()){
                 if (TextUtils.isEmpty(firstName)){
                     etFirstName.setError("First Name Required");
@@ -119,9 +119,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(this, "Select user type", Toast.LENGTH_SHORT).show();
                 }
 
-                if (TextUtils.isEmpty(surName)){
-                    etSurName.setError("Surname Required");
-                }
                 if (TextUtils.isEmpty(email)){
                     etEmail.setError("Email Required");
                 }

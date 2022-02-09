@@ -165,7 +165,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.myImageView.setVisibility(View.VISIBLE);
                 holder.tvMyMessage.setVisibility(View.GONE);
                 holder.btnPlayMe.setVisibility(View.GONE);
-                Glide.with(context).load(messageModelList.get(position).getImage()).placeholder(R.drawable.default_image).into(holder.myImageView);
+                Glide.with(context).load(messageModelList.get(position).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.myImageView);
                 holder.myImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -270,8 +270,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
                 if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(position).getUid())){
                     holder.tvUserName.setText(EUGroupChat.userModelList.get(i).getFirstName()+" "+EUGroupChat.userModelList.get(i).getSurName());
-                    if (EUGroupChat.userModelList.get(i).getProfileUrl()!=null){
-                        Glide.with(context).load(EUGroupChat.userModelList.get(i).getProfileUrl()).placeholder(R.drawable.default_user_img).override(150, 150).into(holder.profilePic);
+                    if (EUGroupChat.userModelList.get(i).isAdmin()){
+                        Glide.with(context).load(R.drawable.project_consult).placeholder(R.drawable.default_user_img).override(150, 150).into(holder.profilePic);
+                    }else {
+                        if (EUGroupChat.userModelList.get(i).getProfileUrl()!=null){
+                            Glide.with(context).load(EUGroupChat.userModelList.get(i).getProfileUrl()).placeholder(R.drawable.default_user_img).override(150, 150).into(holder.profilePic);
+                        }
                     }
                 }
             }
@@ -313,7 +317,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.usersImageView.setVisibility(View.VISIBLE);
                 holder.tvUserMessage.setVisibility(View.GONE);
                 holder.btnPlayUsers.setVisibility(View.GONE);
-                Glide.with(context).load(messageModelList.get(position).getImage()).placeholder(R.drawable.default_image).override(150,150).into(holder.usersImageView);
+                Glide.with(context).load(messageModelList.get(position).getImage()).placeholder(R.drawable.default_image).fitCenter().into(holder.usersImageView);
                 holder.usersImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -416,6 +420,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
         CircleImageView profilePic = view.findViewById(R.id.profilePic);
         TextView tvFirstName = view.findViewById(R.id.etFirstName);
         TextView tvWorksAt = view.findViewById(R.id.tvWorksAt);
+        TextView tvWorkTitle = view.findViewById(R.id.tvWorkTitle);
         TextView tvAbout = view.findViewById(R.id.etAboutMe);
         TextView tvEmail = view.findViewById(R.id.tvEmail);
         TextView tvPhone = view.findViewById(R.id.tvPhoneNumber);
@@ -430,12 +435,22 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
         ImageView btnDetails = view.findViewById(R.id.btnDetails);
         for (int i = 0 ; i<EUGroupChat.userModelList.size(); i++){
             if (EUGroupChat.userModelList.get(i).getUid().equals(uid)){
-                if (EUGroupChat.userModelList.get(i).getProfileUrl()!=null){
-                    Glide.with(context).load(EUGroupChat.userModelList.get(i).getProfileUrl()).placeholder(R.drawable.default_image).into(profilePic);
-                }
-                tvFirstName.setText(EUGroupChat.userModelList.get(i).getFirstName()+" "+EUGroupChat.userModelList.get(i).getSurName());
-                if (EUGroupChat.userModelList.get(i).getAbout()!=null){
-                    tvAbout.setText(EUGroupChat.userModelList.get(i).getAbout());
+
+                if (EUGroupChat.userModelList.get(i).isAdmin()){
+
+                    Glide.with(context).load(R.drawable.project_consult).fitCenter().into(profilePic);
+                    tvFirstName.setText("Admin");
+                    String text = "A <b><i>Rocca</i></b> association";
+                    tvAbout.setText(Html.fromHtml(text));
+
+                }else {
+                    if (EUGroupChat.userModelList.get(i).getProfileUrl()!=null){
+                        Glide.with(context).load(EUGroupChat.userModelList.get(i).getProfileUrl()).fitCenter().placeholder(R.drawable.default_image).into(profilePic);
+                    }
+                    tvFirstName.setText(EUGroupChat.userModelList.get(i).getFirstName()+" "+EUGroupChat.userModelList.get(i).getSurName());
+                    if (EUGroupChat.userModelList.get(i).getAbout()!=null){
+                        tvAbout.setText(EUGroupChat.userModelList.get(i).getAbout());
+                    }
                 }
                 if (EUGroupChat.userModelList.get(i).getPhone()!=null){
                     tvPhone.setText(EUGroupChat.userModelList.get(i).getPhone());
@@ -443,6 +458,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                     tvPhone.setText("---");
                 }
 
+                if (EUGroupChat.userModelList.get(i).getEmail()!=null){
+                    tvEmail.setText(EUGroupChat.userModelList.get(i).getEmail());
+                }
                 int finalI = i;
                 tvPhone.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -454,134 +472,152 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                         }
                     }
                 });
-
-                if (EUGroupChat.userModelList.get(i).getEmail()!=null){
-                    tvEmail.setText(EUGroupChat.userModelList.get(i).getEmail());
-                }
             }
         }
-        final CompanyModel[] myCompany = {null};
-        companyTimeModelRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try{
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                        ComapnyTimeScheduledModel companyTimeScheduledModel = snapshot.getValue(ComapnyTimeScheduledModel.class);
-                        if (companyTimeScheduledModel.getUid()!=null){
-                            if (companyTimeScheduledModel.getUid().equals(uid)){
-                                String id = companyTimeScheduledModel.getCompanyId();
-                                myCompanySchedule = companyTimeScheduledModel;
-                                boolean barcelonaMatch = false;
-                                for (int i = 0; i<EUGroupChat.barcelonaCompanyList.size(); i++){
-                                    if (EUGroupChat.barcelonaCompanyList.get(i).getKey().equals(id)){
-                                        barcelonaMatch = true;
-                                        myCompany[0] = EUGroupChat.barcelonaCompanyList.get(i);
-                                    }
-                                }
-                                if (!barcelonaMatch){
-                                    for (int i = 0; i<EUGroupChat.cataniaCompanyList.size(); i++){
-                                        if (EUGroupChat.cataniaCompanyList.get(i).getKey().equals(id)){
-                                            myCompany[0] = EUGroupChat.cataniaCompanyList.get(i);
+
+        if (EUGroupChat.currentUser.isAdmin()){
+            List<String> days = new ArrayList<>();
+            days.add("Mon");
+            days.add("Tue");
+            days.add("Wed");
+            days.add("Thu");
+            days.add("Fri");
+            tvMorningStart.setText("9:00");
+            tvMorningTo.setText("13:00");
+            tvNoonStart.setText("15:30");
+            tvNoonTo.setText("18:30");
+            StringHorizontalAdapter adapter = new StringHorizontalAdapter(days,
+                    context);
+            recyclerWorkingDays.setAdapter(adapter);
+            linearWork.setVisibility(View.GONE);
+            tvWorkTitle.setVisibility(View.GONE);
+
+        }else {
+            final CompanyModel[] myCompany = {null};
+            companyTimeModelRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    try{
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            ComapnyTimeScheduledModel companyTimeScheduledModel = snapshot.getValue(ComapnyTimeScheduledModel.class);
+                            if (companyTimeScheduledModel.getUid()!=null){
+                                if (companyTimeScheduledModel.getUid().equals(uid)){
+                                    String id = companyTimeScheduledModel.getCompanyId();
+                                    myCompanySchedule = companyTimeScheduledModel;
+                                    boolean barcelonaMatch = false;
+                                    for (int i = 0; i<EUGroupChat.barcelonaCompanyList.size(); i++){
+                                        if (EUGroupChat.barcelonaCompanyList.get(i).getKey().equals(id)){
+                                            barcelonaMatch = true;
+                                            myCompany[0] = EUGroupChat.barcelonaCompanyList.get(i);
                                         }
                                     }
-                                }
-                                if (myCompany[0] !=null){
-                                    linearWork.setVisibility(View.VISIBLE);
-                                    try {
-                                        if (!myCompany[0].getFullLegalName().isEmpty()){
-                                            tvWorksAt.setText(myCompany[0].getFullLegalName());
-                                        }else if (!myCompany[0].getLegalRepresentative().isEmpty()){
-                                            tvWorksAt.setText(myCompany[0].getLegalRepresentative());
-                                        }
-                                        tvMorningStart.setText(companyTimeScheduledModel.getMorningFrom());
-                                        tvMorningTo.setText(companyTimeScheduledModel.getMorningTo());
-                                        tvNoonStart.setText(companyTimeScheduledModel.getNoonFrom());
-                                        tvNoonTo.setText(companyTimeScheduledModel.getNoonTo());
-                                        if (companyTimeScheduledModel.getSelectedDays()!=null){
-                                            List<String> list = new ArrayList<>();
-                                            for (int i = 0; i<companyTimeScheduledModel.getSelectedDays().size(); i++){
-                                                list.add(companyTimeScheduledModel.getSelectedDays().get(i).name());
+                                    if (!barcelonaMatch){
+                                        for (int i = 0; i<EUGroupChat.cataniaCompanyList.size(); i++){
+                                            if (EUGroupChat.cataniaCompanyList.get(i).getKey().equals(id)){
+                                                myCompany[0] = EUGroupChat.cataniaCompanyList.get(i);
                                             }
-                                            StringHorizontalAdapter adapter = new StringHorizontalAdapter(list,
-                                                    context);
-                                            recyclerWorkingDays.setAdapter(adapter);
                                         }
-                                    }catch (Exception e){
-                                        tvWorksAt.setText("Company name not found !");
                                     }
-                                    if (myCompanySchedule!=null){
-                                        btnDetails.setVisibility(View.VISIBLE);
+                                    if (myCompany[0] !=null){
+                                        linearWork.setVisibility(View.VISIBLE);
+                                        try {
+                                            if (!myCompany[0].getFullLegalName().isEmpty()){
+                                                tvWorksAt.setText(myCompany[0].getFullLegalName());
+                                            }else if (!myCompany[0].getLegalRepresentative().isEmpty()){
+                                                tvWorksAt.setText(myCompany[0].getLegalRepresentative());
+                                            }
+                                            tvMorningStart.setText(companyTimeScheduledModel.getMorningFrom());
+                                            tvMorningTo.setText(companyTimeScheduledModel.getMorningTo());
+                                            tvNoonStart.setText(companyTimeScheduledModel.getNoonFrom());
+                                            tvNoonTo.setText(companyTimeScheduledModel.getNoonTo());
+                                            if (companyTimeScheduledModel.getSelectedDays()!=null){
+                                                List<String> list = new ArrayList<>();
+                                                for (int i = 0; i<companyTimeScheduledModel.getSelectedDays().size(); i++){
+                                                    list.add(companyTimeScheduledModel.getSelectedDays().get(i).name());
+                                                }
+                                                StringHorizontalAdapter adapter = new StringHorizontalAdapter(list,
+                                                        context);
+                                                recyclerWorkingDays.setAdapter(adapter);
+                                            }
+                                        }catch (Exception e){
+                                            tvWorksAt.setText("Company name not found !");
+                                        }
+                                        if (myCompanySchedule!=null){
+                                            btnDetails.setVisibility(View.VISIBLE);
+                                        }else {
+                                            btnDetails.setVisibility(View.GONE);
+                                        }
                                     }else {
-                                        btnDetails.setVisibility(View.GONE);
+                                        linearWork.setVisibility(View.GONE);
                                     }
-                                }else {
-                                    linearWork.setVisibility(View.GONE);
                                 }
                             }
                         }
-                    }
-                }catch (Exception e){}
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        btnDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (myCompany[0]!=null&&myCompanySchedule!=null){
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
-                    View view1 = LayoutInflater.from(context).inflate(R.layout.company_schedule_dialog, null);
-                    TextView tvCompanyName = view1.findViewById(R.id.tvCompanyName);
-                    TextView tvDays = view1.findViewById(R.id.tvDays);
-                    TextView tvMorningStartTime = view1.findViewById(R.id.tvMorningStartTime);
-                    TextView tvMorningToTime = view1.findViewById(R.id.tvMorningToTime);
-                    TextView tvNoonStart = view1.findViewById(R.id.tvNoonStart);
-                    TextView tvNoonTo = view1.findViewById(R.id.tvNoonTo);
-                    TextView tvDescription = view1.findViewById(R.id.tvDescription);
-                    ImageButton btnCancel = view1.findViewById(R.id.btnCancel);
-                    try{
-                        if (!myCompany[0].getFullLegalName().isEmpty()){
-                            tvCompanyName.setText(myCompany[0].getFullLegalName());
-                        }else if (!myCompany[0].getLegalRepresentative().isEmpty()){
-                            tvCompanyName.setText(myCompany[0].getLegalRepresentative());
-                        }
-                        if (myCompanySchedule.getSelectedDays()!=null){
-                            String idList = myCompanySchedule.getSelectedDays().toString();
-                            String csv = idList.substring(1, idList.length() - 1).replace(", ", ",");
-                            tvDays.setText(csv);
-                        }
-                        if (myCompanySchedule.getMorningFrom()!=null){
-                            tvMorningStartTime.setText(myCompanySchedule.getMorningFrom());
-                        }
-                        if (myCompanySchedule.getMorningTo()!=null){
-                            tvMorningToTime.setText(myCompanySchedule.getMorningTo());
-                        }
-                        if (myCompanySchedule.getNoonFrom()!=null){
-                            tvNoonStart.setText(myCompanySchedule.getNoonFrom());
-                        }
-                        if (myCompanySchedule.getNoonTo()!=null){
-                            tvNoonTo.setText(myCompanySchedule.getNoonTo());
-                        }
-                        if (myCompanySchedule.getDescription()!=null){
-                            tvDescription.setText(myCompanySchedule.getDescription());
-                        }
                     }catch (Exception e){}
-                    builder1.setView(view1);
-                    AlertDialog alertDialog = builder1.create();
-                    btnCancel.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            alertDialog.dismiss();
-                        }
-                    });
-                    alertDialog.show();
                 }
-            }
-        });
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+            btnDetails.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (myCompany[0]!=null&&myCompanySchedule!=null){
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+                        View view1 = LayoutInflater.from(context).inflate(R.layout.company_schedule_dialog, null);
+                        TextView tvCompanyName = view1.findViewById(R.id.tvCompanyName);
+                        TextView tvDays = view1.findViewById(R.id.tvDays);
+                        TextView tvMorningStartTime = view1.findViewById(R.id.tvMorningStartTime);
+                        TextView tvMorningToTime = view1.findViewById(R.id.tvMorningToTime);
+                        TextView tvNoonStart = view1.findViewById(R.id.tvNoonStart);
+                        TextView tvNoonTo = view1.findViewById(R.id.tvNoonTo);
+                        TextView tvDescription = view1.findViewById(R.id.tvDescription);
+                        ImageButton btnCancel = view1.findViewById(R.id.btnCancel);
+                        try{
+                            if (!myCompany[0].getFullLegalName().isEmpty()){
+                                tvCompanyName.setText(myCompany[0].getFullLegalName());
+                            }else if (!myCompany[0].getLegalRepresentative().isEmpty()){
+                                tvCompanyName.setText(myCompany[0].getLegalRepresentative());
+                            }
+                            if (myCompanySchedule.getSelectedDays()!=null){
+                                String idList = myCompanySchedule.getSelectedDays().toString();
+                                String csv = idList.substring(1, idList.length() - 1).replace(", ", ",");
+                                tvDays.setText(csv);
+                            }
+                            if (myCompanySchedule.getMorningFrom()!=null){
+                                tvMorningStartTime.setText(myCompanySchedule.getMorningFrom());
+                            }
+                            if (myCompanySchedule.getMorningTo()!=null){
+                                tvMorningToTime.setText(myCompanySchedule.getMorningTo());
+                            }
+                            if (myCompanySchedule.getNoonFrom()!=null){
+                                tvNoonStart.setText(myCompanySchedule.getNoonFrom());
+                            }
+                            if (myCompanySchedule.getNoonTo()!=null){
+                                tvNoonTo.setText(myCompanySchedule.getNoonTo());
+                            }
+                            if (myCompanySchedule.getDescription()!=null){
+                                tvDescription.setText(myCompanySchedule.getDescription());
+                            }
+                        }catch (Exception e){}
+                        builder1.setView(view1);
+                        AlertDialog alertDialog = builder1.create();
+                        btnCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                alertDialog.dismiss();
+                            }
+                        });
+                        alertDialog.show();
+                    }
+                }
+            });
+        }
+
+
         builder.setView(view);
         AlertDialog alertDialog = builder.create();
         alertDialog.show();

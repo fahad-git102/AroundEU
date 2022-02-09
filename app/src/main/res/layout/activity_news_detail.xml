@@ -68,10 +68,10 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:gravity="center"
                 android:layout_height="wrap_content"
                 android:textSize="19sp"
                 android:textStyle="bold"
+                android:textIsSelectable="true"
                 android:layout_marginTop="15dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
@@ -80,10 +80,10 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:gravity="center"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:autoLink="web"
+                android:textIsSelectable="true"
                 android:linksClickable="true"
                 android:textColorLink="@color/colorBlue"
                 android:fontFamily="@font/cera_pro_medium"
@@ -95,7 +95,6 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:gravity="center"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textStyle="bold"

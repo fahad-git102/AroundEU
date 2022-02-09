@@ -47,6 +47,7 @@ import com.bumptech.glide.Glide;
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.adapters.MentionUserAdapter;
 import com.fahadandroid.groupchat.adapters.MessagesAdapter;
+import com.fahadandroid.groupchat.adapters.StringHorizontalAdapter;
 import com.fahadandroid.groupchat.adapters.StringPdfsAdapter;
 import com.fahadandroid.groupchat.adapters.UsersAdapter;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
@@ -1133,6 +1134,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         TextView tvAbout = view.findViewById(R.id.etAboutMe);
         TextView tvEmail = view.findViewById(R.id.tvEmail);
         TextView tvPhone = view.findViewById(R.id.tvPhoneNumber);
+        TextView tvMorningStart = view.findViewById(R.id.tvMorningStartTime);
+        TextView tvMorningTo = view.findViewById(R.id.tvMorningToTime);
+        TextView tvNoonStart = view.findViewById(R.id.tvNoonStart);
+        TextView tvNoonTo = view.findViewById(R.id.tvNoonTo);
+        RecyclerView recyclerWorkingDays = view.findViewById(R.id.recycler_working_days);
+        recyclerWorkingDays.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
 
         LinearLayout linearWork = view.findViewById(R.id.linearWork);
         ImageView btnDetails = view.findViewById(R.id.btnDetails);
@@ -1200,6 +1207,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                             tvWorksAt.setText(myCompany[0].getFullLegalName());
                                         }else if (!myCompany[0].getLegalRepresentative().isEmpty()){
                                             tvWorksAt.setText(myCompany[0].getLegalRepresentative());
+                                        }
+                                        tvMorningStart.setText(companyTimeScheduledModel.getMorningFrom());
+                                        tvMorningTo.setText(companyTimeScheduledModel.getMorningTo());
+                                        tvNoonStart.setText(companyTimeScheduledModel.getNoonFrom());
+                                        tvNoonTo.setText(companyTimeScheduledModel.getNoonTo());
+                                        if (companyTimeScheduledModel.getSelectedDays()!=null){
+                                            List<String> list = new ArrayList<>();
+                                            for (int i = 0; i<companyTimeScheduledModel.getSelectedDays().size(); i++){
+                                                list.add(companyTimeScheduledModel.getSelectedDays().get(i).name());
+                                            }
+                                            StringHorizontalAdapter adapter = new StringHorizontalAdapter(list,
+                                                    context);
+                                            recyclerWorkingDays.setAdapter(adapter);
                                         }
                                     }catch (Exception e){
                                         tvWorksAt.setText("Company name not found !");

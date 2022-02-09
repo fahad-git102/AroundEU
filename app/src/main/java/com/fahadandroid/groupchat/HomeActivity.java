@@ -91,15 +91,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         btnNotifications.setOnClickListener(this);
         t = new ActionBarDrawerToggle(this, dl,R.string.Open, R.string.Close);
         AutoRequestAllPermissions();
-//        if (Build.VERSION.SDK_INT >= 23)
-//        {
-//            if (checkPermission())
-//            { } else {
-//                requestPermission();
-//            }
-//        }
-//        else
-//        { }
         dl.addDrawerListener(t);
         t.syncState();
         try {

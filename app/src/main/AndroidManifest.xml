@@ -72,7 +72,8 @@
         <activity android:name=".ProfileActivity" />
         <activity android:name=".SelectCountryActivity" />
         <activity android:name=".HomeActivity" />
-        <activity android:name=".SplashActivity">
+        <activity android:name=".SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

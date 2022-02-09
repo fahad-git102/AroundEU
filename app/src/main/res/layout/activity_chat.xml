@@ -74,9 +74,9 @@
         android:layout_above="@id/linear">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_chat"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/recycler_chat"/>
+            android:layout_height="match_parent" />
 
     </RelativeLayout>
 
