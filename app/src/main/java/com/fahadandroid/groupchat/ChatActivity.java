@@ -1100,6 +1100,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
                     stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
                 }
+            }else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
+                if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
+                    stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+                }
             }
         }
 
@@ -1310,7 +1314,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             File image = File.createTempFile(
                     imageFileName,
-                    ".3gp",
+                    ".mp3",
                     storageDir
             );
 

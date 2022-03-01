@@ -63,7 +63,7 @@ public class AddCategoriesFragment extends Fragment {
         List<String> stringList = new ArrayList<>();
         stringList.add("General Information");
         stringList.add("Excursions");
-        stringList.add("Cultural Activities");
+        stringList.add("Useful Information");
         StringSelectAdapter stringSelectAdapter = new StringSelectAdapter(stringList, requireContext());
         recyclerView.setAdapter(stringSelectAdapter);
         RecycleClick.addTo(recyclerView).setOnItemClickListener(new RecycleClick.OnItemClickListener() {

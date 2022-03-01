@@ -36,7 +36,7 @@ public class CategoriesActivity extends AppCompatActivity {
         List<String> stringList = new ArrayList<>();
         stringList.add("General Information");
         stringList.add("Excursions");
-        stringList.add("Cultural Activities");
+        stringList.add("Useful Information");
         StringSelectAdapter stringSelectAdapter = new StringSelectAdapter(stringList, this);
         recyclerView.setAdapter(stringSelectAdapter);
         RecycleClick.addTo(recyclerView).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
