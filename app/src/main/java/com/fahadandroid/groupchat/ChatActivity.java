@@ -84,6 +84,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -172,6 +173,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         goBack.setOnClickListener(this);
         btnRecord = findViewById(R.id.btnRecord);
         key = getIntent().getStringExtra("group");
+        btnRecord.setVisibility(View.GONE);
 
         btnRecord.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -373,10 +375,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     MessagesModel messagesModel = snapshot.getValue(MessagesModel.class);
                     messagesModel.setKey(snapshot.getKey());
-                    messagesModelList.add(messagesModel);
-                    messagesKeys.add(snapshot.getKey());
+                    if (messagesModel.getAudio()==null){
+                        messagesModelList.add(messagesModel);
+                        messagesKeys.add(snapshot.getKey());
+                    }
                     adapter.notifyDataSetChanged();
                     linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
+
                 }catch (Exception e){
                     Toast.makeText(ChatActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -387,8 +392,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 try{
                     MessagesModel messagesModel = snapshot.getValue(MessagesModel.class);
                     messagesModel.setKey(snapshot.getKey());
-                    int index = messagesKeys.indexOf(messagesModel.getKey());
-                    messagesModelList.set(index,messagesModel);
+                    if (messagesModel.getAudio()==null){
+                        int index = messagesKeys.indexOf(messagesModel.getKey());
+                        messagesModelList.set(index,messagesModel);
+                    }
                     adapter.notifyDataSetChanged();
                     linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
                 }catch (Exception e){
@@ -630,6 +637,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                         }
                                     }
                                 }
+
+                                HashSet<String> hashSet = new HashSet<String>();
+                                hashSet.addAll(list);
+                                list.clear();
+                                list.addAll(hashSet);
+
                                 sendNotification(list);
                                 if (mentionedUser!=null){
                                     sendMentionNotification();
@@ -844,8 +857,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             File file = new File(recordedVideoPath);
             sendMessageWithVideo(contentURI, file);
         }else if (requestCode == 1234){
-            Uri uri = data.getData();
-            sendMessageWithDoc(uri);
+            try {
+                Uri uri = data.getData();
+                sendMessageWithDoc(uri);
+            }catch (Exception e){}
         }
     }
 
@@ -930,6 +945,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
                                         }
+
+                                        HashSet<String> hashSet = new HashSet<String>();
+                                        hashSet.addAll(list);
+                                        list.clear();
+                                        list.addAll(hashSet);
+
                                         sendNotification(list);
                                         if (mentionedUser!=null){
                                             sendMentionNotification();
@@ -992,6 +1013,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
                                         }
+
+                                        HashSet<String> hashSet = new HashSet<String>();
+                                        hashSet.addAll(list);
+                                        list.clear();
+                                        list.addAll(hashSet);
+
                                         sendNotification(list);
                                         if (mentionedUser!=null){
                                             sendMentionNotification();
@@ -1053,6 +1080,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }
                                         }
+
+                                        HashSet<String> hashSet = new HashSet<String>();
+                                        hashSet.addAll(list);
+                                        list.clear();
+                                        list.addAll(hashSet);
+
                                         sendNotification(list);
                                         if (mentionedUser!=null){
                                             sendMentionNotification();
@@ -1100,11 +1133,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
                     stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
                 }
-            }else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
+            }/*else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
                 if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                    stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+                    if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
+                        stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+                    }
                 }
-            }
+            }*/
         }
 
         Map<String, Object> map = new HashMap<>();
@@ -1428,52 +1463,55 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationProvider = LocationManager.NETWORK_PROVIDER;
         @SuppressLint("MissingPermission") android.location.Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-        double userLat = lastKnownLocation.getLatitude();
-        double userLong = lastKnownLocation.getLongitude();
 
-        final Map<String, Object> map = new HashMap<>();
-        map.put("timeStamp", ServerValue.TIMESTAMP);
-        map.put("uid", mAuth.getCurrentUser().getUid());
-        map.put("longitude", userLong);
-        map.put("latitude", userLat);
-        if (replyId!=null){
-            map.put("replyId", replyId);
-        }
+        if (lastKnownLocation!=null){
+            double userLat = lastKnownLocation.getLatitude();
+            double userLong = lastKnownLocation.getLongitude();
 
-        chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    cardReply.setVisibility(View.GONE);
-                    replyId = null;
-                    etTypeHere.setText("");
-                    if (thisgroupsModel.getApprovedMembers()!=null){
-                        List<String> list = new ArrayList<>();
-                        for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
-                            if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
-                                for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
-                                    if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-                                        }
-                                    }else {
-                                        if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
+            final Map<String, Object> map = new HashMap<>();
+            map.put("timeStamp", ServerValue.TIMESTAMP);
+            map.put("uid", mAuth.getCurrentUser().getUid());
+            map.put("longitude", userLong);
+            map.put("latitude", userLat);
+            if (replyId!=null){
+                map.put("replyId", replyId);
+            }
+
+            chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        cardReply.setVisibility(View.GONE);
+                        replyId = null;
+                        etTypeHere.setText("");
+                        if (thisgroupsModel.getApprovedMembers()!=null){
+                            List<String> list = new ArrayList<>();
+                            for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
+                                if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
+                                    for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
+                                        if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
                                             if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
                                                 list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                            }
+                                        }else {
+                                            if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
+                                                if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                    list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
-                        sendNotification(list);
-                        if (mentionedUser!=null){
-                            sendMentionNotification();
+                            sendNotification(list);
+                            if (mentionedUser!=null){
+                                sendMentionNotification();
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
 
     }
 

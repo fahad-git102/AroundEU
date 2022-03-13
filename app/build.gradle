@@ -13,8 +13,8 @@ android {
         applicationId "com.fahadandroid.groupchat"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 7
-        versionName "1.5"
+        versionCode 8
+        versionName "1.6"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

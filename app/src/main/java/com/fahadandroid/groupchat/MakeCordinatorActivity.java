@@ -116,6 +116,48 @@ public class MakeCordinatorActivity extends AppCompatActivity {
             recyclerTeachers.setAdapter(null);
             TeachersCordinatorAdapter adapter = new TeachersCordinatorAdapter(teachersList, this);
             recyclerTeachers.setAdapter(adapter);
+            RecycleClick.addTo(recyclerTeachers).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+                @Override
+                public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MakeCordinatorActivity.this);
+                    builder.setIcon(getResources().getDrawable(R.drawable.ic_coordinator));
+                    builder.setTitle("Make Co-ordinator");
+                    builder.setMessage("Are you sure you want to make "+ teachersList.get(i).getFirstName()+ " a Co-ordinator?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int iu) {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("userType", "Cordinator");
+                            usersRef.child(teachersList.get(i).getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    dialogInterface.dismiss();
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(MakeCordinatorActivity.this);
+                                    builder1.setTitle("Co-ordinator");
+                                    builder1.setIcon(getResources().getDrawable(R.drawable.check));
+                                    builder1.setMessage(teachersList.get(i).getFirstName()+" is a co-ordinator now.");
+                                    builder1.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterfac, int i) {
+                                            dialogInterfac.dismiss();
+                                        }
+                                    });
+                                    AlertDialog alertDialog1 = builder1.create();
+                                    alertDialog1.show();
+                                }
+                            });
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                }
+            });
 
         }
     }
