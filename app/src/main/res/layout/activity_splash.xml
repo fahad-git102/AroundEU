@@ -28,4 +28,15 @@
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:text="v"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/colorDarkGrey"
+        android:textSize="12sp"
+        android:id="@+id/tvVersion"/>
+
 </RelativeLayout>

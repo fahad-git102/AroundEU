@@ -173,7 +173,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         goBack.setOnClickListener(this);
         btnRecord = findViewById(R.id.btnRecord);
         key = getIntent().getStringExtra("group");
-        btnRecord.setVisibility(View.GONE);
+//        btnRecord.setVisibility(View.GONE);
 
         btnRecord.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -375,10 +375,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 try {
                     MessagesModel messagesModel = snapshot.getValue(MessagesModel.class);
                     messagesModel.setKey(snapshot.getKey());
-                    if (messagesModel.getAudio()==null){
+//                    if (messagesModel.getAudio()==null){
                         messagesModelList.add(messagesModel);
                         messagesKeys.add(snapshot.getKey());
-                    }
+//                    }
                     adapter.notifyDataSetChanged();
                     linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
 
@@ -392,10 +392,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 try{
                     MessagesModel messagesModel = snapshot.getValue(MessagesModel.class);
                     messagesModel.setKey(snapshot.getKey());
-                    if (messagesModel.getAudio()==null){
+//                    if (messagesModel.getAudio()==null){
                         int index = messagesKeys.indexOf(messagesModel.getKey());
                         messagesModelList.set(index,messagesModel);
-                    }
+//                    }
                     adapter.notifyDataSetChanged();
                     linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
                 }catch (Exception e){
@@ -1349,17 +1349,25 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             File image = File.createTempFile(
                     imageFileName,
-                    ".mp3",
+                    ".m4a",
                     storageDir
             );
 
             fileName = image.getAbsolutePath();
 
             recorder = new MediaRecorder();
+//            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+//            recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+//            recorder.setOutputFile(fileName);
+//            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            recorder.setAudioSamplingRate(16000);
+            recorder.setAudioChannels(1);
             recorder.setOutputFile(fileName);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
             try {
                 recorder.prepare();
@@ -1490,14 +1498,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
                                     for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
                                         if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-                                            if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-                                                list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-                                            }
-                                        }else {
-                                            if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
+                                            if(!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
                                                 if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
                                                     list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
                                                 }
+                                            }
+                                        }else {
+                                            if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
+
+                                                if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
+                                                    if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                        list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                    }
+                                                }
+
                                             }
                                         }
                                     }

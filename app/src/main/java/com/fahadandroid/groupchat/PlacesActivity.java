@@ -297,22 +297,6 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-//    private void setPic() {
-//        int targetW = 250;
-//        int targetH = 250;
-//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-//        bmOptions.inJustDecodeBounds = true;
-//        int photoW = bmOptions.outWidth;
-//        int photoH = bmOptions.outHeight;
-//        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-//        bmOptions.inJustDecodeBounds = false;
-//        bmOptions.inSampleSize = scaleFactor;
-//        bmOptions.inPurgeable = true;
-//        Bitmap bmp = BitmapFactory.decodeFile(picturepath, bmOptions);
-//        contentUri = HelperClass.getImageUri(this, bmp);
-//        add_image.setImageURI(contentUri);
-//    }
-
     private void getPlaces(){
         adapter = new PlacesAdapter(placesModelList, this, false);
         recyclerPlaces.setAdapter(adapter);

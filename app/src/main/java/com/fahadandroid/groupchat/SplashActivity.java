@@ -5,8 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fahadandroid.groupchat.models.GroupsModel;
@@ -23,8 +27,7 @@ import com.google.firebase.database.ValueEventListener;
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference usersRef, groupsRef, countriesRef;
-    boolean groupMatched = false;
-    GroupsModel matchedGroup;
+    TextView tvVersion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,15 @@ import com.google.firebase.database.ValueEventListener;
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
+        tvVersion = findViewById(R.id.tvVersion);
+        try {
+            PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            tvVersion.setText("v"+pinfo.versionName);
+            tvVersion.setVisibility(View.VISIBLE);
+        } catch (PackageManager.NameNotFoundException e) {
+            tvVersion.setVisibility(View.GONE);
+            e.printStackTrace();
+        }
         usersRef = firebaseDatabase.getReference("Users");
         groupsRef = firebaseDatabase.getReference("groups");
         countriesRef = firebaseDatabase.getReference("countries");

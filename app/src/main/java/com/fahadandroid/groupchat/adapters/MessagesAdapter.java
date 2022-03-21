@@ -209,20 +209,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.audioPlayerMy.setVisibility(View.VISIBLE);
                 holder.audioPlayerMy.setAudio(messageModelList.get(position).getAudio());
 
-//                holder.itemView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-////                        try {
-////                            String url = messageModelList.get(position).getAudio();
-////                            Uri uri = Uri.parse(url);
-////                            MediaPlayer player = new MediaPlayer();
-////                            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-////                            player.setDataSource(context, uri);
-////                            player.prepare();
-////                            player.start();
-////                        } catch(Exception e) {
-////
-////                        }
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        try {
+                            String url = messageModelList.get(position).getAudio();
+                            Uri uri = Uri.parse(url);
+                            MediaPlayer player = new MediaPlayer();
+                            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            player.setDataSource(context, uri);
+                            player.prepare();
+                            player.start();
+                        } catch(Exception e) {
+
+                        }
 //                        String url = messageModelList.get(position).getAudio();
 //                        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
 //                        TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
@@ -233,8 +233,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
 //                        MediaSource mediaSource = new ExtractorMediaSource(videouri, dataSourceFactory, extractorsFactory, null, null);
 //                        player.prepare(mediaSource);
 //                        player.setPlayWhenReady(true);
-//                    }
-//                });
+                    }
+                });
 
             }else if (messageModelList.get(position).getLatitude()>0&&messageModelList.get(position).getLongitude()>0){
                 holder.myImageView.setVisibility(View.VISIBLE);
