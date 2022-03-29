@@ -26,6 +26,7 @@
         android:layout_toRightOf="@id/profile_pic"
         android:background="@drawable/border_rectangle_2"
         android:orientation="vertical"
+        android:backgroundTint="@color/colorSilverLightest"
         android:paddingLeft="14dp"
         android:paddingTop="9dp"
         android:paddingRight="14dp"
@@ -138,36 +139,35 @@
 
         </RelativeLayout>
 
+        <com.rygelouv.audiosensei.player.AudioSenseiPlayerView
+            android:id="@+id/audioPlayerUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:outlineSpotShadowColor="@android:color/transparent"
+            android:visibility="gone" />
 
-<!--        <com.rygelouv.audiosensei.player.AudioSenseiPlayerView-->
-<!--            android:id="@+id/audioPlayerUser"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:visibility="gone"-->
-<!--            app:custom_layout="@layout/my_audio_player_chat" />-->
-
-                <me.jagar.chatvoiceplayerlibrary.VoicePlayerView
-                    android:id="@+id/audioPlayerUser"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:soundEffectsEnabled="true"
-                    android:visibility="gone"
-                    app:enableVisualizer="false"
-                    app:playPauseBackgroundColor="@color/colorMain"
-                    app:playPauseCornerRadius="100"
-                    app:playProgressbarColor="#009688"
-                    app:progressTimeColor="#6C0573"
-                    app:seekBarProgressColor="@color/colorMain"
-                    app:seekBarThumbColor="#FFC107"
-                    app:shareBackgroundColor="#90A808"
-                    app:shareCornerRadius="100"
-                    app:showShareButton="false"
-                    app:showTiming="true"
-                    app:timingBackgroundColor="#6AFF7700"
-                    app:viewBackground="@android:color/transparent"
-                    app:viewCornerRadius="100"
-                    app:visualizationNotPlayedColor="#F62727"
-                    app:visualizationPlayedColor="@color/colorGreen" />
+        <!--        <me.jagar.chatvoiceplayerlibrary.VoicePlayerView-->
+        <!--            android:id="@+id/audioPlayerUser"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:soundEffectsEnabled="true"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:enableVisualizer="false"-->
+        <!--            app:playPauseBackgroundColor="@color/colorMain"-->
+        <!--            app:playPauseCornerRadius="100"-->
+        <!--            app:playProgressbarColor="#009688"-->
+        <!--            app:progressTimeColor="#6C0573"-->
+        <!--            app:seekBarProgressColor="@color/colorMain"-->
+        <!--            app:seekBarThumbColor="#FFC107"-->
+        <!--            app:shareBackgroundColor="#90A808"-->
+        <!--            app:shareCornerRadius="100"-->
+        <!--            app:showShareButton="false"-->
+        <!--            app:showTiming="true"-->
+        <!--            app:timingBackgroundColor="#6AFF7700"-->
+        <!--            app:viewBackground="@android:color/transparent"-->
+        <!--            app:viewCornerRadius="100"-->
+        <!--            app:visualizationNotPlayedColor="#F62727"-->
+        <!--            app:visualizationPlayedColor="@color/colorGreen" />-->
 
         <LinearLayout
             android:id="@+id/linear_documents_others"
@@ -334,35 +334,34 @@
 
         </RelativeLayout>
 
-<!--        <com.rygelouv.audiosensei.player.AudioSenseiPlayerView-->
+                <com.rygelouv.audiosensei.player.AudioSenseiPlayerView
+                    android:id="@+id/audioPlayerMy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+<!--        <me.jagar.chatvoiceplayerlibrary.VoicePlayerView-->
 <!--            android:id="@+id/audioPlayerMy"-->
 <!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:soundEffectsEnabled="true"-->
 <!--            android:visibility="gone"-->
-<!--            app:custom_layout="@layout/my_audio_player_chat"-->
-<!--            android:layout_height="wrap_content"/>-->
-<!--        -->
-        <me.jagar.chatvoiceplayerlibrary.VoicePlayerView
-            android:id="@+id/audioPlayerMy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:soundEffectsEnabled="true"
-            android:visibility="gone"
-            app:enableVisualizer="false"
-            app:playPauseBackgroundColor="@color/colorDarkGrey"
-            app:playPauseCornerRadius="100"
-            app:playProgressbarColor="#009688"
-            app:progressTimeColor="#6C0573"
-            app:seekBarProgressColor="@color/colorDarkGrey"
-            app:seekBarThumbColor="@color/colorLightGrey"
-            app:shareBackgroundColor="#90A808"
-            app:shareCornerRadius="100"
-            app:showShareButton="false"
-            app:showTiming="true"
-            app:timingBackgroundColor="#6AFF7700"
-            app:viewBackground="@android:color/transparent"
-            app:viewCornerRadius="100"
-            app:visualizationNotPlayedColor="#F62727"
-            app:visualizationPlayedColor="@color/colorGreen" />
+<!--            app:enableVisualizer="false"-->
+<!--            app:playPauseBackgroundColor="@color/colorDarkGrey"-->
+<!--            app:playPauseCornerRadius="100"-->
+<!--            app:playProgressbarColor="#009688"-->
+<!--            app:progressTimeColor="#6C0573"-->
+<!--            app:seekBarProgressColor="@color/colorDarkGrey"-->
+<!--            app:seekBarThumbColor="@color/colorLightGrey"-->
+<!--            app:shareBackgroundColor="#90A808"-->
+<!--            app:shareCornerRadius="100"-->
+<!--            app:showShareButton="false"-->
+<!--            app:showTiming="true"-->
+<!--            app:timingBackgroundColor="#6AFF7700"-->
+<!--            app:viewBackground="@android:color/transparent"-->
+<!--            app:viewCornerRadius="100"-->
+<!--            app:visualizationNotPlayedColor="#F62727"-->
+<!--            app:visualizationPlayedColor="@color/colorGreen" />-->
 
         <LinearLayout
             android:id="@+id/linear_documents_me"

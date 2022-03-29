@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.LocationManager;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,7 +71,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
@@ -88,6 +88,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -156,7 +157,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
         companyTimeModelRef = FirebaseDatabase.getInstance().getReference("companyTimeScheduled");
         linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true);
+//        linearLayoutManager.setStackFromEnd(true);
         recycler_chat.setLayoutManager(linearLayoutManager);
         mAuth = FirebaseAuth.getInstance();
         messagesKeys = new ArrayList<>();
@@ -369,16 +370,47 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private void getMessages(){
         adapter = new MessagesAdapter(messagesModelList, this);
         recycler_chat.setAdapter(adapter);
+        RecycleClick.addTo(recycler_chat).setOnItemLongClickListener(new RecycleClick.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(RecyclerView recyclerView, int i, View view) {
+                if (messagesModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+                    builder.setTitle("Delete Message ?");
+                    builder.setMessage("Are you sure you want to delete this message ?");
+                    builder.setIcon(getResources().getDrawable(R.drawable.delete));
+                    builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int iq) {
+                            groupsRef.child(key).child("messages").child(messagesModelList.get(i).getKey()).
+                                    removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Toast.makeText(ChatActivity.this, "Deleted !", Toast.LENGTH_SHORT).show();
+                                    dialogInterface.dismiss();
+                                }
+                            });
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                }
+                return false;
+            }
+        });
         groupsRef.child(key).child("messages").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 try {
                     MessagesModel messagesModel = snapshot.getValue(MessagesModel.class);
                     messagesModel.setKey(snapshot.getKey());
-//                    if (messagesModel.getAudio()==null){
-                        messagesModelList.add(messagesModel);
-                        messagesKeys.add(snapshot.getKey());
-//                    }
+                    messagesModelList.add(messagesModel);
+                    messagesKeys.add(snapshot.getKey());
                     adapter.notifyDataSetChanged();
                     linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
 
@@ -392,13 +424,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 try{
                     MessagesModel messagesModel = snapshot.getValue(MessagesModel.class);
                     messagesModel.setKey(snapshot.getKey());
-//                    if (messagesModel.getAudio()==null){
-                        int index = messagesKeys.indexOf(messagesModel.getKey());
-                        messagesModelList.set(index,messagesModel);
-//                    }
+                    int index = messagesKeys.indexOf(messagesModel.getKey());
+                    messagesModelList.set(index,messagesModel);
                     adapter.notifyDataSetChanged();
-                    linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
                 }catch (Exception e){
+                    Toast.makeText(ChatActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -408,11 +438,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 int index = messagesKeys.indexOf(key);
                 try{
                     messagesModelList.remove(index);
+                    messagesKeys.remove(index);
                     adapter.notifyDataSetChanged();
-
-                }catch (Exception e){
-                    getChat();
-                }
+                }catch (Exception e){ }
             }
 
             @Override
@@ -1150,6 +1178,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         map.put("deviceToken", stringList);
 
         cloudNotification(map);
+
+
+
     }
 
     private void sendMentionNotification(){
@@ -1356,10 +1387,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             fileName = image.getAbsolutePath();
 
             recorder = new MediaRecorder();
-//            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//            recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-//            recorder.setOutputFile(fileName);
-//            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
 
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -1397,6 +1424,31 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public String getAudioFileLength(Uri uri, boolean stringFormat) {
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(ChatActivity.this, uri);
+            String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            int millSecond = Integer.parseInt(duration);
+            if (millSecond < 0) return String.valueOf(0); // if some error then we say duration is zero
+            if (!stringFormat) return String.valueOf(millSecond);
+            int hours, minutes, seconds = millSecond / 1000;
+            hours = (seconds / 3600);
+            minutes = (seconds / 60) % 60;
+            seconds = seconds % 60;
+            if (hours > 0 && hours < 10) stringBuilder.append("0").append(hours).append(":");
+            else if (hours > 0) stringBuilder.append(hours).append(":");
+            if (minutes < 10) stringBuilder.append("0").append(minutes).append(":");
+            else stringBuilder.append(minutes).append(":");
+            if (seconds < 10) stringBuilder.append("0").append(seconds);
+            else stringBuilder.append(seconds);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
+    }
+
     private void uploadAudio(){
 
         if (fileName!=null){
@@ -1409,6 +1461,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             File file = new File(fileName);
             Uri uri = Uri.fromFile(file);
+            String audioLength = getAudioFileLength(uri, false);
+            long seconds = TimeUnit.MILLISECONDS.toSeconds(Long.parseLong(audioLength));
             storageReference.child(file.getName()).putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -1420,6 +1474,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             map.put("timeStamp", ServerValue.TIMESTAMP);
                             map.put("uid", mAuth.getCurrentUser().getUid());
                             map.put("audio", url);
+                            map.put("audioTime", seconds);
                             if (replyId!=null){
                                 map.put("replyId", replyId);
                             }

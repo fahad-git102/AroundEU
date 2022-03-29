@@ -75,8 +75,10 @@ public class PdfsListActivity extends AppCompatActivity implements View.OnClickL
         fab.setOnClickListener(this);
         list = new ArrayList<>();
         keys = new ArrayList<>();
-        if (!EUGroupChat.currentUser.isAdmin()){
-            fab.setVisibility(View.GONE);
+        if (EUGroupChat.currentUser!=null){
+            if (!EUGroupChat.currentUser.isAdmin()){
+                fab.setVisibility(View.GONE);
+            }
         }
         getPdfs();
     }

@@ -11,15 +11,23 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.link.DefaultLinkHandler;
+import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.tonyodev.fetch2.Download;
 import com.tonyodev.fetch2.Error;
 import com.tonyodev.fetch2.Fetch;
@@ -34,8 +42,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -48,7 +58,11 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
     NotificationManager mNotificationManager;
     Request request;
     Fetch fetch;
+    ProgressBar progressBar;
     ImageButton btnDownload;
+
+
+    WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +71,49 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
         pdfView = findViewById(R.id.idPDFView);
         goBack = findViewById(R.id.goBack);
         btnDownload = findViewById(R.id.btnDownload);
+        progressBar = findViewById(R.id.progressBar);
         goBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+//        String pdfURL = getIntent().getStringExtra("url");
+//        webView = findViewById(R.id.webView);
+//        webView.setWebViewClient(new WebViewClient() {
+//            @Override
+//            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+//                super.onPageStarted(view, url, favicon);
+//                progressBar.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//                view.loadUrl(url);
+//
+//                return true;
+//            }
+//
+//            @Override
+//            public void onPageFinished(WebView view, String url) {
+//                super.onPageFinished(view, url);
+//                progressBar.setVisibility(View.GONE);
+//            }
+//
+//            @Override
+//            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+//                super.onReceivedError(view, request, error);
+//                progressBar.setVisibility(View.GONE);
+//            }
+//        });
+//
+//        webView.getSettings().setSupportZoom(true);
+//        webView.getSettings().setJavaScriptEnabled(true);
+//        try {
+//            webView.loadUrl("https://docs.google.com/gview?embedded=true&url=" + URLEncoder.encode(pdfURL, "ISO-8859-1"));
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
 
         String pdfURL = getIntent().getStringExtra("url");
         Toast.makeText(this, "Loading... Please wait.. ", Toast.LENGTH_SHORT).show();
@@ -81,6 +132,18 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
             }
         });
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        try {
+//            if (webView.canGoBack()) {
+//                webView.goBack();
+//            } else {
+//                super.onBackPressed();
+//            }
+//        }catch (Exception e){}
+//
+//    }
 
     private void showNotification(int id){
         builder =
@@ -220,9 +283,13 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
 
         @Override
         protected void onPostExecute(InputStream inputStream) {
-            // after the execution of our async
-            // task we are loading our pdf in our pdf view.
-            pdfView.fromStream(inputStream).load();
+
+            pdfView.fromStream(inputStream).linkHandler(new DefaultLinkHandler(pdfView)).onLoad(new OnLoadCompleteListener() {
+                @Override
+                public void loadComplete(int nbPages) {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }).load();
         }
     }
 

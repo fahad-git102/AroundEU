@@ -6,9 +6,18 @@ public class MessagesModel {
     String image;
     String video;
     String audio;
+    int audioTime;
     String key;
     String replyId;
     double latitude, longitude;
+
+    public int getAudioTime() {
+        return audioTime;
+    }
+
+    public void setAudioTime(int audioTime) {
+        this.audioTime = audioTime;
+    }
 
     public String getReplyId() {
         return replyId;

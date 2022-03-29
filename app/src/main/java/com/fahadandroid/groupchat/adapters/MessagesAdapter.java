@@ -61,6 +61,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.rygelouv.audiosensei.player.AudioSenseiPlayerView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -104,9 +105,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
         return position;
     }
     @Override
-    public void onBindViewHolder(@NonNull MHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MHolder holder, int pos) {
         mAuth = FirebaseAuth.getInstance();
-        if (messageModelList.get(position).getUid().equals(mAuth.getCurrentUser().getUid())){
+        if (messageModelList.get(holder.getAdapterPosition()).getUid().equals(mAuth.getCurrentUser().getUid())){
 
             holder.tvMyMessage.setMovementMethod(LinkMovementMethod.getInstance());
             Linkify.addLinks(holder.tvMyMessage, Linkify.WEB_URLS);
@@ -114,24 +115,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             holder.linearUser.setVisibility(View.GONE);
             holder.linearMe.setVisibility(View.VISIBLE);
             holder.profilePic.setVisibility(View.GONE);
-            if (messageModelList.get(position).getMessage()!=null){
-                holder.tvMyMessage.setText(Html.fromHtml(messageModelList.get(position).getMessage()));
-                holder.tvMyMessage.setMovementMethod(LinkMovementMethod.getInstance());
-                Linkify.addLinks(holder.tvMyMessage, Linkify.WEB_URLS);
-            }
-
-            holder.tvMyTime.setText(HelperClass.getFormattedDateTime(messageModelList.get(position).getTimeStamp(), "MMM dd, yyyy hh:mm a"));
+            holder.tvMyTime.setText(HelperClass.getFormattedDateTime(messageModelList.get(holder.getAdapterPosition()).getTimeStamp(), "MMM dd, yyyy hh:mm a"));
 
             for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
-                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(position).getUid())){
+                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(holder.getAdapterPosition()).getUid())){
                     holder.tvMyName.setText(EUGroupChat.userModelList.get(i).getFirstName() +" "+EUGroupChat.userModelList.get(i).getSurName());
                 }
             }
 
-            if (messageModelList.get(position).getReplyId()!=null){
+            if (messageModelList.get(holder.getAdapterPosition()).getReplyId()!=null){
                 holder.cardMyReply.setVisibility(View.VISIBLE);
                 for (int a = 0 ; a<messageModelList.size(); a++){
-                    if (messageModelList.get(a).getKey().equals(messageModelList.get(position).getReplyId())){
+                    if (messageModelList.get(a).getKey().equals(messageModelList.get(holder.getAdapterPosition()).getReplyId())){
                         for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
                             if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
                                 holder.tvMyReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
@@ -161,82 +156,64 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.cardMyReply.setVisibility(View.GONE);
             }
 
-            if (messageModelList.get(position).getImage()!=null){
+            if (messageModelList.get(holder.getAdapterPosition()).getMessage()!=null){
+                holder.tvMyMessage.setVisibility(View.VISIBLE);
+                holder.audioPlayerMy.setVisibility(View.GONE);
+                holder.tvMyMessage.setText(Html.fromHtml(messageModelList.get(holder.getAdapterPosition()).getMessage()));
+                holder.tvMyMessage.setMovementMethod(LinkMovementMethod.getInstance());
+                Linkify.addLinks(holder.tvMyMessage, Linkify.WEB_URLS);
+            }else if (messageModelList.get(holder.getAdapterPosition()).getImage()!=null){
                 holder.myImageView.setVisibility(View.VISIBLE);
                 holder.tvMyMessage.setVisibility(View.GONE);
+                holder.audioPlayerMy.setVisibility(View.GONE);
                 holder.btnPlayMe.setVisibility(View.GONE);
-                Glide.with(context).load(messageModelList.get(position).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.myImageView);
+                Glide.with(context).load(messageModelList.get(holder.getAdapterPosition()).getImage()).override(150,150).placeholder(R.drawable.default_image).into(holder.myImageView);
                 holder.myImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(context, OpenAttachmentActivity.class);
-                        intent.putExtra("url", messageModelList.get(position).getImage());
+                        intent.putExtra("url", messageModelList.get(holder.getAdapterPosition()).getImage());
                         context.startActivity(intent);
                     }
                 });
-            }else if (messageModelList.get(position).getVideo()!=null){
+            }else if (messageModelList.get(holder.getAdapterPosition()).getVideo()!=null){
                 holder.myImageView.setVisibility(View.VISIBLE);
                 holder.tvMyMessage.setVisibility(View.GONE);
                 holder.btnPlayMe.setVisibility(View.VISIBLE);
-                Glide.with(context).load(messageModelList.get(position).getVideo()).placeholder(R.drawable.default_image).into(holder.myImageView);
+                holder.audioPlayerMy.setVisibility(View.GONE);
+                Glide.with(context).load(messageModelList.get(holder.getAdapterPosition()).getVideo()).override(150,150).placeholder(R.drawable.default_image).into(holder.myImageView);
                 holder.btnPlayMe.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(context, OpenAttachmentActivity.class);
                         intent.putExtra("isVideo", true);
-                        intent.putExtra("url", messageModelList.get(position).getVideo());
+                        intent.putExtra("url", messageModelList.get(holder.getAdapterPosition()).getVideo());
                         context.startActivity(intent);
                     }
                 });
-            }else if (messageModelList.get(position).getDocument()!=null){
+            }else if (messageModelList.get(holder.getAdapterPosition()).getDocument()!=null){
                 holder.linear_documents_Me.setVisibility(View.VISIBLE);
                 holder.btnPlayMe.setVisibility(View.GONE);
                 holder.myImageView.setVisibility(View.GONE);
                 holder.tvMyMessage.setVisibility(View.GONE);
+                holder.audioPlayerMy.setVisibility(View.GONE);
                 holder.linear_documents_Me.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(context, LoadPdfActivity.class);
-                        intent.putExtra("url", messageModelList.get(position).getDocument());
+                        intent.putExtra("url", messageModelList.get(holder.getAdapterPosition()).getDocument());
                         context.startActivity(intent);
                     }
                 });
-            }else if (messageModelList.get(position).getAudio()!=null){
+            }else if (messageModelList.get(holder.getAdapterPosition()).getAudio()!=null){
                 holder.linear_documents_Me.setVisibility(View.GONE);
                 holder.btnPlayMe.setVisibility(View.GONE);
                 holder.myImageView.setVisibility(View.GONE);
                 holder.tvMyMessage.setVisibility(View.GONE);
                 holder.audioPlayerMy.setVisibility(View.VISIBLE);
-                holder.audioPlayerMy.setAudio(messageModelList.get(position).getAudio());
+                holder.audioPlayerMy.setAudioTarget(messageModelList.get(holder.getAdapterPosition()).getAudio());
 
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        try {
-                            String url = messageModelList.get(position).getAudio();
-                            Uri uri = Uri.parse(url);
-                            MediaPlayer player = new MediaPlayer();
-                            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            player.setDataSource(context, uri);
-                            player.prepare();
-                            player.start();
-                        } catch(Exception e) {
-
-                        }
-//                        String url = messageModelList.get(position).getAudio();
-//                        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-//                        TrackSelector trackSelector = new DefaultTrackSelector(new AdaptiveTrackSelection.Factory(bandwidthMeter));
-//                        SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
-//                        Uri videouri = Uri.parse(url);
-//                        DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer_video");
-//                        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-//                        MediaSource mediaSource = new ExtractorMediaSource(videouri, dataSourceFactory, extractorsFactory, null, null);
-//                        player.prepare(mediaSource);
-//                        player.setPlayWhenReady(true);
-                    }
-                });
-
-            }else if (messageModelList.get(position).getLatitude()>0&&messageModelList.get(position).getLongitude()>0){
+            }else if (messageModelList.get(holder.getAdapterPosition()).getLatitude()>0&&messageModelList.get(holder.getAdapterPosition()).getLongitude()>0){
                 holder.myImageView.setVisibility(View.VISIBLE);
                 holder.tvMyMessage.setVisibility(View.GONE);
                 holder.btnPlayMe.setVisibility(View.GONE);
@@ -244,7 +221,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.myImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String uri = "http://maps.google.com/maps?q=loc:" + messageModelList.get(position).getLatitude() + "," + messageModelList.get(position).getLongitude();
+                        String uri = "http://maps.google.com/maps?q=loc:" + messageModelList.get(holder.getAdapterPosition()).getLatitude()
+                                + "," + messageModelList.get(holder.getAdapterPosition()).getLongitude();
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                         intent.setPackage("com.google.android.apps.maps");
                         context.startActivity(intent);
@@ -254,6 +232,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.btnPlayMe.setVisibility(View.GONE);
                 holder.myImageView.setVisibility(View.GONE);
                 holder.tvMyMessage.setVisibility(View.VISIBLE);
+                holder.audioPlayerMy.setVisibility(View.GONE);
             }
 
         }else {
@@ -261,14 +240,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             holder.linearMe.setVisibility(View.GONE);
             holder.linearUser.setVisibility(View.VISIBLE);
             holder.profilePic.setVisibility(View.VISIBLE);
-            if (messageModelList.get(position).getMessage()!=null){
-                holder.tvUserMessage.setText(Html.fromHtml(messageModelList.get(position).getMessage()));
-                holder.tvUserMessage.setMovementMethod(LinkMovementMethod.getInstance());
-                Linkify.addLinks(holder.tvUserMessage, Linkify.WEB_URLS);
-            }
-            holder.tvUserTime.setText(HelperClass.getFormattedDateTime(messageModelList.get(position).getTimeStamp(), "MMM dd, yyyy hh:mm a"));
+            holder.tvUserTime.setText(HelperClass.getFormattedDateTime(messageModelList.get(holder.getAdapterPosition()).getTimeStamp(), "MMM dd, yyyy hh:mm a"));
             for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
-                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(position).getUid())){
+                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(holder.getAdapterPosition()).getUid())){
                     holder.tvUserName.setText(EUGroupChat.userModelList.get(i).getFirstName()+" "+EUGroupChat.userModelList.get(i).getSurName());
                     if (EUGroupChat.userModelList.get(i).isAdmin()){
                         Glide.with(context).load(R.drawable.project_consult).placeholder(R.drawable.default_user_img).override(150, 150).into(holder.profilePic);
@@ -280,10 +254,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 }
             }
 
-            if (messageModelList.get(position).getReplyId()!=null){
+            if (messageModelList.get(holder.getAdapterPosition()).getReplyId()!=null){
                 holder.cardOtherReply.setVisibility(View.VISIBLE);
                 for (int a = 0 ; a<messageModelList.size(); a++){
-                    if (messageModelList.get(a).getKey().equals(messageModelList.get(position).getReplyId())){
+                    if (messageModelList.get(a).getKey().equals(messageModelList.get(holder.getAdapterPosition()).getReplyId())){
                         for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
                             if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
                                 holder.tvOtherReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
@@ -312,58 +286,66 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             }else {
                 holder.cardOtherReply.setVisibility(View.GONE);
             }
-
-            if (messageModelList.get(position).getImage()!=null){
+            if (messageModelList.get(holder.getAdapterPosition()).getMessage()!=null){
+                holder.tvUserMessage.setVisibility(View.VISIBLE);
+                holder.audioPlayerUser.setVisibility(View.GONE);
+                holder.tvUserMessage.setText(Html.fromHtml(messageModelList.get(holder.getAdapterPosition()).getMessage()));
+                holder.tvUserMessage.setMovementMethod(LinkMovementMethod.getInstance());
+                Linkify.addLinks(holder.tvUserMessage, Linkify.WEB_URLS);
+            }else if (messageModelList.get(holder.getAdapterPosition()).getImage()!=null){
                 holder.usersImageView.setVisibility(View.VISIBLE);
                 holder.tvUserMessage.setVisibility(View.GONE);
                 holder.btnPlayUsers.setVisibility(View.GONE);
-                Glide.with(context).load(messageModelList.get(position).getImage()).placeholder(R.drawable.default_image).fitCenter().into(holder.usersImageView);
+                holder.audioPlayerUser.setVisibility(View.GONE);
+                Glide.with(context).load(messageModelList.get(holder.getAdapterPosition()).getImage()).placeholder(R.drawable.default_image).override(150,150).into(holder.usersImageView);
                 holder.usersImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(context, OpenAttachmentActivity.class);
-                        intent.putExtra("url", messageModelList.get(position).getImage());
+                        intent.putExtra("url", messageModelList.get(holder.getAdapterPosition()).getImage());
                         context.startActivity(intent);
                     }
                 });
-            }else if (messageModelList.get(position).getVideo()!=null){
+            }else if (messageModelList.get(holder.getAdapterPosition()).getVideo()!=null){
                 holder.usersImageView.setVisibility(View.VISIBLE);
                 holder.tvUserMessage.setVisibility(View.GONE);
+                holder.audioPlayerUser.setVisibility(View.GONE);
                 holder.btnPlayUsers.setVisibility(View.VISIBLE);
-                Glide.with(context).load(messageModelList.get(position).getVideo()).placeholder(R.drawable.default_image).into(holder.usersImageView);
+                Glide.with(context).load(messageModelList.get(holder.getAdapterPosition()).getVideo()).override(150,150).placeholder(R.drawable.default_image).into(holder.usersImageView);
                 holder.btnPlayUsers.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(context, OpenAttachmentActivity.class);
                         intent.putExtra("isVideo", true);
-                        intent.putExtra("url", messageModelList.get(position).getVideo());
+                        intent.putExtra("url", messageModelList.get(holder.getAdapterPosition()).getVideo());
                         context.startActivity(intent);
                     }
                 });
 
-            }else if (messageModelList.get(position).getDocument()!=null){
+            }else if (messageModelList.get(holder.getAdapterPosition()).getDocument()!=null){
                 holder.linear_documents_other.setVisibility(View.VISIBLE);
                 holder.btnPlayUsers.setVisibility(View.GONE);
                 holder.usersImageView.setVisibility(View.GONE);
                 holder.tvUserMessage.setVisibility(View.GONE);
+                holder.audioPlayerUser.setVisibility(View.GONE);
                 holder.linear_documents_other.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 //                        downloadPdfFromUrl(messageModelList.get(position).getDocument());
                         Intent intent = new Intent(context, LoadPdfActivity.class);
-                        intent.putExtra("url", messageModelList.get(position).getDocument());
+                        intent.putExtra("url", messageModelList.get(holder.getAdapterPosition()).getDocument());
                         context.startActivity(intent);
                     }
                 });
-            }else if (messageModelList.get(position).getAudio()!=null){
+            }else if (messageModelList.get(holder.getAdapterPosition()).getAudio()!=null){
                 holder.linear_documents_other.setVisibility(View.GONE);
                 holder.btnPlayUsers.setVisibility(View.GONE);
                 holder.usersImageView.setVisibility(View.GONE);
                 holder.tvUserMessage.setVisibility(View.GONE);
                 holder.audioPlayerUser.setVisibility(View.VISIBLE);
-                holder.audioPlayerUser.setAudio(messageModelList.get(position).getAudio());
+                holder.audioPlayerUser.setAudioTarget(messageModelList.get(holder.getAdapterPosition()).getAudio());
 
-            }else if (messageModelList.get(position).getLatitude()>0&&messageModelList.get(position).getLongitude()>0){
+            }else if (messageModelList.get(holder.getAdapterPosition()).getLatitude()>0&&messageModelList.get(holder.getAdapterPosition()).getLongitude()>0){
                 holder.usersImageView.setVisibility(View.VISIBLE);
                 holder.tvUserMessage.setVisibility(View.GONE);
                 holder.btnPlayUsers.setVisibility(View.GONE);
@@ -372,7 +354,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.usersImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String uri = "http://maps.google.com/maps?q=loc:" + messageModelList.get(position).getLatitude() + "," + messageModelList.get(position).getLongitude();
+                        String uri = "http://maps.google.com/maps?q=loc:" + messageModelList.get(holder.getAdapterPosition()).getLatitude()
+                                + "," + messageModelList.get(holder.getAdapterPosition()).getLongitude();
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                         intent.setPackage("com.google.android.apps.maps");
                         context.startActivity(intent);
@@ -382,6 +365,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
                 holder.tvUserMessage.setVisibility(View.VISIBLE);
                 holder.usersImageView.setVisibility(View.GONE);
                 holder.btnPlayUsers.setVisibility(View.GONE);
+                holder.audioPlayerUser.setVisibility(View.GONE);
             }
 
         }
@@ -390,7 +374,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             holder.tvMyName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showUsersData(messageModelList.get(position).getUid());
+                    showUsersData(messageModelList.get(holder.getAdapterPosition()).getUid());
                 }
             });
         }
@@ -398,7 +382,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
             holder.tvUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showUsersData(messageModelList.get(position).getUid());
+                    showUsersData(messageModelList.get(holder.getAdapterPosition()).getUid());
                 }
             });
         }
@@ -640,7 +624,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
         ImageView usersImageView, myImageView;
         ImageView btnPlayMe, btnPlayUsers, myReplyImage, otherReplyImage;
         CardView cardMyReply, cardOtherReply;
-        VoicePlayerView audioPlayerMy, audioPlayerUser;
+        AudioSenseiPlayerView audioPlayerMy, audioPlayerUser;
 
         public MHolder(@NonNull View itemView) {
             super(itemView);
