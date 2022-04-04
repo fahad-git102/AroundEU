@@ -57,7 +57,7 @@ public class NewsActivity extends AppCompatActivity {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int i, View view) {
                 Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
-                intent.putExtra("news", newsModelList.get(i));
+                intent.putExtra("news", newsModelList.get(i).getKey());
                 startActivity(intent);
             }
         });

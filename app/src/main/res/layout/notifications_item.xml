@@ -17,23 +17,42 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingLeft="18dp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="0.8"
-            android:text="Your contract started with Alexa Anderson"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorDarkGrey"
-            android:textSize="15sp"
-            android:id="@+id/tvMessage"/>
+            android:orientation="vertical"
+            android:layout_marginEnd="15dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:text="News Added"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:id="@+id/tvTitle"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:text="Your contract started with Alexa Anderson"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="13sp"
+                android:layout_marginTop="3dp"
+                android:id="@+id/tvMessage"/>
+
+        </LinearLayout>
+
+
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.3"
+            android:layout_width="wrap_content"
             android:gravity="end"
             android:text="1 Hour"
             android:layout_height="wrap_content"

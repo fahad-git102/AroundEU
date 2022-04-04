@@ -38,6 +38,7 @@ import com.fahadandroid.groupchat.helpers.HyperlinkTextView;
 import com.fahadandroid.groupchat.models.ComapnyTimeScheduledModel;
 import com.fahadandroid.groupchat.models.CompanyModel;
 import com.fahadandroid.groupchat.models.MessagesModel;
+import com.fahadandroid.groupchat.models.UserModel;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -419,6 +420,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MHolde
         ImageView btnDetails = view.findViewById(R.id.btnDetails);
         for (int i = 0 ; i<EUGroupChat.userModelList.size(); i++){
             if (EUGroupChat.userModelList.get(i).getUid().equals(uid)){
+                UserModel userModel = EUGroupChat.userModelList.get(i);
+                profilePic.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (userModel.getProfileUrl()!=null){
+                            Intent intent = new Intent(context, OpenAttachmentActivity.class);
+                            intent.putExtra("url", userModel.getProfileUrl());
+                            intent.putExtra("profile_pic", true);
+                            context.startActivity(intent);
+                        }
+
+                    }
+                });
 
                 if (EUGroupChat.userModelList.get(i).isAdmin()){
 

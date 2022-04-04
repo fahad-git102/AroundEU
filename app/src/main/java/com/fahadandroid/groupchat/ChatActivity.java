@@ -157,7 +157,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
         companyTimeModelRef = FirebaseDatabase.getInstance().getReference("companyTimeScheduled");
         linearLayoutManager = new LinearLayoutManager(this);
-//        linearLayoutManager.setStackFromEnd(true);
         recycler_chat.setLayoutManager(linearLayoutManager);
         mAuth = FirebaseAuth.getInstance();
         messagesKeys = new ArrayList<>();
@@ -174,7 +173,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         goBack.setOnClickListener(this);
         btnRecord = findViewById(R.id.btnRecord);
         key = getIntent().getStringExtra("group");
-//        btnRecord.setVisibility(View.GONE);
 
         btnRecord.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -671,7 +669,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 list.clear();
                                 list.addAll(hashSet);
 
-                                sendNotification(list);
+                                sendNotification(list, key);
                                 if (mentionedUser!=null){
                                     sendMentionNotification();
                                 }
@@ -979,7 +977,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                         list.clear();
                                         list.addAll(hashSet);
 
-                                        sendNotification(list);
+                                        sendNotification(list, key);
                                         if (mentionedUser!=null){
                                             sendMentionNotification();
                                         }
@@ -1047,7 +1045,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                         list.clear();
                                         list.addAll(hashSet);
 
-                                        sendNotification(list);
+                                        sendNotification(list, key);
                                         if (mentionedUser!=null){
                                             sendMentionNotification();
                                         }
@@ -1114,7 +1112,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                         list.clear();
                                         list.addAll(hashSet);
 
-                                        sendNotification(list);
+                                        sendNotification(list, key);
                                         if (mentionedUser!=null){
                                             sendMentionNotification();
                                         }
@@ -1143,7 +1141,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Task<String> cloudNotification(Map<String, Object> data) {
 
         return mFunctions
-                .getHttpsCallable("sendNotification")
+                .getHttpsCallable("sendNotificationToList")
                 .call(data)
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
@@ -1154,7 +1152,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    private void sendNotification(List<String> stringList){
+    private void sendNotification(List<String> stringList, String chatId){
 
         for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
             if (EUGroupChat.userModelList.get(i).isAdmin()){
@@ -1170,12 +1168,24 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }*/
         }
 
+        HashSet<String> hashSet = new HashSet<String>();
+        hashSet.addAll(stringList);
+        stringList.clear();
+        stringList.addAll(hashSet);
+
         Map<String, Object> map = new HashMap<>();
         String title = thisgroupsModel.getName();
         String message = EUGroupChat.currentUser.getFirstName()+" sent a message in your group";
         map.put("title", title);
         map.put("message", message);
-        map.put("deviceToken", stringList);
+        map.put("tokens", stringList);
+
+        Map<String, Object> smallMap = new HashMap<>();
+        smallMap.put("title", title);
+        smallMap.put("message", message);
+        smallMap.put("dataUid", chatId);
+
+        map.put("data", smallMap);
 
         cloudNotification(map);
 
@@ -1505,7 +1515,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                                     }
                                                 }
                                             }
-                                            sendNotification(list);
+                                            sendNotification(list, key);
                                             if (mentionedUser!=null){
                                                 sendMentionNotification();
                                             }
@@ -1572,7 +1582,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                     }
                                 }
                             }
-                            sendNotification(list);
+                            sendNotification(list, key);
                             if (mentionedUser!=null){
                                 sendMentionNotification();
                             }
@@ -1599,6 +1609,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 super.clearView(recyclerView, viewHolder);
                 //awesome code to run when user drops card and completes reorder
             }
+
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {

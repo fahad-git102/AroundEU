@@ -115,7 +115,7 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
                             @Override
                             public void onItemClicked(RecyclerView recyclerView, int i, View view) {
                                 Intent intent = new Intent(PlacesActivity.this, PlacesDetailsActivity.class);
-                                intent.putExtra("place", places.get(i));
+                                intent.putExtra("place", places.get(i).getKey());
                                 startActivity(intent);
                             }
                         });
@@ -304,7 +304,7 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onItemClicked(RecyclerView recyclerView, int i, View view) {
                 Intent intent = new Intent(PlacesActivity.this, PlacesDetailsActivity.class);
-                intent.putExtra("place", placesModelList.get(i));
+                intent.putExtra("place", placesModelList.get(i).getKey());
                 startActivity(intent);
             }
         });

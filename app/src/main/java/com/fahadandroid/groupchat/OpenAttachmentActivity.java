@@ -77,6 +77,10 @@ public class OpenAttachmentActivity extends AppCompatActivity implements View.On
         btnDownload.setOnClickListener(this);
         imgView = findViewById(R.id.imageView);
         isVideo = getIntent().getBooleanExtra("isVideo", false);
+        boolean isProfilePic = getIntent().getBooleanExtra("profile_pic", false);
+        if (isProfilePic){
+            btnDownload.setVisibility(View.GONE);
+        }
         url = getIntent().getStringExtra("url");
         if (isVideo){
             playerView.setVisibility(View.VISIBLE);

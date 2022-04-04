@@ -53,7 +53,7 @@ public class ApprovedPlacesAdminActivity extends AppCompatActivity implements Vi
             @Override
             public void onItemClicked(RecyclerView recyclerView, int i, View view) {
                 Intent intent = new Intent(ApprovedPlacesAdminActivity.this, PlacesDetailsActivity.class);
-                intent.putExtra("place", placesModelList.get(i));
+                intent.putExtra("place", placesModelList.get(i).getKey());
                 intent.putExtra("delete", true);
                 startActivity(intent);
             }

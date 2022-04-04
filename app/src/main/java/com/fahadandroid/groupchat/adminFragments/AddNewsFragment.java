@@ -30,14 +30,19 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.fahadandroid.groupchat.R;
+import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.NewsModel;
+import com.fahadandroid.groupchat.models.NotificationsModel;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -49,7 +54,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.app.Activity.RESULT_OK;
@@ -62,10 +72,11 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
     ImageView btnAddImage;
     StorageReference storageReference;
     EditText etText, etTitle;
+    FirebaseFunctions mFunctions;
     Uri contentUri;
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
-    DatabaseReference newsRef;
+    DatabaseReference newsRef, notificationsRef;
     String picturepath;
     Button btnSubmit;
 
@@ -106,8 +117,10 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
         View view = inflater.inflate(R.layout.fragment_add_news, container, false);
         firebaseDatabase = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        mFunctions = FirebaseFunctions.getInstance();
         newsRef = firebaseDatabase.getReference("news");
         storageReference = FirebaseStorage.getInstance().getReference().child("media");
+        notificationsRef = firebaseDatabase.getReference("notifications");
         etText = view.findViewById(R.id.etText);
         etTitle = view.findViewById(R.id.etTitle);
         btnAddImage = view.findViewById(R.id.add_image);
@@ -197,28 +210,39 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
                         String url = uri.toString();
                         NewsModel newsModel = new NewsModel(description, url, mAuth.getCurrentUser().getUid(), System.currentTimeMillis());
                         newsModel.setTitle(title);
-                        newsRef.push().setValue(newsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                progressDialog.dismiss();
-                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                builder.setTitle("Success");
-                                builder.setMessage("Post uploaded successfully !");
-                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
-                                        etText.setText("");
-                                        contentUri = null;
-                                        btnAddImage.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_photo));
+                        String pushKey = newsRef.push().getKey();
+                        if (pushKey!=null){
+                            newsRef.child(pushKey).setValue(newsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    List<String> tokens = new ArrayList<>();
+                                    for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
+                                        if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
+                                            tokens.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+                                        }
                                     }
-                                });
-                                AlertDialog alertDialog = builder.create();
-                                alertDialog.setCanceledOnTouchOutside(false);
-                                alertDialog.setCancelable(false);
-                                alertDialog.show();
-                            }
-                        });
+                                    sendNotification(tokens, pushKey);
+
+                                    progressDialog.dismiss();
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                    builder.setTitle("Success");
+                                    builder.setMessage("Post uploaded successfully !");
+                                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.dismiss();
+                                            etText.setText("");
+                                            contentUri = null;
+                                            btnAddImage.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_photo));
+                                        }
+                                    });
+                                    AlertDialog alertDialog = builder.create();
+                                    alertDialog.setCanceledOnTouchOutside(false);
+                                    alertDialog.setCancelable(false);
+                                    alertDialog.show();
+                                }
+                            });
+                        }
                     }
                 });
             }
@@ -289,9 +313,6 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
             }
         }else if (requestCode == PICK_IMAGE){
             if (resultCode == RESULT_OK){
-//                Uri uri = data.getData();
-////                btnAddImage.setImageURI(contentUri);
-//                cropImage(uri);
                 try{
                     Uri selectedImage = data.getData();
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
@@ -346,8 +367,54 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
         bmOptions.inPurgeable = true;
         Bitmap bmp = BitmapFactory.decodeFile(picturepath, bmOptions);
         Uri uri = HelperClass.getImageUri(getActivity(), bmp);
-//        btnAddImage.setImageURI(contentUri);
         cropImage(uri);
+    }
+
+//    private Task<String> cloudNotification(Map<String, Object> data) {
+//
+//        return mFunctions
+//                .getHttpsCallable("sendNotificationToList")
+//                .call(data)
+//                .continueWith(new Continuation<HttpsCallableResult, String>() {
+//                    @Override
+//                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+//                        Toast.makeText(getActivity(), ""+(String) task.getResult().getData(), Toast.LENGTH_SHORT).show();
+//                        String result = (String) task.getResult().getData();
+//                        return result;
+//                    }
+//                });
+//    }
+
+    private void sendNotification(List<String> stringList, String newsId){
+//
+//        HashSet<String> hashSet = new HashSet<String>();
+//        hashSet.addAll(stringList);
+//        stringList.clear();
+//        stringList.addAll(hashSet);
+
+//        Map<String, Object> map = new HashMap<>();
+        String title = "News Added";
+        String message = "Admin add a new news";
+//        map.put("title", title);
+//        map.put("message", message);
+//        map.put("tokens", stringList);
+//
+//        Map<String, Object> smallMap = new HashMap<>();
+//        smallMap.put("title", title);
+//        smallMap.put("message", message);
+//        smallMap.put("dataUid", newsId);
+//
+//        map.put("data", smallMap);
+//        cloudNotification(map);
+
+        NotificationsModel notificationsModel = new NotificationsModel();
+        notificationsModel.setMessage(message);
+        notificationsModel.setTitle(title);
+        notificationsModel.setDataUid(newsId);
+        notificationsModel.setTimeStamp(System.currentTimeMillis());
+
+        notificationsRef.push().setValue(notificationsModel);
+
     }
 
 }

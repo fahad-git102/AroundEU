@@ -110,7 +110,7 @@ public class ManagePlacesFragment extends Fragment {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int i, View view) {
                 Intent intent = new Intent(getActivity(), PlacesDetailsActivity.class);
-                intent.putExtra("place", placesModelList.get(i));
+                intent.putExtra("place", placesModelList.get(i).getKey());
                 intent.putExtra("isAdmin", true);
                 startActivity(intent);
             }

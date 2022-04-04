@@ -1,5 +1,6 @@
 package com.fahadandroid.groupchat;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -9,10 +10,16 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.NewsModel;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class NewsDetailActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -30,22 +37,40 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         text = findViewById(R.id.text);
         textDate = findViewById(R.id.textDate);
         title = findViewById(R.id.title);
-        NewsModel newsModel = getIntent().getParcelableExtra("news");
+        String key = getIntent().getStringExtra("news");
+        DatabaseReference newsRef = FirebaseDatabase.getInstance().getReference("news");
         text.setMovementMethod(LinkMovementMethod.getInstance());
         Linkify.addLinks(text, Linkify.WEB_URLS);
-        if (newsModel!=null){
-            if (newsModel.getTitle()!=null){
-                title.setVisibility(View.VISIBLE);
-                title.setText(newsModel.getTitle());
-            }else {
-                title.setVisibility(View.GONE);
+        newsRef.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                try {
+                    NewsModel newsModel = snapshot.getValue(NewsModel.class);
+                    if (newsModel!=null){
+                        newsModel.setKey(snapshot.getKey());
+                        if (newsModel.getTitle()!=null){
+                            title.setVisibility(View.VISIBLE);
+                            title.setText(newsModel.getTitle());
+                        }else {
+                            title.setVisibility(View.GONE);
+                        }
+                        if (newsModel.getImageUrl()!=null){
+                            Glide.with(NewsDetailActivity.this).load(newsModel.getImageUrl()).fitCenter().placeholder(R.drawable.default_image).into(image);
+                        }
+                        text.setText(newsModel.getDescription());
+                        textDate.setText(HelperClass.getFormattedDateTime(newsModel.getTimeStamp(), "dd MMM, yyyy hh:mm a"));
+                    }else {
+                        Toast.makeText(NewsDetailActivity.this, "Data not found. This news must be deleted", Toast.LENGTH_LONG).show();
+                    }
+                }catch (Exception e){}
             }
-            if (newsModel.getImageUrl()!=null){
-                Glide.with(this).load(newsModel.getImageUrl()).placeholder(R.drawable.default_image).into(image);
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
-            text.setText(newsModel.getDescription());
-            textDate.setText(HelperClass.getFormattedDateTime(newsModel.getTimeStamp(), "dd MMM, yyyy hh:mm a"));
-        }
+        });
+
     }
 
     @Override

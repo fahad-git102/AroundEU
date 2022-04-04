@@ -55,6 +55,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
@@ -224,6 +225,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     finish();
                 }
             }
+
+            if (EUGroupChat.currentUser.getUserType().toLowerCase().equals("cordinator")||EUGroupChat.currentUser.getUserType().toLowerCase().equals("student")){
+                btnNotifications.setVisibility(View.VISIBLE);
+            }else {
+                btnNotifications.setVisibility(View.GONE);
+            }
+
         }
 
         requestAppPermissions();
