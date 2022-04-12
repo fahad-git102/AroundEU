@@ -76,7 +76,7 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
     List<PlacesModel> placesModelList;
     ImageButton btnAdd;
     Uri contentUri;
-    String picturepath, selected;
+    String picturepath, selected, selectedCountry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +86,7 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
         goBack.setOnClickListener(this);
         btnAdd = findViewById(R.id.btnAdd);
         btnAdd.setOnClickListener(this);
+
         placesKeys = new ArrayList<>();
         spinner = findViewById(R.id.spinner);
         selected = "All";
@@ -151,6 +152,7 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
             add_image = view.findViewById(R.id.add_image);
             Spinner spinner = view.findViewById(R.id.spinner);
             selectedCategory = "Bars & Restaurants";
+            Spinner etCountry = view.findViewById(R.id.etCountry);
             String[] items = new String[]{"Bars & Restaurants", "Sightseeing places", "Experience"};
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -164,6 +166,19 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
             aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             //Setting the ArrayAdapter data on the Spinner
             spinner.setAdapter(aa);
+            selectedCountry = "Barcelona P.G";
+            String[] itemsCountry = new String[]{"Barcelona P.G", "Catania"};
+            etCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    selectedCountry = itemsCountry[i];
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) { }
+            });
+            ArrayAdapter aa1 = new ArrayAdapter(this, android.R.layout.simple_spinner_item,itemsCountry);
+            aa1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            etCountry.setAdapter(aa1);
             builder.setView(view);
             AlertDialog alertDialog = builder.create();
             EditText etText = view.findViewById(R.id.etText);
@@ -383,6 +398,9 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
                         PlacesModel placesModel = new PlacesModel();
                         placesModel.setDescription(description);
                         placesModel.setImageUrl(url);
+                        if (selectedCategory!=null){
+                            placesModel.setCountry(selectedCountry);
+                        }
                         placesModel.setStatus("pending");
                         placesModel.setCategory(selectedCategory);
                         placesModel.setUid(mAuth.getCurrentUser().getUid());

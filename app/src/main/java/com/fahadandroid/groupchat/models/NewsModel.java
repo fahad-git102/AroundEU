@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class NewsModel implements Parcelable{
-    String description, title, imageUrl, uid, key;
+    String description, title, imageUrl, uid, key, country;
     long timeStamp;
 
     public NewsModel() {
@@ -24,6 +24,14 @@ public class NewsModel implements Parcelable{
         uid = in.readString();
         key = in.readString();
         timeStamp = in.readLong();
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public static final Creator<NewsModel> CREATOR = new Creator<NewsModel>() {

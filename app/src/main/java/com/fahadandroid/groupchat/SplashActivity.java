@@ -45,6 +45,7 @@ import com.google.firebase.database.ValueEventListener;
             tvVersion.setVisibility(View.GONE);
             e.printStackTrace();
         }
+        Intent intent = getIntent();
         usersRef = firebaseDatabase.getReference("Users");
         groupsRef = firebaseDatabase.getReference("groups");
         countriesRef = firebaseDatabase.getReference("countries");
@@ -55,15 +56,29 @@ import com.google.firebase.database.ValueEventListener;
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     try{
                         UserModel userModel = snapshot.getValue(UserModel.class);
-                        if (userModel.isAdmin()){
-                            Intent intent = new Intent(SplashActivity.this, AdminHomeActivity.class);
-                            startActivity(intent);
-                            finish();
+                        if (intent.hasExtra("dataUid")||intent.hasExtra("chatId")){
+                            String dataUid = null;
+                            if (intent.hasExtra("dataUid")){
+                                dataUid = intent.getStringExtra("dataUid");
+                            }else if (intent.hasExtra("chatId")){
+                                dataUid = intent.getStringExtra("chatId");
+                            }
+                            if (dataUid!=null){
+                                Intent intent = new Intent(SplashActivity.this, ChatActivity.class);
+                                intent.putExtra("group", dataUid);
+                                startActivity(intent);
+                            }
                         }else {
-                            Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
+                            if (userModel.isAdmin()){
+                                Intent intent = new Intent(SplashActivity.this, AdminHomeActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }else {
+                                Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                                finish();
 
+                            }
                         }
                     }catch (Exception e){
                         Toast.makeText(SplashActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();

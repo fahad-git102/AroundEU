@@ -30,17 +30,17 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <com.github.barteksc.pdfviewer.PDFView
-        android:id="@+id/idPDFView"
-        android:layout_below="@id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-<!--    <WebView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
+<!--    <com.github.barteksc.pdfviewer.PDFView-->
+<!--        android:id="@+id/idPDFView"-->
 <!--        android:layout_below="@id/toolbar"-->
-<!--        android:id="@+id/webView"/>-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent" />-->
+
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:id="@+id/webView"/>
 
     <ImageButton
         android:id="@+id/btnDownload"

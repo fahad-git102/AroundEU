@@ -24,9 +24,13 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fahadandroid.groupchat.R;
@@ -73,8 +77,10 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
     StorageReference storageReference;
     EditText etText, etTitle;
     FirebaseFunctions mFunctions;
+    Spinner etCountry;
     Uri contentUri;
     FirebaseAuth mAuth;
+    String selectedCountry;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference newsRef, notificationsRef;
     String picturepath;
@@ -118,6 +124,7 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
         firebaseDatabase = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         mFunctions = FirebaseFunctions.getInstance();
+        etCountry = view.findViewById(R.id.etCountry);
         newsRef = firebaseDatabase.getReference("news");
         storageReference = FirebaseStorage.getInstance().getReference().child("media");
         notificationsRef = firebaseDatabase.getReference("notifications");
@@ -127,6 +134,19 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
         btnAddImage.setOnClickListener(this);
         btnSubmit = view.findViewById(R.id.btnSubmit);
         btnSubmit.setOnClickListener(this);
+        selectedCountry = "Barcelona P.G";
+        String[] items = new String[]{"Barcelona P.G", "Catania"};
+        etCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                selectedCountry = items[i];
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) { }
+        });
+        ArrayAdapter aa = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item,items);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        etCountry.setAdapter(aa);
         return view;
     }
 
@@ -210,19 +230,13 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
                         String url = uri.toString();
                         NewsModel newsModel = new NewsModel(description, url, mAuth.getCurrentUser().getUid(), System.currentTimeMillis());
                         newsModel.setTitle(title);
+                        newsModel.setCountry(selectedCountry);
                         String pushKey = newsRef.push().getKey();
                         if (pushKey!=null){
                             newsRef.child(pushKey).setValue(newsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    List<String> tokens = new ArrayList<>();
-                                    for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                        if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
-                                            tokens.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                        }
-                                    }
-                                    sendNotification(tokens, pushKey);
-
+                                    sendNotification(pushKey);
                                     progressDialog.dismiss();
                                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                                     builder.setTitle("Success");
@@ -370,42 +384,10 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
         cropImage(uri);
     }
 
-//    private Task<String> cloudNotification(Map<String, Object> data) {
-//
-//        return mFunctions
-//                .getHttpsCallable("sendNotificationToList")
-//                .call(data)
-//                .continueWith(new Continuation<HttpsCallableResult, String>() {
-//                    @Override
-//                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-//                        Toast.makeText(getActivity(), ""+(String) task.getResult().getData(), Toast.LENGTH_SHORT).show();
-//                        String result = (String) task.getResult().getData();
-//                        return result;
-//                    }
-//                });
-//    }
 
-    private void sendNotification(List<String> stringList, String newsId){
-//
-//        HashSet<String> hashSet = new HashSet<String>();
-//        hashSet.addAll(stringList);
-//        stringList.clear();
-//        stringList.addAll(hashSet);
-
-//        Map<String, Object> map = new HashMap<>();
+    private void sendNotification(String newsId){
         String title = "News Added";
         String message = "Admin add a new news";
-//        map.put("title", title);
-//        map.put("message", message);
-//        map.put("tokens", stringList);
-//
-//        Map<String, Object> smallMap = new HashMap<>();
-//        smallMap.put("title", title);
-//        smallMap.put("message", message);
-//        smallMap.put("dataUid", newsId);
-//
-//        map.put("data", smallMap);
-//        cloudNotification(map);
 
         NotificationsModel notificationsModel = new NotificationsModel();
         notificationsModel.setMessage(message);

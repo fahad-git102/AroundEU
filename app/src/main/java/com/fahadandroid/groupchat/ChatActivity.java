@@ -1138,10 +1138,62 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         startActivityForResult(intent, CAMERA);
     }
 
+//    private Task<String> cloudNotification(Map<String, Object> data) {
+//
+//        return mFunctions
+//                .getHttpsCallable("sendNotificationToList")
+//                .call(data)
+//                .continueWith(new Continuation<HttpsCallableResult, String>() {
+//                    @Override
+//                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+//                        String result = (String) task.getResult().getData();
+//                        return result;
+//                    }
+//                });
+//    }
+//
+//    private void sendNotification(List<String> stringList, String chatId){
+//
+//        for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
+//            if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
+//                if (EUGroupChat.userModelList.get(i).isAdmin()){
+//                    if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
+//                        stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+//                    }
+//                }
+//            }
+//        }
+//
+//        HashSet<String> hashSet = new HashSet<String>();
+//        hashSet.addAll(stringList);
+//        stringList.clear();
+//        stringList.addAll(hashSet);
+//
+//        Map<String, Object> map = new HashMap<>();
+//        String title = thisgroupsModel.getName();
+//        String message = EUGroupChat.currentUser.getFirstName()+" sent a message in your group";
+//        map.put("title", title);
+//        map.put("message", message);
+//        map.put("tokens", stringList);
+//
+//        Map<String, Object> smallMap = new HashMap<>();
+//        smallMap.put("title", title);
+//        smallMap.put("message", message);
+//        smallMap.put("dataUid", chatId);
+//
+//        map.put("data", smallMap);
+//
+//        cloudNotification(map);
+//
+//
+//
+//    }
+
+
     private Task<String> cloudNotification(Map<String, Object> data) {
 
         return mFunctions
-                .getHttpsCallable("sendNotificationToList")
+                .getHttpsCallable("sendNotification")
                 .call(data)
                 .continueWith(new Continuation<HttpsCallableResult, String>() {
                     @Override
@@ -1151,34 +1203,28 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
     }
-
     private void sendNotification(List<String> stringList, String chatId){
 
         for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-            if (EUGroupChat.userModelList.get(i).isAdmin()){
-                if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
-                    stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                }
-            }/*else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
-                if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
+            if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
+                if (EUGroupChat.userModelList.get(i).isAdmin()){
                     if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
                         stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
                     }
                 }
-            }*/
+            }
         }
-
         HashSet<String> hashSet = new HashSet<String>();
         hashSet.addAll(stringList);
         stringList.clear();
         stringList.addAll(hashSet);
 
         Map<String, Object> map = new HashMap<>();
+
         String title = thisgroupsModel.getName();
         String message = EUGroupChat.currentUser.getFirstName()+" sent a message in your group";
         map.put("title", title);
         map.put("message", message);
-        map.put("tokens", stringList);
 
         Map<String, Object> smallMap = new HashMap<>();
         smallMap.put("title", title);
@@ -1186,11 +1232,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         smallMap.put("dataUid", chatId);
 
         map.put("data", smallMap);
+        map.put("deviceToken", stringList);
 
         cloudNotification(map);
-
-
-
     }
 
     private void sendMentionNotification(){

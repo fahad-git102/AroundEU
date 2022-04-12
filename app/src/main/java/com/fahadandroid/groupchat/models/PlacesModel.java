@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class PlacesModel implements Parcelable {
 
-    String key, description, uid, imageUrl, category, status;
+    String key, description, uid, imageUrl, category, status, country;
     long timeStamp;
 
     public PlacesModel(){}
@@ -38,6 +38,14 @@ public class PlacesModel implements Parcelable {
             return new PlacesModel[size];
         }
     };
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
 
     public String getKey() {
         return key;

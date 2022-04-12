@@ -44,24 +44,37 @@
             </LinearLayout>
 
             <EditText
+                android:id="@+id/etTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/linear"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/border_rectangle_3"
                 android:layout_marginStart="25dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="25dp"
+                android:background="@drawable/border_rectangle_3"
                 android:gravity="start"
                 android:hint="Title"
                 android:padding="13dp"
-                android:textSize="14sp"
                 android:textColor="@color/colorDarkGrey"
-                android:id="@+id/etTitle"/>
+                android:textSize="14sp" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_rectangle_3"
+                android:id="@+id/etCountry"
+                android:minHeight="45dp"
+                android:layout_below="@id/etTitle"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginTop="10dp"/>
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/etTitle"
+                android:layout_below="@id/etCountry"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/border_rectangle_3"
                 android:layout_marginStart="25dp"

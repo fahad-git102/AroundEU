@@ -52,7 +52,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class LoadPdfActivity extends AppCompatActivity implements FetchListener {
 
-    PDFView pdfView;
     ImageButton goBack;
     NotificationCompat.Builder builder;
     NotificationManager mNotificationManager;
@@ -68,7 +67,7 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_pdf);
-        pdfView = findViewById(R.id.idPDFView);
+//        pdfView = findViewById(R.id.idPDFView);
         goBack = findViewById(R.id.goBack);
         btnDownload = findViewById(R.id.btnDownload);
         progressBar = findViewById(R.id.progressBar);
@@ -78,46 +77,48 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
                 finish();
             }
         });
-//        String pdfURL = getIntent().getStringExtra("url");
-//        webView = findViewById(R.id.webView);
-//        webView.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-//                super.onPageStarted(view, url, favicon);
-//                progressBar.setVisibility(View.VISIBLE);
-//            }
-//
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                view.loadUrl(url);
-//
-//                return true;
-//            }
-//
-//            @Override
-//            public void onPageFinished(WebView view, String url) {
-//                super.onPageFinished(view, url);
-//                progressBar.setVisibility(View.GONE);
-//            }
-//
-//            @Override
-//            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-//                super.onReceivedError(view, request, error);
-//                progressBar.setVisibility(View.GONE);
-//            }
-//        });
-//
-//        webView.getSettings().setSupportZoom(true);
-//        webView.getSettings().setJavaScriptEnabled(true);
-//        try {
-//            webView.loadUrl("https://docs.google.com/gview?embedded=true&url=" + URLEncoder.encode(pdfURL, "ISO-8859-1"));
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-
         String pdfURL = getIntent().getStringExtra("url");
+        webView = findViewById(R.id.webView);
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+
+                return true;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(LoadPdfActivity.this, ""+error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        webView.getSettings().setSupportZoom(true);
+        webView.clearCache(true);
+        webView.getSettings().setJavaScriptEnabled(true);
+        try {
+            webView.loadUrl("https://docs.google.com/gview?embedded=true&url=" + URLEncoder.encode(pdfURL, "ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+//        String pdfURL = getIntent().getStringExtra("url");
         Toast.makeText(this, "Loading... Please wait.. ", Toast.LENGTH_SHORT).show();
-        new RetrivePDFfromUrl().execute(pdfURL);
+//        new RetrivePDFfromUrl().execute(pdfURL);
         FetchConfiguration fetchConfiguration = new FetchConfiguration.Builder(this)
                 .enableLogging(true)
                 .setDownloadConcurrentLimit(1)
@@ -133,17 +134,17 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
         });
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        try {
-//            if (webView.canGoBack()) {
-//                webView.goBack();
-//            } else {
-//                super.onBackPressed();
-//            }
-//        }catch (Exception e){}
-//
-//    }
+    @Override
+    public void onBackPressed() {
+        try {
+            if (webView.canGoBack()) {
+                webView.goBack();
+            } else {
+                super.onBackPressed();
+            }
+        }catch (Exception e){}
+
+    }
 
     private void showNotification(int id){
         builder =
@@ -254,44 +255,44 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
 
     }
 
-    class RetrivePDFfromUrl extends AsyncTask<String, Void, InputStream> {
-        @Override
-        protected InputStream doInBackground(String... strings) {
-            // we are using inputstream
-            // for getting out PDF.
-            InputStream inputStream = null;
-            try {
-                URL url = new URL(strings[0]);
-                // below is the step where we are
-                // creating our connection.
-                HttpURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-                if (urlConnection.getResponseCode() == 200) {
-                    // response is success.
-                    // we are getting input stream from url
-                    // and storing it in our variable.
-                    inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                }
-
-            } catch (IOException e) {
-                // this is the method
-                // to handle errors.
-                e.printStackTrace();
-                return null;
-            }
-            return inputStream;
-        }
-
-        @Override
-        protected void onPostExecute(InputStream inputStream) {
-
-            pdfView.fromStream(inputStream).linkHandler(new DefaultLinkHandler(pdfView)).onLoad(new OnLoadCompleteListener() {
-                @Override
-                public void loadComplete(int nbPages) {
-                    progressBar.setVisibility(View.GONE);
-                }
-            }).load();
-        }
-    }
+//    class RetrivePDFfromUrl extends AsyncTask<String, Void, InputStream> {
+//        @Override
+//        protected InputStream doInBackground(String... strings) {
+//            // we are using inputstream
+//            // for getting out PDF.
+//            InputStream inputStream = null;
+//            try {
+//                URL url = new URL(strings[0]);
+//                // below is the step where we are
+//                // creating our connection.
+//                HttpURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+//                if (urlConnection.getResponseCode() == 200) {
+//                    // response is success.
+//                    // we are getting input stream from url
+//                    // and storing it in our variable.
+//                    inputStream = new BufferedInputStream(urlConnection.getInputStream());
+//                }
+//
+//            } catch (IOException e) {
+//                // this is the method
+//                // to handle errors.
+//                e.printStackTrace();
+//                return null;
+//            }
+//            return inputStream;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(InputStream inputStream) {
+//
+//            pdfView.fromStream(inputStream).linkHandler(new DefaultLinkHandler(pdfView)).onLoad(new OnLoadCompleteListener() {
+//                @Override
+//                public void loadComplete(int nbPages) {
+//                    progressBar.setVisibility(View.GONE);
+//                }
+//            }).load();
+//        }
+//    }
 
     private void downloadFile(String url){
         String extension = ".pdf";
