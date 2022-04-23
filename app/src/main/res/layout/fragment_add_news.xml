@@ -98,6 +98,17 @@
                 android:text="Submit"
                 android:id="@+id/btnSubmit"/>
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/button_background"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_below="@id/btnSubmit"
+                android:layout_marginTop="10dp"
+                android:text="View All News"
+                android:id="@+id/btnAllNews"/>
+
         </RelativeLayout>
 
     </ScrollView>

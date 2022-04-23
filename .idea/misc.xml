@@ -37,6 +37,7 @@
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_groups.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_home.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_load_pdf.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_login.xml" value="0.2" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_manage_requests.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_my_documents.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_news_detail.xml" value="0.20416666666666666" />
@@ -45,6 +46,7 @@
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_personal_info.xml" value="0.33" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_places.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_places_details.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_select_country.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_sign_up.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/activity_splash.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/chat_item.xml" value="0.1956521739130435" />
@@ -64,6 +66,7 @@
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/notifications_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/pdf_file_item.xml" value="0.67" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/pdfs_list_item.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/select_country_dialog.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/string_horizontals_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/string_list_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/HP/Desktop/Projects/AroundEU-Android/app/src/main/res/layout/users_info_dialog.xml" value="0.20416666666666666" />

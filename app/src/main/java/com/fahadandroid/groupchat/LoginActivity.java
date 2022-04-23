@@ -103,64 +103,66 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         startActivity(intent);
                                         finish();
                                     }else {
-
-                                        if (userModel.getUserType()!=null){
-                                            if (userModel.getUserType().equals("Cordinator")){
-                                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                                                View view = LayoutInflater.from(LoginActivity.this).inflate(R.layout.country_select_dialog, null);
-                                                RecyclerView recyclerCountries = view.findViewById(R.id.recycler_countries);
-                                                recyclerCountries.setLayoutManager(new LinearLayoutManager(LoginActivity.this));
-                                                List<CountryModel> countriesList = new ArrayList<>();
-                                                DatabaseReference countriesRef = FirebaseDatabase.getInstance().getReference("countries");
-                                                countriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                        for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                                            try{
-                                                                CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
-                                                                countryModel.setKey(dataSnapshot.getKey());
-                                                                if (!countryModel.isDeleted()){
-                                                                    countriesList.add(countryModel);
-                                                                }
-                                                            }catch (Exception e){}
-                                                        }
-                                                        CountrySmallDialogAdapter adapter = new CountrySmallDialogAdapter(countriesList, LoginActivity.this);
-                                                        recyclerCountries.setAdapter(adapter);
-                                                        RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
-                                                            @Override
-                                                            public void onItemClicked(RecyclerView recyclerView, int i, View view) {
-                                                                SharedPreferences preferences = getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE);
-                                                                SharedPreferences.Editor editor = preferences.edit();
-                                                                editor.putString("country",countriesList.get(i).getCountryName());
-                                                                editor.putString("countryKey",countriesList.get(i).getKey());
-                                                                editor.apply();
-                                                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                                                startActivity(intent);
-                                                                finish();
-                                                            }
-                                                        });
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                                    }
-                                                });
-                                                builder.setView(view);
-                                                AlertDialog alertDialog = builder.create();
-                                                alertDialog.setCancelable(false);
-                                                alertDialog.setCanceledOnTouchOutside(false);
-                                                alertDialog.show();
-                                            }else {
-                                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                                startActivity(intent);
-                                                finish();
-                                            }
-                                        }else {
-                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        }
+                                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                        startActivity(intent);
+                                        finish();
+//                                        if (userModel.getUserType()!=null){
+//                                            if (userModel.getUserType().equals("Cordinator")){
+//                                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+//                                                View view = LayoutInflater.from(LoginActivity.this).inflate(R.layout.country_select_dialog, null);
+//                                                RecyclerView recyclerCountries = view.findViewById(R.id.recycler_countries);
+//                                                recyclerCountries.setLayoutManager(new LinearLayoutManager(LoginActivity.this));
+//                                                List<CountryModel> countriesList = new ArrayList<>();
+//                                                DatabaseReference countriesRef = FirebaseDatabase.getInstance().getReference("countries");
+//                                                countriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                                    @Override
+//                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                                                        for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+//                                                            try{
+//                                                                CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
+//                                                                countryModel.setKey(dataSnapshot.getKey());
+//                                                                if (!countryModel.isDeleted()){
+//                                                                    countriesList.add(countryModel);
+//                                                                }
+//                                                            }catch (Exception e){}
+//                                                        }
+//                                                        CountrySmallDialogAdapter adapter = new CountrySmallDialogAdapter(countriesList, LoginActivity.this);
+//                                                        recyclerCountries.setAdapter(adapter);
+//                                                        RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+//                                                            @Override
+//                                                            public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+//                                                                SharedPreferences preferences = getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE);
+//                                                                SharedPreferences.Editor editor = preferences.edit();
+//                                                                editor.putString("country",countriesList.get(i).getCountryName());
+//                                                                editor.putString("countryKey",countriesList.get(i).getKey());
+//                                                                editor.apply();
+//                                                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+//                                                                startActivity(intent);
+//                                                                finish();
+//                                                            }
+//                                                        });
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                                                    }
+//                                                });
+//                                                builder.setView(view);
+//                                                AlertDialog alertDialog = builder.create();
+//                                                alertDialog.setCancelable(false);
+//                                                alertDialog.setCanceledOnTouchOutside(false);
+//                                                alertDialog.show();
+//                                            }else {
+//                                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+//                                                startActivity(intent);
+//                                                finish();
+//                                            }
+//                                        }else {
+//                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+//                                            startActivity(intent);
+//                                            finish();
+//                                        }
                                     }
 
                                 }catch (Exception e){

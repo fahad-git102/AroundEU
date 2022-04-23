@@ -33,6 +33,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fahadandroid.groupchat.HomeActivity;
+import com.fahadandroid.groupchat.NewsActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
@@ -84,7 +86,7 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
     FirebaseDatabase firebaseDatabase;
     DatabaseReference newsRef, notificationsRef;
     String picturepath;
-    Button btnSubmit;
+    Button btnSubmit, btnAllNews;
 
     // TODO: Rename parameter arguments, choose names that match
     private static final String ARG_PARAM1 = "param1";
@@ -125,6 +127,8 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
         mAuth = FirebaseAuth.getInstance();
         mFunctions = FirebaseFunctions.getInstance();
         etCountry = view.findViewById(R.id.etCountry);
+        btnAllNews = view.findViewById(R.id.btnAllNews);
+        btnAllNews.setOnClickListener(this);
         newsRef = firebaseDatabase.getReference("news");
         storageReference = FirebaseStorage.getInstance().getReference().child("media");
         notificationsRef = firebaseDatabase.getReference("notifications");
@@ -152,7 +156,10 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view1) {
-        if (view1.getId()==R.id.add_image){
+        if (view1.getId()==R.id.btnAllNews){
+            Intent intent1 = new Intent(requireContext(), NewsActivity.class);
+            startActivity(intent1);
+        }else if (view1.getId()==R.id.add_image){
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             LayoutInflater inflater = getLayoutInflater();
             View view = inflater.inflate(R.layout.select_camera_action_dialog, null);

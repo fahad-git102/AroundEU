@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.adapters.CountrySmallDialogAdapter;
+import com.fahadandroid.groupchat.adapters.StringSelectAdapter;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.CountryModel;
 import com.fahadandroid.groupchat.models.GroupsModel;
@@ -42,7 +44,9 @@ import com.yesterselga.countrypicker.CountryPickerListener;
 import com.yesterselga.countrypicker.Theme;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -213,11 +217,15 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         public void onComplete(@NonNull Task<Void> task) {
                             progress.setVisibility(View.GONE);
                             if (task.isSuccessful()){
-                                mAuth.signOut();
-                                Toast.makeText(SignUpActivity.this, "User created successfully !", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
-                                startActivity(intent);
-                                finish();
+                                if (userType.toLowerCase().equals("teacher")||userType.toLowerCase().equals("Student")){
+                                    selectCountryDialog();
+                                }else {
+                                    mAuth.signOut();
+                                    Toast.makeText(SignUpActivity.this, "User created successfully !", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
                             }else {
                                 progress.setVisibility(View.GONE);
                                 Toast.makeText(SignUpActivity.this, ""+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -231,4 +239,41 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
     }
+
+    private void selectCountryDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.select_country_dialog, null);
+        RecyclerView recyclerCountries = view.findViewById(R.id.recycler_countries);
+        recyclerCountries.setLayoutManager(new LinearLayoutManager(this));
+        builder.setView(view);
+        AlertDialog alertDialog = builder.create();
+        List<String> countries = new ArrayList<>();
+        countries.add("Barcellona P.G");
+        countries.add("Catania");
+        StringSelectAdapter adapter = new StringSelectAdapter(countries, this);
+        recyclerCountries.setAdapter(adapter);
+        RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("selectedCountry", countries.get(i));
+                usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        mAuth.signOut();
+                        Toast.makeText(SignUpActivity.this, "User created successfully !", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+            }
+        });
+        alertDialog.setCancelable(false);
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
+    }
+
 }
+
+

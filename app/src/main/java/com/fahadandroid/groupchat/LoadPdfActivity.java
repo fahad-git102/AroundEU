@@ -56,6 +56,7 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
     NotificationCompat.Builder builder;
     NotificationManager mNotificationManager;
     Request request;
+    int code = 0;
     Fetch fetch;
     ProgressBar progressBar;
     ImageButton btnDownload;
@@ -129,7 +130,10 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
         btnDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                downloadFile(pdfURL);
+                if(code==0){
+                    downloadFile(pdfURL);
+                    code = 1;
+                }
             }
         });
     }
@@ -150,7 +154,9 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
         builder =
                 new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent ii = new Intent(getApplicationContext(), SplashActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, 0);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii,  PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, ii, PendingIntent.FLAG_UPDATE_CURRENT |
+                PendingIntent.FLAG_MUTABLE);
 
         NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
         bigText.bigText("Download Started...");
@@ -309,8 +315,10 @@ public class LoadPdfActivity extends AppCompatActivity implements FetchListener 
         request.addHeader("clientKey", "SD78DF93_3947&MVNGHE1WONG");
 
         fetch.enqueue(request, updatedRequest -> {
+            code = 0;
             Toast.makeText(this, "Downloading started...", Toast.LENGTH_SHORT).show();
         }, error -> {
+            code = 0;
             Toast.makeText(this, "Download failed.  "+error.name(), Toast.LENGTH_SHORT).show();
         });
 

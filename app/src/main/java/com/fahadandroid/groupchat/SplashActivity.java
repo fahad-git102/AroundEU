@@ -67,6 +67,7 @@ import com.google.firebase.database.ValueEventListener;
                                 Intent intent = new Intent(SplashActivity.this, ChatActivity.class);
                                 intent.putExtra("group", dataUid);
                                 startActivity(intent);
+                                finish();
                             }
                         }else {
                             if (userModel.isAdmin()){

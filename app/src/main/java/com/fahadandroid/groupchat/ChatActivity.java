@@ -655,9 +655,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                             }else {
                                                 if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-                                                    if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-                                                        list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                    if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
+                                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                        }
                                                     }
+
                                                 }
                                             }
                                         }
@@ -963,9 +966,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                                                     }else {
                                                         if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-                                                            if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                            if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
+                                                                if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
                                                                 list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
                                                             }
+                                                            }
+
                                                         }
                                                     }
                                                 }
@@ -1031,9 +1037,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                                         }
                                                     }else {
                                                         if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-                                                            if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                            if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
+                                                                if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
                                                                 list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
                                                             }
+                                                            }
+
                                                         }
                                                     }
                                                 }
@@ -1098,8 +1107,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                                         }
                                                     }else {
                                                         if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-                                                            if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
+                                                            if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
+                                                             if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
                                                                 list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
+                                                            }
                                                             }
                                                         }
                                                     }

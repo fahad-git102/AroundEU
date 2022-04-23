@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.adapters.PlacesAdapter;
+import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.PlacesModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -331,9 +332,18 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
                     placesModel.setKey(snapshot.getKey());
                     if (placesModel.getStatus()!=null){
                         if (placesModel.getStatus().equals("approved")){
-                            placesModelList.add(0,placesModel);
-                            placesKeys.add(0,placesModel.getKey());
-                            adapter.notifyDataSetChanged();
+
+                            if (EUGroupChat.currentUser.getSelectedCountry()!=null) {
+                                if (placesModel.getCountry() != null && placesModel.getCountry().equals(EUGroupChat.currentUser.getSelectedCountry())) {
+                                    placesModelList.add(0,placesModel);
+                                    placesKeys.add(0,placesModel.getKey());
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }else {
+                                placesModelList.add(0,placesModel);
+                                placesKeys.add(0,placesModel.getKey());
+                                adapter.notifyDataSetChanged();
+                            }
                         }
                     }
                 }catch (Exception e){}
@@ -346,9 +356,18 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
                     placesModel.setKey(snapshot.getKey());
                     if (placesModel.getStatus()!=null) {
                         if (placesModel.getStatus().equals("approved")) {
-                            int index = placesKeys.indexOf(placesModel.getKey());
-                            placesModelList.set(index, placesModel);
-                            adapter.notifyDataSetChanged();
+                            if (EUGroupChat.currentUser.getSelectedCountry()!=null) {
+                                if (placesModel.getCountry() != null && placesModel.getCountry().equals(EUGroupChat.currentUser.getSelectedCountry())) {
+                                    int index = placesKeys.indexOf(placesModel.getKey());
+                                    placesModelList.set(index, placesModel);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }else {
+                                int index = placesKeys.indexOf(placesModel.getKey());
+                                placesModelList.set(index, placesModel);
+                                adapter.notifyDataSetChanged();
+                            }
+
                         }else {
                             int index = placesKeys.indexOf(placesModel.getKey());
                             placesModelList.remove(index);

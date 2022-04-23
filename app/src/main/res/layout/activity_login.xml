@@ -12,107 +12,107 @@
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent">-->
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginTop="60dp"
+            android:src="@drawable/logo_around" />
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="25dp"
+            android:background="@android:color/transparent">
 
-            <ImageView
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                android:layout_marginTop="60dp"
-                android:src="@drawable/logo_around"/>
-
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
                 android:layout_width="match_parent"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
+                android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:layout_marginTop="30dp"
-                android:layout_height="wrap_content">
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/colorLightGrey"
+                android:textSize="14sp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:background="@android:color/transparent"
-                    android:textColor="@color/colorLightGrey"
-                    android:hint="Email"
-                    android:inputType="textEmailAddress"
-                    android:id="@+id/etEmail"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="25dp"
+            android:background="@android:color/transparent">
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
                 android:layout_width="match_parent"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
+                android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:layout_marginTop="10dp"
-                android:layout_height="wrap_content">
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:textColor="@color/colorLightGrey"
+                android:textSize="14sp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:background="@android:color/transparent"
-                    android:textColor="@color/colorLightGrey"
-                    android:hint="Password"
-                    android:inputType="textPassword"
-                    android:id="@+id/etPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="25dp"
+            android:background="@drawable/button_background"
+            android:text="Login"
+            android:textAllCaps="false"
+            android:textColor="@color/colorDarkGrey" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:background="@drawable/button_background"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:layout_marginTop="40dp"
-                android:id="@+id/btnLogin"
-                android:text="Login"
-                android:textAllCaps="false"
-                android:textColor="@color/colorDarkGrey"/>
+        <!--            <TextView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="OR"-->
+        <!--                android:layout_marginTop="15dp"-->
+        <!--                android:textSize="13sp"-->
+        <!--                android:textColor="@color/colorDarkGrey"/>-->
 
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="OR"-->
-<!--                android:layout_marginTop="15dp"-->
-<!--                android:textSize="13sp"-->
-<!--                android:textColor="@color/colorDarkGrey"/>-->
+        <!--            <LinearLayout-->
+        <!--                android:orientation="horizontal"-->
+        <!--                android:gravity="center"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="45dp"-->
+        <!--                android:background="@drawable/border_rectangle_1"-->
+        <!--                android:layout_marginLeft="25dp"-->
+        <!--                android:clickable="true"-->
+        <!--                android:foreground="?selectableItemBackground"-->
+        <!--                android:layout_marginRight="25dp"-->
+        <!--                android:layout_marginTop="15dp"-->
+        <!--                android:id="@+id/btnGoogle" >-->
 
-<!--            <LinearLayout-->
-<!--                android:orientation="horizontal"-->
-<!--                android:gravity="center"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="45dp"-->
-<!--                android:background="@drawable/border_rectangle_1"-->
-<!--                android:layout_marginLeft="25dp"-->
-<!--                android:clickable="true"-->
-<!--                android:foreground="?selectableItemBackground"-->
-<!--                android:layout_marginRight="25dp"-->
-<!--                android:layout_marginTop="15dp"-->
-<!--                android:id="@+id/btnGoogle" >-->
+        <!--                <ImageView-->
+        <!--                    android:layout_width="16dp"-->
+        <!--                    android:layout_height="16dp"-->
+        <!--                    android:src="@drawable/google_logo"/>-->
 
-<!--                <ImageView-->
-<!--                    android:layout_width="16dp"-->
-<!--                    android:layout_height="16dp"-->
-<!--                    android:src="@drawable/google_logo"/>-->
+        <!--                <TextView-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    android:text="Login with Google"-->
+        <!--                    android:layout_marginStart="15dp"-->
+        <!--                    android:textColor="@color/colorDarkGrey"-->
+        <!--                    android:textSize="15sp"/>-->
 
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Login with Google"-->
-<!--                    android:layout_marginStart="15dp"-->
-<!--                    android:textColor="@color/colorDarkGrey"-->
-<!--                    android:textSize="15sp"/>-->
+        <!--            </LinearLayout>-->
 
-<!--            </LinearLayout>-->
-
-        </LinearLayout>
+    </LinearLayout>
 
 <!--    </ScrollView>-->
 
