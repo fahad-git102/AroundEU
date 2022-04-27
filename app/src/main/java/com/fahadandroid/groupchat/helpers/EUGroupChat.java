@@ -166,7 +166,7 @@ public class EUGroupChat extends Application {
                     CompanyModel companyModel = snapshot.getValue(CompanyModel.class);
                     companyModel.setKey(snapshot.getKey());
                     if (companyModel.getSelectedCountry()!=null){
-                        if (companyModel.getSelectedCountry().equals("Barcelona P.G")){
+                        if (companyModel.getSelectedCountry().equals("Barcellona P.G")){
                             barcelonaCompanyList.add(companyModel);
                             barcelonaKeys.add(companyModel.getKey());
                         }else if (companyModel.getSelectedCountry().equals("Catania")){
@@ -183,7 +183,7 @@ public class EUGroupChat extends Application {
                     CompanyModel companyModel = snapshot.getValue(CompanyModel.class);
                     companyModel.setKey(snapshot.getKey());
                     if (companyModel.getSelectedCountry()!=null){
-                        if (companyModel.getSelectedCountry().equals("Barcelona P.G")){
+                        if (companyModel.getSelectedCountry().equals("Barcellona P.G")){
                             int index = barcelonaKeys.indexOf(companyModel.getKey());
                             barcelonaCompanyList.set(index, companyModel);
                         }else if (companyModel.getSelectedCountry().equals("Catania")){
@@ -200,7 +200,7 @@ public class EUGroupChat extends Application {
                     CompanyModel companyModel = snapshot.getValue(CompanyModel.class);
                     companyModel.setKey(snapshot.getKey());
                     if (companyModel.getSelectedCountry()!=null){
-                        if (companyModel.getSelectedCountry().equals("Barcelona P.G")){
+                        if (companyModel.getSelectedCountry().equals("Barcellona P.G")){
                             int index = barcelonaKeys.indexOf(companyModel.getKey());
                             barcelonaCompanyList.remove(index);
                         }else if (companyModel.getSelectedCountry().equals("Catania")){

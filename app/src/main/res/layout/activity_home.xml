@@ -41,6 +41,8 @@
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_above="@id/logo"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
             android:layout_centerHorizontal="true"
             android:gravity="center"
             android:visibility="gone"

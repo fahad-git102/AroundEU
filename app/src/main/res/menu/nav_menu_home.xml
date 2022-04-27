@@ -63,6 +63,10 @@
             android:id="@+id/office_contact"
             android:icon="@drawable/ic_phone_call"/>
 
+        <item android:title="Privacy Policy"
+            android:id="@+id/privacy_policy"
+            android:icon="@drawable/privacy_policy"/>
+
         <item android:title="Sign out"
             android:id="@+id/signout"
             android:icon="@drawable/ic_logout"/>

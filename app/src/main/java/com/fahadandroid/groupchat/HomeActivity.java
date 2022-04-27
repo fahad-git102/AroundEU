@@ -167,6 +167,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         intentl13.putExtra("from", "office");
                         startActivity(intentl13);
                         break;
+                    case R.id.privacy_policy:
+                        startActivity(new Intent(HomeActivity.this, PrivacyPolicyActivity.class));
+                        break;
                     case R.id.signout:
                         AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
                         builder.setTitle("Log Out");
@@ -205,11 +208,36 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         btnNews = findViewById(R.id.btnNews);
         btnNews.setOnClickListener(this);
         tvCordinatorsCountry = findViewById(R.id.tvCordinatorsCountry);
-
+        tvCordinatorsCountry.setOnClickListener(this);
         if (EUGroupChat.currentUser!=null){
 
             if (EUGroupChat.currentUser.getUserType().equals("Cordinator")){
-                selectCountryForCordinator();
+//                selectCountryForCordinator();
+                SharedPreferences preferences = getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("country","Barcellona P.G");
+                editor.putString("countryKey","-Ml5BuK4n-yI67rkq7E2");
+                editor.apply();
+                cordinatorCountry = preferences.getString("country", "");
+                if (cordinatorCountry!=null){
+                    if (cordinatorCountry.equals("")){
+                        getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE).edit().clear().apply();
+                        mAuth.signOut();
+                        deleteDeviceToken();
+                        startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                        finish();
+                    }else {
+                        tvCordinatorsCountry.setVisibility(View.VISIBLE);
+                        String text = "<u>Cordinator's Country: <b>"+cordinatorCountry+"</b></u>";
+                        tvCordinatorsCountry.setText(Html.fromHtml(text));
+                    }
+                }else {
+                    getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE).edit().clear().apply();
+                    mAuth.signOut();
+                    deleteDeviceToken();
+                    startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                    finish();
+                }
             }else if (!EUGroupChat.currentUser.isAdmin()){
                 if (EUGroupChat.currentUser.getSelectedCountry()==null){
                     selectCountryDialog();
@@ -369,7 +397,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if (view.getId()==R.id.btnProfile){
+        if (view.getId()==R.id.tvCordinatorsCountry){
+            selectCountryForCordinator();
+        }else if (view.getId()==R.id.btnProfile){
             Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
             startActivity(intent);
         }else if (view.getId()==R.id.btnJoinGroup){

@@ -77,8 +77,8 @@ public class AddCompanyFragment extends Fragment implements View.OnClickListener
         View view = inflater.inflate(R.layout.fragment_add_company, container, false);
         spinner = view.findViewById(R.id.spinner);
         companyRef = FirebaseDatabase.getInstance().getReference("companies");
-        selectedCountry = "Barcelona P.G";
-        String[] items = new String[]{"Barcelona P.G", "Catania"};
+        selectedCountry = "Barcellona P.G";
+        String[] items = new String[]{"Barcellona P.G", "Catania"};
         btnViewAll = view.findViewById(R.id.btnViewAll);
         btnViewAll.setOnClickListener(this);
         etFullName = view.findViewById(R.id.etFullLegalName);

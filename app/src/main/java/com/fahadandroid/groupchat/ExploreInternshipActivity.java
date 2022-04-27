@@ -72,13 +72,13 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
         recycler_companies.setLayoutManager(new LinearLayoutManager(this));
         goBack = findViewById(R.id.goBack);
         goBack.setOnClickListener(this);
-        selectedCountry = "Barcelona P.G";
-        String[] items = new String[]{"Barcelona P.G", "Catania"};
+        selectedCountry = "Barcellona P.G";
+        String[] items = new String[]{"Barcellona P.G", "Catania"};
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 selectedCountry = items[i];
-                if (selectedCountry.equals("Barcelona P.G")){
+                if (selectedCountry.equals("Barcellona P.G")){
                     recycler_companies.setAdapter(null);
                     adapter = new CompanyAdapter(EUGroupChat.barcelonaCompanyList, ExploreInternshipActivity.this, fromAdmin);
                     recycler_companies.setAdapter(adapter);
@@ -124,7 +124,7 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
     }
 
     private void search(String text){
-        if (selectedCountry.equals("Barcelona P.G")){
+        if (selectedCountry.equals("Barcellona P.G")){
             List<CompanyModel> companyModelList = new ArrayList<>();
             for (CompanyModel companyModel: EUGroupChat.barcelonaCompanyList){
                 boolean nameMatch = false;

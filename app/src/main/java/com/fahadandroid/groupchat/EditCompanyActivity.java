@@ -39,8 +39,8 @@ public class EditCompanyActivity extends AppCompatActivity implements View.OnCli
         companyModel = getIntent().getParcelableExtra("company");
         spinner = findViewById(R.id.spinner);
         companyRef = FirebaseDatabase.getInstance().getReference("companies");
-        selectedCountry = "Barcelona P.G";
-        String[] items = new String[]{"Barcelona P.G", "Catania"};
+        selectedCountry = "Barcellona P.G";
+        String[] items = new String[]{"Barcellona P.G", "Catania"};
         goBack = findViewById(R.id.goBack);
         goBack.setOnClickListener(this);
         etFullName = findViewById(R.id.etFullLegalName);

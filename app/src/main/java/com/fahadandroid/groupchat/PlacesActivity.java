@@ -167,8 +167,8 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
             aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             //Setting the ArrayAdapter data on the Spinner
             spinner.setAdapter(aa);
-            selectedCountry = "Barcelona P.G";
-            String[] itemsCountry = new String[]{"Barcelona P.G", "Catania"};
+            selectedCountry = "Barcellona P.G";
+            String[] itemsCountry = new String[]{"Barcellona P.G", "Catania"};
             etCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
