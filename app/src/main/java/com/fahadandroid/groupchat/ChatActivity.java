@@ -11,6 +11,7 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -41,6 +42,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,6 +71,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -105,6 +108,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     UserModel mentionedUser;
     MediaRecorder recorder;
     String fileName;
+    ProgressBar progressBar;
     public static final int GALLERY = 31, CAMERA = 32;
     DatabaseReference usersRef;
     String replyId;
@@ -130,6 +134,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     DatabaseReference groupsRef, chatRef;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     CardView cardReply;
+    String keyForPagination ;
     TextView tvReplyUsername, tvReplyMessageType;
     ImageView replyImage, btnCloseReply;
      private boolean permissionToRecordAccepted = false;
@@ -146,6 +151,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         btnInfo.setOnClickListener(this);
         recycler_chat = findViewById(R.id.recycler_chat);
         etTypeHere = findViewById(R.id.etTypeHere);
+        progressBar = findViewById(R.id.progressBar);
         btnCloseReply = findViewById(R.id.btnCloseReply);
         btnCloseReply.setOnClickListener(this);
         cardReply = findViewById(R.id.card_reply);
@@ -156,6 +162,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         storageReference = FirebaseStorage.getInstance().getReference().child("media");
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
         companyTimeModelRef = FirebaseDatabase.getInstance().getReference("companyTimeScheduled");
+        thisgroupsModel = getIntent().getParcelableExtra("groupModel");
         linearLayoutManager = new LinearLayoutManager(this);
         recycler_chat.setLayoutManager(linearLayoutManager);
         mAuth = FirebaseAuth.getInstance();
@@ -235,84 +242,64 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             getChat();
             getMessages();
         }else {
-            groupsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+            progressBar.setVisibility(View.VISIBLE);
+            if (thisgroupsModel!=null){
+                boolean isFound = false;
+                if (thisgroupsModel.getApprovedMembers()!=null){
+                    if (thisgroupsModel.getApprovedMembers().contains(mAuth.getCurrentUser().getUid())){
 
-                    boolean isFound = false;
-
-                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                        try {
-                            GroupsModel groupsModel = dataSnapshot.getValue(GroupsModel.class);
-                            groupsModel.setKey(dataSnapshot.getKey());
-
-                            if (groupsModel.getApprovedMembers()!=null){
-                                if (groupsModel.getApprovedMembers().contains(mAuth.getCurrentUser().getUid())){
-
-                                    if (groupsModel.isDeleted()){
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
-                                        builder.setTitle("Chat Unavailable");
-                                        builder.setMessage("This group is unavailable.");
-                                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Map<String, Object> map = new HashMap<>();
-                                                map.put("joined", false);
-                                                usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        dialogInterface.dismiss();
-                                                        finish();
-                                                    }
-                                                });
-                                            }
-                                        });
-                                        AlertDialog alertDialog = builder.create();
-                                        alertDialog.show();
-                                    }else {
-                                        isFound = true;
-                                        key = groupsModel.getKey();
-                                        chatRef = firebaseDatabase.getReference("groups").child(key).child("messages");
-                                        getChat();
-                                        getMessages();
-                                    }
-
-
+                        if (thisgroupsModel.isDeleted()){
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+                            builder.setTitle("Chat Unavailable");
+                            builder.setMessage("This group is unavailable.");
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("joined", false);
+                                    usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            dialogInterface.dismiss();
+                                            finish();
+                                        }
+                                    });
                                 }
-                            }
+                            });
+                            AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+                        }else {
+                            isFound = true;
+                            key = thisgroupsModel.getKey();
+                            chatRef = firebaseDatabase.getReference("groups").child(key).child("messages");
+                            getChat();
+                            getMessages();
+                        }
+                        if (!isFound){
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+                            builder.setTitle("Chat Unavailable");
+                            builder.setMessage("This group is unavailable.");
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("joined", false);
+                                    usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            dialogInterface.dismiss();
+                                            finish();
+                                        }
+                                    });
+                                }
+                            });
+                            AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+                        }
 
-                        }catch (Exception e){}
                     }
-
-                    if (!isFound){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
-                        builder.setTitle("Chat Unavailable");
-                        builder.setMessage("This group is unavailable.");
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Map<String, Object> map = new HashMap<>();
-                                map.put("joined", false);
-                                usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        dialogInterface.dismiss();
-                                        finish();
-                                    }
-                                });
-                            }
-                        });
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.show();
-                    }
-
                 }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(ChatActivity.this, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+            }
         }
     }
 
@@ -409,8 +396,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     messagesModel.setKey(snapshot.getKey());
                     messagesModelList.add(messagesModel);
                     messagesKeys.add(snapshot.getKey());
+                    keyForPagination = messagesModel.getKey();
                     adapter.notifyDataSetChanged();
                     linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
+                    progressBar.setVisibility(View.GONE);
 
                 }catch (Exception e){
                     Toast.makeText(ChatActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -454,54 +443,55 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getChat(){
-        groupsRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                try{
-                    GroupsModel groupsModel = snapshot.getValue(GroupsModel.class);
-                    if(groupsModel.getKey()==null){
-                        groupsModel.setKey(snapshot.getKey());
-                    }
-                    if (groupsModel.getKey().equals(key)){
+        if (thisgroupsModel==null){
+            groupsRef.child(key).addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    try{
+                        GroupsModel groupsModel = snapshot.getValue(GroupsModel.class);
+                        if(groupsModel.getKey()==null){
+                            groupsModel.setKey(snapshot.getKey());
+                        }
                         thisgroupsModel = groupsModel;
                         tvGroupName.setText(groupsModel.getName());
+                    }catch (Exception e){
+                        Toast.makeText(ChatActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                }catch (Exception e){
-                    Toast.makeText(ChatActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                try{
-                    GroupsModel groupsModel = snapshot.getValue(GroupsModel.class);
-                    if(groupsModel.getKey()==null){
-                        groupsModel.setKey(snapshot.getKey());
-                    }
-                    if (groupsModel.getKey().equals(key)){
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    try{
+                        GroupsModel groupsModel = snapshot.getValue(GroupsModel.class);
+                        if(groupsModel.getKey()==null){
+                            groupsModel.setKey(snapshot.getKey());
+                        }
                         thisgroupsModel = groupsModel;
                         tvGroupName.setText(groupsModel.getName());
+                    }catch (Exception e){
+
                     }
-                }catch (Exception e){
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
                 }
-            }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-            }
+                }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
+                }
+            });
+        }else {
+            tvGroupName.setText(thisgroupsModel.getName());
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
     @Override
@@ -519,7 +509,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View view1 = LayoutInflater.from(this).inflate(R.layout.group_info_dialog, null);
             TextView tvName = view1.findViewById(R.id.etName);
-//            LinearLayout linear_file = view1.findViewById(R.id.linear_file);
             RecyclerView recyclerPdfs = view1.findViewById(R.id.recycler_items);
             recyclerPdfs.setLayoutManager(new LinearLayoutManager(ChatActivity.this, RecyclerView.HORIZONTAL, false));
             ImageButton btnGroupMembers = view1.findViewById(R.id.btnGroupMembers);
@@ -636,14 +625,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (replyId!=null){
                     map.put("replyId", replyId);
                 }
-
+                etTypeHere.setText("");
                 chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         cardReply.setVisibility(View.GONE);
                         replyId = null;
                         if (task.isSuccessful()){
-                            etTypeHere.setText("");
+
                             if (thisgroupsModel.getApprovedMembers()!=null){
                                 List<String> list = new ArrayList<>();
 

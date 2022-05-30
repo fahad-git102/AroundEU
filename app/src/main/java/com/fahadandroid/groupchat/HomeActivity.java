@@ -28,6 +28,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -71,6 +72,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private NavigationView nv;
     FirebaseAuth mAuth;
     TextView tvCordinatorsCountry;
+    GroupsModel myGroupModel;
     CardView progress;
     CompanyModel myCompany;
     String cordinatorCountry;
@@ -116,6 +118,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         View headerView = nv.getHeaderView(0);
         ImageView image= headerView.findViewById(R.id.navlogo);
         addDeviceToken();
+        getGroup();
         Picasso.get().load(R.drawable.logo_around).centerCrop()
                 .resize(150, 150).error(R.drawable.logo_around).into(image);
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -212,11 +215,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (EUGroupChat.currentUser!=null){
 
             if (EUGroupChat.currentUser.getUserType().equals("Cordinator")){
-//                selectCountryForCordinator();
                 SharedPreferences preferences = getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("country","Barcellona P.G");
-                editor.putString("countryKey","-Ml5BuK4n-yI67rkq7E2");
+                editor.putString("country",EUGroupChat.countryModelList.get(0).getCountryName());
+                editor.putString("countryKey",EUGroupChat.countryModelList.get(0).getKey());
                 editor.apply();
                 cordinatorCountry = preferences.getString("country", "");
                 if (cordinatorCountry!=null){
@@ -255,6 +257,35 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         requestAppPermissions();
     }
 
+    private void getGroup(){
+        progress.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        groupsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    try {
+                        GroupsModel groupsModel = dataSnapshot.getValue(GroupsModel.class);
+                        groupsModel.setKey(dataSnapshot.getKey());
+                        if (groupsModel.getApprovedMembers()!=null) {
+                            if (groupsModel.getApprovedMembers().contains(mAuth.getCurrentUser().getUid())) {
+                                matchedGroup = groupsModel;
+                            }
+                        }
+                    }catch (Exception e){}
+                }
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                progress.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void deleteDeviceToken(){
         List<String> deviceTokens = new ArrayList<>();
         if (EUGroupChat.currentUser!=null){
@@ -270,24 +301,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Map<String, Object> map = new HashMap<>();
             map.put("deviceTokens", deviceTokens);
             usersRef.child(EUGroupChat.currentUser.getUid()).updateChildren(map);
-        }
-    }
-
-    private boolean checkPermission() {
-        int result = ContextCompat.checkSelfPermission(HomeActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (result == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void requestPermission() {
-
-        if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Toast.makeText(HomeActivity.this, "Write External Storage permission allows us to do store images. Please allow this permission in App Settings.", Toast.LENGTH_LONG).show();
-        } else {
-            ActivityCompat.requestPermissions(HomeActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1289);
         }
     }
 
@@ -484,6 +497,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             if (EUGroupChat.currentUser.getUserType().toLowerCase().equals("student")){
                 if (EUGroupChat.currentUser.isJoined()){
                     Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
+                    if (matchedGroup!=null){
+                        intent.putExtra("groupModel", matchedGroup);
+                        intent.putExtra("group", matchedGroup.getKey());
+                    }
                     startActivity(intent);
                 }else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
@@ -525,7 +542,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                         if (!matchedGroup.isDeleted()){
                                             Toast.makeText(HomeActivity.this, "Pin matched", Toast.LENGTH_SHORT).show();
                                             List<String> approvedMembers = new ArrayList<>();
-//
                                             if (matchedGroup.getApprovedMembers()!=null){
                                                 approvedMembers = matchedGroup.getApprovedMembers();
                                                 if (!approvedMembers.contains(mAuth.getCurrentUser().getUid())){
@@ -550,6 +566,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                                                 Toast.makeText(HomeActivity.this, "Group Joined !", Toast.LENGTH_SHORT).show();
                                                                 Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
                                                                 intent.putExtra("group", matchedGroup.getKey());
+                                                                intent.putExtra("groupModel", matchedGroup);
                                                                 startActivity(intent);
                                                             }else {
                                                                 alertDialog.dismiss();
@@ -730,8 +747,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         builder.setView(view);
         AlertDialog alertDialog = builder.create();
         List<String> countries = new ArrayList<>();
-        countries.add("Barcellona P.G");
-        countries.add("Catania");
+        countries.addAll(EUGroupChat.countryNamesList);
         StringSelectAdapter adapter = new StringSelectAdapter(countries, this);
         recyclerCountries.setAdapter(adapter);
         RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
@@ -752,7 +768,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         alertDialog.show();
     }
 
-    private void selectCountryForCordinator(){
+    private void  selectCountryForCordinator(){
         AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
         View view = LayoutInflater.from(HomeActivity.this).inflate(R.layout.country_select_dialog, null);
         RecyclerView recyclerCountries = view.findViewById(R.id.recycler_countries);

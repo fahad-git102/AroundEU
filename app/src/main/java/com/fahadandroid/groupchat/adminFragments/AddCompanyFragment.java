@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.fahadandroid.groupchat.ExploreInternshipActivity;
 import com.fahadandroid.groupchat.R;
+import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.models.CompanyModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -77,8 +78,9 @@ public class AddCompanyFragment extends Fragment implements View.OnClickListener
         View view = inflater.inflate(R.layout.fragment_add_company, container, false);
         spinner = view.findViewById(R.id.spinner);
         companyRef = FirebaseDatabase.getInstance().getReference("companies");
-        selectedCountry = "Barcellona P.G";
-        String[] items = new String[]{"Barcellona P.G", "Catania"};
+        selectedCountry = EUGroupChat.countryNamesList.get(0);
+        String[] items = new String[EUGroupChat.countryNamesList.size()];
+        EUGroupChat.countryNamesList.toArray(items);
         btnViewAll = view.findViewById(R.id.btnViewAll);
         btnViewAll.setOnClickListener(this);
         etFullName = view.findViewById(R.id.etFullLegalName);

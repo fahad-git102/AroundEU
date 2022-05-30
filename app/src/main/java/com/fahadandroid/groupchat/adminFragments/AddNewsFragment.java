@@ -138,8 +138,9 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
         btnAddImage.setOnClickListener(this);
         btnSubmit = view.findViewById(R.id.btnSubmit);
         btnSubmit.setOnClickListener(this);
-        selectedCountry = "Barcellona P.G";
-        String[] items = new String[]{"Barcellona P.G", "Catania"};
+        selectedCountry = EUGroupChat.countryNamesList.get(0);
+        String[] items = new String[EUGroupChat.countryNamesList.size()];
+        EUGroupChat.countryNamesList.toArray(items);
         etCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

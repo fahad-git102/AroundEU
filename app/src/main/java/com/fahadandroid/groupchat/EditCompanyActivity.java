@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.models.CompanyModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,8 +40,9 @@ public class EditCompanyActivity extends AppCompatActivity implements View.OnCli
         companyModel = getIntent().getParcelableExtra("company");
         spinner = findViewById(R.id.spinner);
         companyRef = FirebaseDatabase.getInstance().getReference("companies");
-        selectedCountry = "Barcellona P.G";
-        String[] items = new String[]{"Barcellona P.G", "Catania"};
+        selectedCountry = EUGroupChat.countryNamesList.get(0);
+        String[] items = new String[EUGroupChat.countryNamesList.size()];
+        EUGroupChat.countryNamesList.toArray(items);
         goBack = findViewById(R.id.goBack);
         goBack.setOnClickListener(this);
         etFullName = findViewById(R.id.etFullLegalName);

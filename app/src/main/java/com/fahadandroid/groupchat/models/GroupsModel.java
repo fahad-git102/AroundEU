@@ -1,9 +1,12 @@
 package com.fahadandroid.groupchat.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.HashMap;
 import java.util.List;
 
-public class GroupsModel {
+public class GroupsModel implements Parcelable {
     long createdOn;
     String joined;
     String key, businessKey, name, createdBy, category;
@@ -12,6 +15,34 @@ public class GroupsModel {
     HashMap<String, MessagesModel> messages;
     boolean deleted;
     List<String> approvedMembers, pendingMembers;
+
+    protected GroupsModel(Parcel in) {
+        createdOn = in.readLong();
+        joined = in.readString();
+        key = in.readString();
+        businessKey = in.readString();
+        name = in.readString();
+        createdBy = in.readString();
+        category = in.readString();
+        pincode = in.readString();
+        categoryList = in.createStringArrayList();
+        fileUrls = in.createStringArrayList();
+        deleted = in.readByte() != 0;
+        approvedMembers = in.createStringArrayList();
+        pendingMembers = in.createStringArrayList();
+    }
+
+    public static final Creator<GroupsModel> CREATOR = new Creator<GroupsModel>() {
+        @Override
+        public GroupsModel createFromParcel(Parcel in) {
+            return new GroupsModel(in);
+        }
+
+        @Override
+        public GroupsModel[] newArray(int size) {
+            return new GroupsModel[size];
+        }
+    };
 
     public List<String> getCategoryList() {
         return categoryList;
@@ -135,5 +166,27 @@ public class GroupsModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(createdOn);
+        parcel.writeString(joined);
+        parcel.writeString(key);
+        parcel.writeString(businessKey);
+        parcel.writeString(name);
+        parcel.writeString(createdBy);
+        parcel.writeString(category);
+        parcel.writeString(pincode);
+        parcel.writeStringList(categoryList);
+        parcel.writeStringList(fileUrls);
+        parcel.writeByte((byte) (deleted ? 1 : 0));
+        parcel.writeStringList(approvedMembers);
+        parcel.writeStringList(pendingMembers);
     }
 }

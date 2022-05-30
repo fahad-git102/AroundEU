@@ -27,13 +27,13 @@ import retrofit2.Response;
 
 public class EUGroupChat extends Application {
     public static List<UserModel> userModelList;
-    List<String> userKeys, countryKeys, barcelonaKeys, cataniaKeys;
+    List<String> userKeys, countryKeys, barcelonaKeys, cataniaKeys, allCompanyKeys;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference usersRef, countriesRef, companiesRef;
-    public static List<CompanyModel> barcelonaCompanyList, cataniaCompanyList;
+    public static List<CompanyModel> barcelonaCompanyList, cataniaCompanyList, allCompanyList;
     public static UserModel currentUser;
+    public static List<String> countryNamesList;
     public static List<CountryModel> countryModelList;
-    public static List<CompanyApiModel> companiesList;
     FirebaseAuth mAuth;
     @Override
     public void onCreate() {
@@ -45,6 +45,9 @@ public class EUGroupChat extends Application {
         companiesRef = firebaseDatabase.getReference("companies");
         barcelonaCompanyList = new ArrayList<>();
         cataniaCompanyList = new ArrayList<>();
+        countryNamesList = new ArrayList<>();
+        allCompanyList = new ArrayList<>();
+        allCompanyKeys = new ArrayList<>();
         getUsers();
         getCountryList();
         populateCompaniesLists();
@@ -122,6 +125,7 @@ public class EUGroupChat extends Application {
                     countryModel.setKey(snapshot.getKey());
                     countryModelList.add(countryModel);
                     countryKeys.add(countryModel.getKey());
+                    countryNamesList.add(countryModel.getCountryName());
                 }catch (Exception e){
 
                 }
@@ -134,6 +138,7 @@ public class EUGroupChat extends Application {
                     countryModel.setKey(snapshot.getKey());
                     int index = countryKeys.indexOf(countryModel.getKey());
                     countryModelList.set(index, countryModel);
+                    countryNamesList.set(index, countryModel.getCountryName());
                 }catch (Exception e){}
             }
 
@@ -142,6 +147,7 @@ public class EUGroupChat extends Application {
                 try {
                     int index = countryKeys.indexOf(snapshot.getKey());
                     countryModelList.remove(index);
+                    countryNamesList.remove(index);
                 }catch (Exception e){}
             }
 
@@ -166,12 +172,14 @@ public class EUGroupChat extends Application {
                     CompanyModel companyModel = snapshot.getValue(CompanyModel.class);
                     companyModel.setKey(snapshot.getKey());
                     if (companyModel.getSelectedCountry()!=null){
-                        if (companyModel.getSelectedCountry().equals("Barcellona P.G")){
-                            barcelonaCompanyList.add(companyModel);
-                            barcelonaKeys.add(companyModel.getKey());
-                        }else if (companyModel.getSelectedCountry().equals("Catania")){
+                        allCompanyList.add(companyModel);
+                        allCompanyKeys.add(companyModel.getKey());
+                        if (companyModel.getSelectedCountry().equals("Catania")){
                             cataniaCompanyList.add(companyModel);
                             cataniaKeys.add(companyModel.getKey());
+                        }else {
+                            barcelonaCompanyList.add(companyModel);
+                            barcelonaKeys.add(companyModel.getKey());
                         }
                     }
                 }catch (Exception e){}
@@ -182,13 +190,15 @@ public class EUGroupChat extends Application {
                 try {
                     CompanyModel companyModel = snapshot.getValue(CompanyModel.class);
                     companyModel.setKey(snapshot.getKey());
+                    int in = allCompanyKeys.indexOf(companyModel.getKey());
+                    allCompanyList.set(in, companyModel);
                     if (companyModel.getSelectedCountry()!=null){
-                        if (companyModel.getSelectedCountry().equals("Barcellona P.G")){
-                            int index = barcelonaKeys.indexOf(companyModel.getKey());
-                            barcelonaCompanyList.set(index, companyModel);
-                        }else if (companyModel.getSelectedCountry().equals("Catania")){
+                        if (companyModel.getSelectedCountry().equals("Catania")){
                             int index = cataniaKeys.indexOf(companyModel.getKey());
                             cataniaCompanyList.set(index, companyModel);
+                        } else {
+                            int index = barcelonaKeys.indexOf(companyModel.getKey());
+                            barcelonaCompanyList.set(index, companyModel);
                         }
                     }
                 }catch (Exception e){}
@@ -199,13 +209,15 @@ public class EUGroupChat extends Application {
                 try {
                     CompanyModel companyModel = snapshot.getValue(CompanyModel.class);
                     companyModel.setKey(snapshot.getKey());
+                    int in = allCompanyKeys.indexOf(companyModel.getKey());
+                    allCompanyList.remove(in);
                     if (companyModel.getSelectedCountry()!=null){
-                        if (companyModel.getSelectedCountry().equals("Barcellona P.G")){
-                            int index = barcelonaKeys.indexOf(companyModel.getKey());
-                            barcelonaCompanyList.remove(index);
-                        }else if (companyModel.getSelectedCountry().equals("Catania")){
+                        if (companyModel.getSelectedCountry().equals("Catania")){
                             int index = cataniaKeys.indexOf(companyModel.getKey());
                             cataniaCompanyList.remove(index);
+                        } else {
+                            int index = barcelonaKeys.indexOf(companyModel.getKey());
+                            barcelonaCompanyList.remove(index);
                         }
                     }
                 }catch (Exception e){}
@@ -221,6 +233,8 @@ public class EUGroupChat extends Application {
 
             }
         });
+
+
 
     }
 

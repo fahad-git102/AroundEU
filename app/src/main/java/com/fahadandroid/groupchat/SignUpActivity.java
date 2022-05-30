@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.adapters.CountrySmallDialogAdapter;
 import com.fahadandroid.groupchat.adapters.StringSelectAdapter;
+import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.CountryModel;
 import com.fahadandroid.groupchat.models.GroupsModel;
@@ -248,8 +249,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         builder.setView(view);
         AlertDialog alertDialog = builder.create();
         List<String> countries = new ArrayList<>();
-        countries.add("Barcellona P.G");
-        countries.add("Catania");
+        countries.addAll(EUGroupChat.countryNamesList);
         StringSelectAdapter adapter = new StringSelectAdapter(countries, this);
         recyclerCountries.setAdapter(adapter);
         RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
