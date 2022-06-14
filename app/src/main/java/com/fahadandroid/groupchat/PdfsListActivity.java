@@ -231,9 +231,15 @@ public class PdfsListActivity extends AppCompatActivity implements View.OnClickL
                     if (model.getCategoryId()==null){
                         model.setCategoryId(snapshot.getKey());
                     }
-                    list.add(0, model);
-                    keys.add(0, model.getCategoryId());
-                    adapter.notifyDataSetChanged();
+                    if (EUGroupChat.currentUser.getSelectedCountry()!=null) {
+                        if (model.getCountry()!=null){
+                            if (model.getCountry().equals(EUGroupChat.currentUser.getSelectedCountry())) {
+                                list.add(0, model);
+                                keys.add(0, model.getCategoryId());
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
                 }catch (Exception e){}
             }
 
@@ -244,9 +250,16 @@ public class PdfsListActivity extends AppCompatActivity implements View.OnClickL
                     if (model.getCategoryId()==null){
                         model.setCategoryId(snapshot.getKey());
                     }
-                    int index = keys.indexOf(model.getCategoryId());
-                    list.set(index, model);
-                    adapter.notifyDataSetChanged();
+                    if (EUGroupChat.currentUser.getSelectedCountry()!=null) {
+                        if (model.getCountry() != null) {
+                            if (model.getCountry().equals(EUGroupChat.currentUser.getSelectedCountry())) {
+                                int index = keys.indexOf(model.getCategoryId());
+                                list.set(index, model);
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+
                 }catch (Exception e){}
             }
 

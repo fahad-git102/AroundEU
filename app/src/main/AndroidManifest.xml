@@ -79,8 +79,11 @@
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
+                <action android:name="MOBILE_NOTIFICATION_CLICK"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -97,16 +100,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider> <!-- <service -->
-        <!-- android:name=".helpers.MyFirebaseMessagingService" -->
-        <!-- android:exported="false" -->
-        <!-- android:stopWithTask="false"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="com.google.firebase.MESSAGING_EVENT" /> -->
-        <!-- </intent-filter> -->
-        <!-- </service> -->
-        <!-- <meta-data -->
-        <!-- android:name="com.google.firebase.messaging.default_notification_icon" -->
-        <!-- android:resource="@drawable/logo_around" /> -->
+
         <service
             android:name=".helpers.MyFirebaseMessagingService"
             android:exported="true"

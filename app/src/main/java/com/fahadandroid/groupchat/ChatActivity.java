@@ -164,6 +164,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         companyTimeModelRef = FirebaseDatabase.getInstance().getReference("companyTimeScheduled");
         thisgroupsModel = getIntent().getParcelableExtra("groupModel");
         linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
         recycler_chat.setLayoutManager(linearLayoutManager);
         mAuth = FirebaseAuth.getInstance();
         messagesKeys = new ArrayList<>();
@@ -408,26 +409,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                try{
-                    MessagesModel messagesModel = snapshot.getValue(MessagesModel.class);
-                    messagesModel.setKey(snapshot.getKey());
-                    int index = messagesKeys.indexOf(messagesModel.getKey());
-                    messagesModelList.set(index,messagesModel);
-                    adapter.notifyDataSetChanged();
-                }catch (Exception e){
-                    Toast.makeText(ChatActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                String key = snapshot.getKey();
-                int index = messagesKeys.indexOf(key);
-                try{
-                    messagesModelList.remove(index);
-                    messagesKeys.remove(index);
-                    adapter.notifyDataSetChanged();
-                }catch (Exception e){ }
+
             }
 
             @Override
@@ -444,7 +431,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void getChat(){
         if (thisgroupsModel==null){
-            groupsRef.child(key).addChildEventListener(new ChildEventListener() {
+            Query query = groupsRef.orderByChild("key").equalTo(key);
+            query.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                     try{
@@ -632,74 +620,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         cardReply.setVisibility(View.GONE);
                         replyId = null;
                         if (task.isSuccessful()){
-
-                            if (thisgroupsModel.getApprovedMembers()!=null){
-                                List<String> list = new ArrayList<>();
-
-                                for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                    if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                        if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                            if(EUGroupChat.userModelList.get(i).isAdmin()){
-                                                if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                    list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                            }else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
-                                                if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                    if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                        list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                }
-
-                                for (int a = 0; a<thisgroupsModel.getApprovedMembers().size(); a++){
-                                    for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                        if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                            if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                                if (!EUGroupChat.userModelList.get(i).isAdmin()&&!EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                    if (EUGroupChat.userModelList.get(i).getUid().equals(thisgroupsModel.getApprovedMembers().get(a))){
-                                                        if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                        list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                    }
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                }
-
-//                                for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
-//                                    if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
-//                                        for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
-//                                            if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-//                                                if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                    list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                }
-//                                            }else {
-//                                                if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-//                                                    if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
-//                                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                        }
-//                                                    }
-//
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                }
-
-//                                HashSet<String> hashSet = new HashSet<String>();
-//                                hashSet.addAll(list);
-//                                list.clear();
-//                                list.addAll(hashSet);
-
-                                sendNotification(list, key);
-                                if (mentionedUser!=null){
-                                    sendMentionNotification();
-                                }
-                            }
+                            manageNotifications();
                         }
                     }
                 });
@@ -771,6 +692,52 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
             alertDialog.show();
+        }
+    }
+
+    private void manageNotifications() {
+        List<String> list = new ArrayList<>();
+
+        for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
+            if (EUGroupChat.userModelList.get(i).getUid()!=null){
+                if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
+                    if(EUGroupChat.userModelList.get(i).isAdmin()){
+                        if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
+                            list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+                    }else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
+                        if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
+                            if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
+                                list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if (thisgroupsModel.getApprovedMembers()!=null){
+
+            for (int a = 0; a<thisgroupsModel.getApprovedMembers().size(); a++){
+                for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
+                    if (EUGroupChat.userModelList.get(i).getUid()!=null){
+                        if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
+                            if (!EUGroupChat.userModelList.get(i).isAdmin()&&!EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
+                                if (EUGroupChat.userModelList.get(i).getUid().equals(thisgroupsModel.getApprovedMembers().get(a))){
+                                    if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
+                                        list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        if (list!=null){
+            sendNotification(list, key);
+        }
+        if (mentionedUser!=null){
+            sendMentionNotification();
         }
     }
 
@@ -977,73 +944,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 progressDialog.dismiss();
                                 if (task.isSuccessful()){
                                     etTypeHere.setText("");
-                                    if (thisgroupsModel.getApprovedMembers()!=null){
-                                        List<String> list = new ArrayList<>();
-
-                                        for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                            if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                                if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                                    if(EUGroupChat.userModelList.get(i).isAdmin()){
-                                                        if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                        list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                    }else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
-                                                        if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                            if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                            list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        for (int a = 0; a<thisgroupsModel.getApprovedMembers().size(); a++){
-                                            for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                                if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                                    if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                                        if (!EUGroupChat.userModelList.get(i).isAdmin()&&!EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                            if (EUGroupChat.userModelList.get(i).getUid().equals(thisgroupsModel.getApprovedMembers().get(a))){
-                                                                if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                                list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                            }
-                                                        }
-                                                    }
-
-                                                }
-                                            }
-                                        }
-
-//                                        for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
-//                                            if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
-//                                                for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
-//                                                    if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-//                                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                        }
-//
-//                                                    }else {
-//                                                        if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-//                                                            if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
-//                                                                if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                                list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                            }
-//                                                            }
-//
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
-//
-//                                        HashSet<String> hashSet = new HashSet<String>();
-//                                        hashSet.addAll(list);
-//                                        list.clear();
-//                                        list.addAll(hashSet);
-
-                                        sendNotification(list, key);
-                                        if (mentionedUser!=null){
-                                            sendMentionNotification();
-                                        }
-                                    }
+                                    manageNotifications();
                                 }
                             }
                         });
@@ -1082,75 +983,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 progressDialog.dismiss();
                                 if (task.isSuccessful()){
                                     etTypeHere.setText("");
-                                    if (thisgroupsModel.getApprovedMembers()!=null){
-                                        List<String> list = new ArrayList<>();
-
-                                        for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                            if(EUGroupChat.userModelList.get(i).getUid()!=null){
-                                                if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                                    if(EUGroupChat.userModelList.get(i).isAdmin()){
-                                                        if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                        list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                    }else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
-                                                        if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                            if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                            list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-
-
-                                        }
-
-                                        for (int a = 0; a<thisgroupsModel.getApprovedMembers().size(); a++){
-                                            for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                                if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                                    if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                                        if (!EUGroupChat.userModelList.get(i).isAdmin()&&!EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                            if (EUGroupChat.userModelList.get(i).getUid().equals(thisgroupsModel.getApprovedMembers().get(a))){
-                                                                if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                                list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                            }
-                                                        }
-                                                    }
-
-                                                }
-                                            }
-                                        }
-
-//                                        for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
-//                                            if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
-//                                                for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
-//                                                    if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-//                                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                        }
-//                                                    }else {
-//                                                        if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-//                                                            if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
-//                                                                if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                                list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                            }
-//                                                            }
-//
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
-//
-//                                        HashSet<String> hashSet = new HashSet<String>();
-//                                        hashSet.addAll(list);
-//                                        list.clear();
-//                                        list.addAll(hashSet);
-
-                                        sendNotification(list, key);
-                                        if (mentionedUser!=null){
-                                            sendMentionNotification();
-                                        }
-                                    }
+                                    manageNotifications();
                                 }
                             }
                         });
@@ -1188,74 +1021,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 progressDialog.dismiss();
                                 if (task.isSuccessful()){
                                     etTypeHere.setText("");
-                                    if (thisgroupsModel.getApprovedMembers()!=null){
-                                        List<String> list = new ArrayList<>();
-
-                                        for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                            if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                                if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                                    if(EUGroupChat.userModelList.get(i).isAdmin()){
-                                                        if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                        list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                    }else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
-                                                        if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                            if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                            list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-
-
-                                        }
-
-                                        for (int a = 0; a<thisgroupsModel.getApprovedMembers().size(); a++){
-                                            for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                                if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                                    if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                                        if (!EUGroupChat.userModelList.get(i).isAdmin()&&!EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                            if (EUGroupChat.userModelList.get(i).getUid().equals(thisgroupsModel.getApprovedMembers().get(a))){
-                                                                if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                                list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                            }
-                                                        }
-                                                    }
-
-                                                }
-                                            }
-                                        }
-
-//                                        for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
-//                                            if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
-//                                                for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
-//                                                    if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-//                                                        if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                            list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                        }
-//                                                    }else {
-//                                                        if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-//                                                            if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
-//                                                             if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                                list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                            }
-//                                                            }
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
-//
-//                                        HashSet<String> hashSet = new HashSet<String>();
-//                                        hashSet.addAll(list);
-//                                        list.clear();
-//                                        list.addAll(hashSet);
-
-                                        sendNotification(list, key);
-                                        if (mentionedUser!=null){
-                                            sendMentionNotification();
-                                        }
-                                    }
+                                    manageNotifications();
                                 }
                             }
                         });
@@ -1276,57 +1042,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         startActivityForResult(intent, CAMERA);
     }
-
-//    private Task<String> cloudNotification(Map<String, Object> data) {
-//
-//        return mFunctions
-//                .getHttpsCallable("sendNotificationToList")
-//                .call(data)
-//                .continueWith(new Continuation<HttpsCallableResult, String>() {
-//                    @Override
-//                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-//                        String result = (String) task.getResult().getData();
-//                        return result;
-//                    }
-//                });
-//    }
-//
-//    private void sendNotification(List<String> stringList, String chatId){
-//
-//        for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-//            if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-//                if (EUGroupChat.userModelList.get(i).isAdmin()){
-//                    if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null){
-//                        stringList.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-//                    }
-//                }
-//            }
-//        }
-//
-//        HashSet<String> hashSet = new HashSet<String>();
-//        hashSet.addAll(stringList);
-//        stringList.clear();
-//        stringList.addAll(hashSet);
-//
-//        Map<String, Object> map = new HashMap<>();
-//        String title = thisgroupsModel.getName();
-//        String message = EUGroupChat.currentUser.getFirstName()+" sent a message in your group";
-//        map.put("title", title);
-//        map.put("message", message);
-//        map.put("tokens", stringList);
-//
-//        Map<String, Object> smallMap = new HashMap<>();
-//        smallMap.put("title", title);
-//        smallMap.put("message", message);
-//        smallMap.put("dataUid", chatId);
-//
-//        map.put("data", smallMap);
-//
-//        cloudNotification(map);
-//
-//
-//
-//    }
 
 
     private Task<String> cloudNotification(Map<String, Object> data) {
@@ -1353,7 +1068,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }
-        HashSet<String> hashSet = new HashSet<String>();
+        HashSet<String> hashSet = new HashSet<>();
         hashSet.addAll(stringList);
         stringList.clear();
         stringList.addAll(hashSet);
@@ -1371,9 +1086,22 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         smallMap.put("dataUid", chatId);
 
         map.put("data", smallMap);
-        map.put("deviceToken", stringList);
+        map.put("tokens", stringList);
 
-        cloudNotification(map);
+        cloudMessageNotification(map);
+    }
+
+    private Task<String> cloudMessageNotification(Map<String, Object> data){
+        return mFunctions
+                .getHttpsCallable("sendNotificationToList")
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        String result = (String) task.getResult().getData();
+                        return result;
+                    }
+                });
     }
 
     private void sendMentionNotification(){
@@ -1677,66 +1405,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                     cardReply.setVisibility(View.GONE);
                                     replyId = null;
                                     progressDialog.dismiss();
-                                    if (task.isSuccessful()){
+                                    if (task.isSuccessful()) {
                                         etTypeHere.setText("");
-                                        if (thisgroupsModel.getApprovedMembers()!=null){
-                                            List<String> list = new ArrayList<>();
-//                                            for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
-//                                                if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
-//                                                    for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
-//                                                        if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-//                                                            if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                                list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                            }
-//                                                        }else {
-//                                                            if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-//                                                                if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                                    list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                                }
-//                                                            }
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-                                            for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                                if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                                    if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                                        if(EUGroupChat.userModelList.get(i).isAdmin()){
-                                                            if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                                list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                        }else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
-                                                            if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                                if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                                    list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                            }
-                                                        }
-                                                    }
-                                                }
-
-
-
-                                            }
-
-                                            for (int a = 0; a<thisgroupsModel.getApprovedMembers().size(); a++){
-                                                for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                                    if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                                        if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                                            if (!EUGroupChat.userModelList.get(i).isAdmin()&&!EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                                if (EUGroupChat.userModelList.get(i).getUid().equals(thisgroupsModel.getApprovedMembers().get(a))){
-                                                                    if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                                        list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                                }
-                                                            }
-                                                        }
-
-                                                    }
-                                                }
-                                            }
-                                            sendNotification(list, key);
-                                            if (mentionedUser!=null){
-                                                sendMentionNotification();
-                                            }
-                                        }
+                                        manageNotifications();
                                     }
                                 }
                             });
@@ -1774,71 +1445,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         cardReply.setVisibility(View.GONE);
                         replyId = null;
                         etTypeHere.setText("");
-                        if (thisgroupsModel.getApprovedMembers()!=null){
-                            List<String> list = new ArrayList<>();
-//                            for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
-//                                if (!thisgroupsModel.getApprovedMembers().get(i).equals(mAuth.getCurrentUser().getUid())){
-//                                    for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
-//                                        if (EUGroupChat.userModelList.get(a).getUserType().equals("Cordinator")){
-//                                            if(!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
-//                                                if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                    list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                }
-//                                            }
-//                                        }else {
-//                                            if (EUGroupChat.userModelList.get(a).getUid().equals(thisgroupsModel.getApprovedMembers().get(i))){
-//
-//                                                if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
-//                                                    if (EUGroupChat.userModelList.get(a).getDeviceTokens()!=null){
-//                                                        list.addAll(EUGroupChat.userModelList.get(a).getDeviceTokens());
-//                                                    }
-//                                                }
-//
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-
-                            for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                    if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                        if(EUGroupChat.userModelList.get(i).isAdmin()){
-                                            if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                        }else if (EUGroupChat.userModelList.get(i).getUserType()!=null){
-                                            if (EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                    list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                            }
-                                        }
-                                    }
-                                }
-
-
-                            }
-
-                            for (int a = 0; a<thisgroupsModel.getApprovedMembers().size(); a++){
-                                for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-                                    if (EUGroupChat.userModelList.get(i).getUid()!=null){
-                                        if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                            if (!EUGroupChat.userModelList.get(i).isAdmin()&&!EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-                                                if (EUGroupChat.userModelList.get(i).getUid().equals(thisgroupsModel.getApprovedMembers().get(a))){
-                                                    if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-                                                        list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                }
-                            }
-
-                            sendNotification(list, key);
-                            if (mentionedUser!=null){
-                                sendMentionNotification();
-                            }
-                        }
+                        manageNotifications();
                     }
                 }
             });

@@ -116,6 +116,7 @@ public class AdminHomeActivity extends AppCompatActivity implements View.OnClick
         t = new ActionBarDrawerToggle(this, dl,R.string.Open, R.string.Close);
         dl.addDrawerListener(t);
         t.syncState();
+
         mAuth = FirebaseAuth.getInstance();
         nv = findViewById(R.id.nv);
         requestAppPermissions();
