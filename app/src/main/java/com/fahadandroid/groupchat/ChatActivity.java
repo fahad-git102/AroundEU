@@ -55,6 +55,7 @@ import com.fahadandroid.groupchat.adapters.StringPdfsAdapter;
 import com.fahadandroid.groupchat.adapters.UsersAdapter;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.EmojiUtils;
+import com.fahadandroid.groupchat.helpers.EndlessRecyclerOnScrollListener;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.ComapnyTimeScheduledModel;
 import com.fahadandroid.groupchat.models.CompanyModel;
@@ -101,6 +102,15 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
 
+    public final static int REQUEST_CAMERA_WRITE_EXTERNAL_STORAGE = 1919;
+    public static final int PICK_IMAGE = 1001;
+    public static final int TAKE_PHOTO = 1000;
+    private static final int TOTAL_ITEMS_TO_LOAD = 10;
+    private int currentPage = 0;
+    private final int scrollPosition = 0;
+    boolean scrollToEnd = true;
+
+    SwipeRefreshLayout swipeRefreshLayout;
     ImageButton goBack, btnRecord;
     GroupsModel thisgroupsModel;
     ItemTouchHelper itemTouchHelper;
@@ -115,9 +125,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     RecyclerView recyclerUsersToMention;
     TextView tvGroupName;
     FirebaseFunctions mFunctions;
-    public final static int REQUEST_CAMERA_WRITE_EXTERNAL_STORAGE = 1919;
-    public static final int PICK_IMAGE = 1001;
-    public static final int TAKE_PHOTO = 1000;
     List<String> messagesKeys;
     DatabaseReference companyTimeModelRef;
     ComapnyTimeScheduledModel myCompanySchedule ;
@@ -134,7 +141,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     DatabaseReference groupsRef, chatRef;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
     CardView cardReply;
-    String keyForPagination ;
     TextView tvReplyUsername, tvReplyMessageType;
     ImageView replyImage, btnCloseReply;
      private boolean permissionToRecordAccepted = false;
@@ -149,6 +155,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         goBack = findViewById(R.id.goBack);
         btnInfo = findViewById(R.id.btnInfo);
         btnInfo.setOnClickListener(this);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         recycler_chat = findViewById(R.id.recycler_chat);
         etTypeHere = findViewById(R.id.etTypeHere);
         progressBar = findViewById(R.id.progressBar);
@@ -164,7 +171,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         companyTimeModelRef = FirebaseDatabase.getInstance().getReference("companyTimeScheduled");
         thisgroupsModel = getIntent().getParcelableExtra("groupModel");
         linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true);
         recycler_chat.setLayoutManager(linearLayoutManager);
         mAuth = FirebaseAuth.getInstance();
         messagesKeys = new ArrayList<>();
@@ -302,6 +308,29 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                currentPage++;
+//                messagesModelList.clear();
+//                messagesKeys.clear();
+//                scrollToEnd = false;
+//                getMessages();
+//            }
+//        });
+//        recycler_chat.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//                scrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+//            }
+//        });
+        recycler_chat.setOnScrollListener(new EndlessRecyclerOnScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) { // when we have reached end of RecyclerView this event fired
+                loadMoreData();
+            }
+        });
     }
 
     private void getAllMembers(String str){
@@ -317,7 +346,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         for (int i = 0; i<approvedMembers.size(); i++){
-            if (approvedMembers.get(i).getFirstName().toLowerCase().contains(str.toLowerCase())||approvedMembers.get(i).getSurName().toLowerCase().contains(str.toLowerCase())){
+            if (approvedMembers.get(i).getFirstName().toLowerCase().contains(str.toLowerCase())
+                    ||approvedMembers.get(i).getSurName().toLowerCase().contains(str.toLowerCase())){
                 refinedUsers.add(approvedMembers.get(i));
             }
         }
@@ -344,10 +374,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                break;
+        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+            permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
         }
         if (!permissionToRecordAccepted ) finish();
 
@@ -389,18 +417,31 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         });
-        groupsRef.child(key).child("messages").addChildEventListener(new ChildEventListener() {
+
+        DatabaseReference newRef = groupsRef.child(key).child("messages");
+//        Query messagesQuery = newRef.limitToLast(currentPage*TOTAL_ITEMS_TO_LOAD);
+        Query messageQuery = newRef.limitToFirst(TOTAL_ITEMS_TO_LOAD)
+                .startAt(currentPage*TOTAL_ITEMS_TO_LOAD);
+
+        messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 try {
+                    if(!snapshot.hasChildren()){
+                        currentPage--;
+                    }
                     MessagesModel messagesModel = snapshot.getValue(MessagesModel.class);
                     messagesModel.setKey(snapshot.getKey());
                     messagesModelList.add(messagesModel);
                     messagesKeys.add(snapshot.getKey());
-                    keyForPagination = messagesModel.getKey();
                     adapter.notifyDataSetChanged();
-                    linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
+                    if (scrollToEnd){
+                        linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
+                    }else {
+                        linearLayoutManager.scrollToPosition(scrollPosition);
+                    }
                     progressBar.setVisibility(View.GONE);
+                    swipeRefreshLayout.setRefreshing(false);
 
                 }catch (Exception e){
                     Toast.makeText(ChatActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -427,6 +468,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+    }
+
+    private void loadMoreData(){
+        currentPage++;
+        getMessages();
     }
 
     private void getChat(){

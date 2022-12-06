@@ -67,12 +67,10 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <RelativeLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
+        android:padding="5dp"
+        android:id="@+id/swipe_refresh"
         android:layout_marginTop="10dp"
         android:layout_below="@id/toolbar"
         android:layout_height="match_parent"
@@ -83,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </RelativeLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_reply"

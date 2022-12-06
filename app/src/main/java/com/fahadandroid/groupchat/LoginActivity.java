@@ -47,8 +47,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference usersRef, groupsRef, countriesRef;
-    boolean groupMatched = false;
-    GroupsModel matchedGroup;
     EditText etEmail, etPassword;
     RelativeLayout progress;
 
@@ -68,6 +66,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btnLogin.setOnClickListener(this);
         tvGoToSignUp = findViewById(R.id.tvGoToSignup);
         tvGoToSignUp.setOnClickListener(this);
+
     }
 
     @Override

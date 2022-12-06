@@ -561,13 +561,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                                         @Override
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             if (task.isSuccessful()){
-                                                                alertDialog.dismiss();
-                                                                progressBar.setVisibility(View.GONE);
-                                                                Toast.makeText(HomeActivity.this, "Group Joined !", Toast.LENGTH_SHORT).show();
-                                                                Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
-                                                                intent.putExtra("group", matchedGroup.getKey());
-                                                                intent.putExtra("groupModel", matchedGroup);
-                                                                startActivity(intent);
+                                                                try {
+                                                                    alertDialog.dismiss();
+                                                                    progressBar.setVisibility(View.GONE);
+                                                                    Toast.makeText(HomeActivity.this, "Group Joined !", Toast.LENGTH_SHORT).show();
+                                                                    Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
+                                                                    intent.putExtra("group", matchedGroup.getKey());
+                                                                    intent.putExtra("groupModel", matchedGroup);
+                                                                    startActivity(intent);
+                                                                }catch (Exception e){
+                                                                    e.printStackTrace();
+                                                                }
+
                                                             }else {
                                                                 alertDialog.dismiss();
                                                                 progressBar.setVisibility(View.GONE);
