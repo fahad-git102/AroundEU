@@ -31,8 +31,6 @@ public class AddCoordinatorActivity extends AppCompatActivity implements View.On
     String text, phone;
     TextView btnViewAll;
 
-    //Github Check
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

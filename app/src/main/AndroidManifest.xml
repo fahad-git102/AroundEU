@@ -51,7 +51,8 @@
         <activity android:name=".CompanyDetailActivity" />
         <activity android:name=".ExploreInternshipActivity" />
         <activity android:name=".NewsDetailActivity" />
-        <activity android:name=".AddCoordinatorActivity" />
+        <activity android:name=".AddCoordinatorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"

@@ -325,12 +325,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 //                scrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
 //            }
 //        });
-        recycler_chat.setOnScrollListener(new EndlessRecyclerOnScrollListener(linearLayoutManager) {
-            @Override
-            public void onLoadMore(int current_page) { // when we have reached end of RecyclerView this event fired
-                loadMoreData();
-            }
-        });
+//        recycler_chat.setOnScrollListener(new EndlessRecyclerOnScrollListener(linearLayoutManager) {
+//            @Override
+//            public void onLoadMore(int current_page) { // when we have reached end of RecyclerView this event fired
+//                loadMoreData();
+//            }
+//        });
     }
 
     private void getAllMembers(String str){
@@ -423,7 +423,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Query messageQuery = newRef.limitToFirst(TOTAL_ITEMS_TO_LOAD)
                 .startAt(currentPage*TOTAL_ITEMS_TO_LOAD);
 
-        messageQuery.addChildEventListener(new ChildEventListener() {
+        newRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 try {
@@ -470,10 +470,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void loadMoreData(){
-        currentPage++;
-        getMessages();
-    }
+//    private void loadMoreData(){
+//        currentPage++;
+//        getMessages();
+//    }
 
     private void getChat(){
         if (thisgroupsModel==null){
