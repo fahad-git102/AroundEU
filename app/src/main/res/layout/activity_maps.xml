@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".MapsActivity">
+
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:padding="15dp"
+        android:layout_marginTop="7dp"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_back"
+            android:id="@+id/goBack"
+            android:layout_centerVertical="true"
+            android:background="@drawable/yellow_circle"
+            android:backgroundTint="@color/white"
+            android:scaleType="fitCenter"
+            android:padding="7dp"
+            app:tint="@color/black"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_centerInParent="true"
+            android:text="Pick a location"
+            android:fontFamily="@font/cera_pro_medium"
+            android:textColor="@color/colorDarkGrey"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/button_background"
+        android:layout_margin="16dp"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/black"
+        android:fontFamily="@font/cera_pro_medium"
+        android:text="Done"
+        android:id="@+id/btnDone"/>
+
+
+</RelativeLayout>

@@ -17,6 +17,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -57,6 +59,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.fahadandroid.groupchat.ChatActivity.PICK_IMAGE;
@@ -72,8 +75,9 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
     ImageView add_image;
     PlacesAdapter adapter;
     Spinner spinner;
+    EditText etLocation;
     List<String> placesKeys;
-    String selectedCategory;
+    String selectedCategory, selectedLocation;
     List<PlacesModel> placesModelList;
     ImageButton btnAdd;
     Uri contentUri;
@@ -87,7 +91,6 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
         goBack.setOnClickListener(this);
         btnAdd = findViewById(R.id.btnAdd);
         btnAdd.setOnClickListener(this);
-
         placesKeys = new ArrayList<>();
         spinner = findViewById(R.id.spinner);
         selected = "All";
@@ -154,6 +157,15 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
             Spinner spinner = view.findViewById(R.id.spinner);
             selectedCategory = "Bars & Restaurants";
             Spinner etCountry = view.findViewById(R.id.etCountry);
+            etLocation = view.findViewById(R.id.et_location);
+            Button btnPickLocation = view.findViewById(R.id.btnPickLocation);
+            btnPickLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(PlacesActivity.this, MapsActivity.class);
+                    startActivityForResult(intent, 8956);
+                }
+            });
             String[] items = new String[]{"Bars & Restaurants", "Sightseeing places", "Experience"};
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -295,6 +307,17 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
             if (resultCode == RESULT_OK){
                 contentUri = data.getData();
                 add_image.setImageURI(contentUri);
+            }
+        }else if (requestCode == 8956) {
+            if (resultCode == RESULT_OK) {
+                try {
+                    if (etLocation!=null){
+                        String lat = data.getStringExtra("latitude");
+                        String lng = data.getStringExtra("longitude");
+                        etLocation.setText(lat+", "+lng);
+                    }
+                }catch (Exception e){}
+
             }
         }
     }

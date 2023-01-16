@@ -47,6 +47,46 @@
         android:minHeight="50dp"
         android:layout_marginTop="10dp"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:minHeight="50dp">
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:background="@drawable/border_rectangle_2"
+            android:hint="Location"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="13dp"
+            android:textSize="14sp"
+            android:id="@+id/et_location"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="9dp"
+            android:text="OR"
+            android:textSize="16sp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:text="Pick a location"
+            android:id="@+id/btnPickLocation"
+            android:layout_gravity="center_vertical"
+            android:textSize="14sp"
+            android:background="@drawable/button_background"
+            android:gravity="center"
+            android:paddingHorizontal="13dp"/>
+
+    </LinearLayout>
+
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="100dp"
