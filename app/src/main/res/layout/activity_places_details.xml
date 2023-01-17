@@ -108,6 +108,32 @@
                 android:textColor="@color/colorDarkGrey"
                 android:id="@+id/text"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:gravity="center_vertical"
+                android:id="@+id/linear_location"
+                android:visibility="gone"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/marker"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/cera_pro_medium"
+                    android:textSize="15sp"
+                    android:textColor="@color/colorBlue"
+                    android:id="@+id/tvLocation"/>
+
+            </LinearLayout>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:layout_width="match_parent"
                 android:layout_height="50dp"

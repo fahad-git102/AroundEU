@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -64,10 +65,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.putExtra("latitude", lastKnownLocation.getLatitude());
-                intent.putExtra("longitude", lastKnownLocation.getLongitude());
-                setResult(RESULT_OK, intent);
+                Intent data = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("location", lastKnownLocation);
+                data.putExtras(bundle);
+                if (getParent() == null) {
+                    setResult(3396, data);
+                } else {
+                    getParent().setResult(3396, data);
+                }
                 finish();
             }
         });

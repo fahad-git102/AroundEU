@@ -3,10 +3,11 @@ package com.fahadandroid.groupchat.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class PlacesModel implements Parcelable {
+public class PlacesModel implements Parcelable{
 
     String key, description, uid, imageUrl, category, status, country;
     long timeStamp;
+    LocationModel location;
 
     public PlacesModel(){}
 
@@ -16,15 +17,9 @@ public class PlacesModel implements Parcelable {
         uid = in.readString();
         imageUrl = in.readString();
         category = in.readString();
+        status = in.readString();
+        country = in.readString();
         timeStamp = in.readLong();
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public static final Creator<PlacesModel> CREATOR = new Creator<PlacesModel>() {
@@ -38,6 +33,22 @@ public class PlacesModel implements Parcelable {
             return new PlacesModel[size];
         }
     };
+
+    public LocationModel getLocation() {
+        return location;
+    }
+
+    public void setLocation(LocationModel location) {
+        this.location = location;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getCountry() {
         return country;
@@ -107,6 +118,8 @@ public class PlacesModel implements Parcelable {
         parcel.writeString(uid);
         parcel.writeString(imageUrl);
         parcel.writeString(category);
+        parcel.writeString(status);
+        parcel.writeString(country);
         parcel.writeLong(timeStamp);
     }
 }

@@ -1,5 +1,9 @@
 package com.fahadandroid.groupchat;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -19,10 +23,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,16 +40,25 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.adapters.PlacesAdapter;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
+import com.fahadandroid.groupchat.models.LocationModel;
 import com.fahadandroid.groupchat.models.PlacesModel;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -57,6 +73,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -68,6 +85,7 @@ import static com.fahadandroid.groupchat.ChatActivity.TAKE_PHOTO;
 
 public class PlacesActivity extends AppCompatActivity implements View.OnClickListener{
 
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1001;
     ImageButton goBack;
     RecyclerView recyclerPlaces;
     StorageReference storageReference;
@@ -75,9 +93,10 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
     ImageView add_image;
     PlacesAdapter adapter;
     Spinner spinner;
-    EditText etLocation;
+    TextView etLocation;
     List<String> placesKeys;
-    String selectedCategory, selectedLocation;
+    String selectedCategory, selectedLocName;
+    Location selectedLocation;
     List<PlacesModel> placesModelList;
     ImageButton btnAdd;
     Uri contentUri;
@@ -87,6 +106,8 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_places);
+        Places.initialize(getApplicationContext(), getResources().getString(R.string.places_api_key));
+        PlacesClient placesClient = Places.createClient(this);
         goBack = findViewById(R.id.goBack);
         goBack.setOnClickListener(this);
         btnAdd = findViewById(R.id.btnAdd);
@@ -145,6 +166,40 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
         getPlaces();
     }
 
+    ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == 3396) {
+                        Intent data = result.getData();
+                        if (data!=null&&etLocation!=null){
+                            selectedLocation = data.getParcelableExtra("location");
+                            selectedLocName = getLocationName(selectedLocation);
+                            etLocation.setText(selectedLocName);
+                        }
+
+                    }
+                }
+            });
+
+    private String getLocationName(Location location){
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> listAddresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if(null!=listAddresses&&listAddresses.size()>0){
+                return listAddresses.get(0).getAddressLine(0);
+            }else {
+                return latitude + ", " + longitude;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return latitude + ", " + longitude;
+        }
+    }
+
     @Override
     public void onClick(View view1) {
         if (view1.getId()==R.id.goBack){
@@ -159,11 +214,20 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
             Spinner etCountry = view.findViewById(R.id.etCountry);
             etLocation = view.findViewById(R.id.et_location);
             Button btnPickLocation = view.findViewById(R.id.btnPickLocation);
+            etLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
+                    Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                            .build(PlacesActivity.this);
+                    startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+                }
+            });
             btnPickLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(PlacesActivity.this, MapsActivity.class);
-                    startActivityForResult(intent, 8956);
+                    activityResultLaunch.launch(intent);
                 }
             });
             String[] items = new String[]{"Bars & Restaurants", "Sightseeing places", "Experience"};
@@ -297,27 +361,34 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                etLocation.setText(place.getAddress());
+                selectedLocation = new Location("");
+                selectedLocName = place.getAddress();
+                selectedLocation.setLatitude(place.getLatLng().latitude);
+                selectedLocation.setLongitude(place.getLatLng().longitude);
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("Place", status.getStatusMessage());
+                Toast.makeText(this, status.getStatusMessage(), Toast.LENGTH_SHORT).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == TAKE_PHOTO){
             if (resultCode==RESULT_OK){
                 galleryAddPic();
-//                setPic();
             }
         }else if (requestCode == PICK_IMAGE){
             if (resultCode == RESULT_OK){
                 contentUri = data.getData();
                 add_image.setImageURI(contentUri);
-            }
-        }else if (requestCode == 8956) {
-            if (resultCode == RESULT_OK) {
-                try {
-                    if (etLocation!=null){
-                        String lat = data.getStringExtra("latitude");
-                        String lng = data.getStringExtra("longitude");
-                        etLocation.setText(lat+", "+lng);
-                    }
-                }catch (Exception e){}
-
             }
         }
     }
@@ -441,6 +512,13 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
                         PlacesModel placesModel = new PlacesModel();
                         placesModel.setDescription(description);
                         placesModel.setImageUrl(url);
+                        if (selectedLocation!=null){
+                            LocationModel locationModel = new LocationModel();
+                            locationModel.setAddress(selectedLocName);
+                            locationModel.setLatitude(selectedLocation.getLatitude());
+                            locationModel.setLongitude(selectedLocation.getLongitude());
+                            placesModel.setLocation(locationModel);
+                        }
                         if (selectedCategory!=null){
                             placesModel.setCountry(selectedCountry);
                         }
