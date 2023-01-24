@@ -31,6 +31,13 @@
         android:theme="@style/Theme.GroupChat"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ChatRecyclerActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".MapsActivity"
             android:exported="false">
             <meta-data
@@ -125,11 +132,9 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/logo_around" />
-
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyALZpIBW7NvdLPVAYaDRwBYfZUo9vregH0" />
-
     </application>
 
 </manifest>

@@ -1,5 +1,7 @@
 package com.fahadandroid.groupchat;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -11,7 +13,6 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -30,10 +31,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
-import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -50,13 +49,11 @@ import com.bumptech.glide.Glide;
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.adapters.ChatRecyclerAdapter;
 import com.fahadandroid.groupchat.adapters.MentionUserAdapter;
-import com.fahadandroid.groupchat.adapters.MessagesAdapter;
 import com.fahadandroid.groupchat.adapters.StringHorizontalAdapter;
 import com.fahadandroid.groupchat.adapters.StringPdfsAdapter;
 import com.fahadandroid.groupchat.adapters.UsersAdapter;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.EmojiUtils;
-import com.fahadandroid.groupchat.helpers.EndlessRecyclerOnScrollListener;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.helpers.MyScrollToBottomObserver;
 import com.fahadandroid.groupchat.models.ComapnyTimeScheduledModel;
@@ -93,7 +90,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -101,23 +97,14 @@ import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
-public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
+public class ChatRecyclerActivity extends AppCompatActivity implements View.OnClickListener {
 
     public final static int REQUEST_CAMERA_WRITE_EXTERNAL_STORAGE = 1919;
     public static final int PICK_IMAGE = 1001;
     public static final int TAKE_PHOTO = 1000;
-    private static final int TOTAL_ITEMS_TO_LOAD = 10;
-    private int currentPage = 0;
-    private final int scrollPosition = 0;
-    boolean scrollToEnd = true;
-
-    SwipeRefreshLayout swipeRefreshLayout;
     ImageButton goBack, btnRecord;
-    GroupsModel thisgroupsModel;
-    ItemTouchHelper itemTouchHelper;
     String key;
+    GroupsModel thisgroupsModel;
     UserModel mentionedUser;
     MediaRecorder recorder;
     String fileName;
@@ -138,6 +125,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     ChatRecyclerAdapter adapter;
     EditText etTypeHere;
     RecyclerView recycler_chat;
+    ItemTouchHelper itemTouchHelper;
     ImageButton btnSend, btnAdd, btnInfo;
     LinearLayoutManager linearLayoutManager;
     FirebaseDatabase firebaseDatabase;
@@ -146,19 +134,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     CardView cardReply;
     TextView tvReplyUsername, tvReplyMessageType;
     ImageView replyImage, btnCloseReply;
-     private boolean permissionToRecordAccepted = false;
+    private boolean permissionToRecordAccepted = false;
     private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_chat_recycler);
         AudioSenseiListObserver.getInstance().registerLifecycle(getLifecycle());
         messagesModelList = new ArrayList<>();
         goBack = findViewById(R.id.goBack);
         btnInfo = findViewById(R.id.btnInfo);
         btnInfo.setOnClickListener(this);
-        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         recycler_chat = findViewById(R.id.recycler_chat);
         etTypeHere = findViewById(R.id.etTypeHere);
         progressBar = findViewById(R.id.progressBar);
@@ -173,8 +160,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
         companyTimeModelRef = FirebaseDatabase.getInstance().getReference("companyTimeScheduled");
         thisgroupsModel = getIntent().getParcelableExtra("groupModel");
-        linearLayoutManager = new LinearLayoutManager(this);
-        recycler_chat.setLayoutManager(linearLayoutManager);
+//        linearLayoutManager = new LinearLayoutManager(this);
+//        recycler_chat.setLayoutManager(linearLayoutManager);
         mAuth = FirebaseAuth.getInstance();
         messagesKeys = new ArrayList<>();
         recyclerUsersToMention = findViewById(R.id.recycler_users_to_mention);
@@ -190,7 +177,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         goBack.setOnClickListener(this);
         btnRecord = findViewById(R.id.btnRecord);
         key = getIntent().getStringExtra("group");
-
+        setupRecyclerView();
         btnRecord.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -208,8 +195,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         });
-
-        setupRecyclerView();
 
         etTypeHere.addTextChangedListener(new TextWatcher() {
             @Override
@@ -247,100 +232,68 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        if (key!=null){
+        if (key==null){
+            handleUnavailableChat();
+        }else{
             chatRef = firebaseDatabase.getReference("groups").child(key).child("messages");
             getChat();
             getMessages();
-        }else {
-            progressBar.setVisibility(View.VISIBLE);
-            if (thisgroupsModel!=null){
-                boolean isFound = false;
-                if (thisgroupsModel.getApprovedMembers()!=null){
-                    if (thisgroupsModel.getApprovedMembers().contains(mAuth.getCurrentUser().getUid())){
+        }
 
-                        if (thisgroupsModel.isDeleted()){
-                            AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
-                            builder.setTitle("Chat Unavailable");
-                            builder.setMessage("This group is unavailable.");
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Map<String, Object> map = new HashMap<>();
-                                    map.put("joined", false);
-                                    usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            dialogInterface.dismiss();
-                                            finish();
-                                        }
-                                    });
-                                }
-                            });
-                            AlertDialog alertDialog = builder.create();
-                            alertDialog.show();
-                        }else {
-                            isFound = true;
-                            key = thisgroupsModel.getKey();
-                            chatRef = firebaseDatabase.getReference("groups").child(key).child("messages");
-                            getChat();
-                            getMessages();
-                        }
-                        if (!isFound){
-                            AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
-                            builder.setTitle("Chat Unavailable");
-                            builder.setMessage("This group is unavailable.");
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    Map<String, Object> map = new HashMap<>();
-                                    map.put("joined", false);
-                                    usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            dialogInterface.dismiss();
-                                            finish();
-                                        }
-                                    });
-                                }
-                            });
-                            AlertDialog alertDialog = builder.create();
-                            alertDialog.show();
-                        }
+    }
 
+    private void handleUnavailableChat(){
+        progressBar.setVisibility(View.VISIBLE);
+        if (thisgroupsModel!=null){
+            boolean isFound = false;
+            if (thisgroupsModel.getApprovedMembers()!=null){
+                if (thisgroupsModel.getApprovedMembers().contains(mAuth.getCurrentUser().getUid())){
+
+                    if (thisgroupsModel.isDeleted()){
+                        chatUnavailableDialog();
+                    }else {
+                        isFound = true;
+                        key = thisgroupsModel.getKey();
+                        chatRef = firebaseDatabase.getReference("groups").child(key).child("messages");
+                        getChat();
+                        getMessages();
                     }
+                    if (!isFound){
+                        chatUnavailableDialog();
+                    }
+
                 }
             }
         }
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                currentPage++;
-//                messagesModelList.clear();
-//                messagesKeys.clear();
-//                scrollToEnd = false;
-//                getMessages();
-//            }
-//        });
-//        recycler_chat.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-//                super.onScrollStateChanged(recyclerView, newState);
-//                scrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-//            }
-//        });
-//        recycler_chat.setOnScrollListener(new EndlessRecyclerOnScrollListener(linearLayoutManager) {
-//            @Override
-//            public void onLoadMore(int current_page) { // when we have reached end of RecyclerView this event fired
-//                loadMoreData();
-//            }
-//        });
+    }
+
+    private void chatUnavailableDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChatRecyclerActivity.this);
+        builder.setTitle("Chat Unavailable");
+        builder.setMessage("This group is unavailable.");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("joined", false);
+                usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        dialogInterface.dismiss();
+                        finish();
+                    }
+                });
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     private void getAllMembers(String str){
         List<UserModel> approvedMembers = new ArrayList<>();
         List<UserModel> refinedUsers = new ArrayList<>();
 
-        for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
+        for (int a = 0; a< EUGroupChat.userModelList.size(); a++){
             for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
                 if (thisgroupsModel.getApprovedMembers().get(i).equals(EUGroupChat.userModelList.get(a).getUid())){
                     approvedMembers.add(EUGroupChat.userModelList.get(a));
@@ -384,19 +337,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void getMessages(){
-        DatabaseReference messagesRef = groupsRef.child(key).child("messages");
-        FirebaseRecyclerOptions<MessagesModel> options = new FirebaseRecyclerOptions.Builder<MessagesModel>()
-                .setQuery(messagesRef, MessagesModel.class)
-                .build();
-        adapter = new ChatRecyclerAdapter(options, ChatActivity.this, messagesModelList);
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-        manager.setStackFromEnd(true);
-        recycler_chat.setLayoutManager(manager);
-        recycler_chat.setAdapter(adapter);
-        adapter.registerAdapterDataObserver(new MyScrollToBottomObserver(recycler_chat, adapter, manager));
-    }
-
     @Override
     protected void onPause() {
         adapter.stopListening();
@@ -409,95 +349,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         adapter.startListening();
     }
 
-
-//    private void getMessages(){
-//        adapter = new MessagesAdapter(messagesModelList, this);
-//        recycler_chat.setAdapter(adapter);
-//        RecycleClick.addTo(recycler_chat).setOnItemLongClickListener(new RecycleClick.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClicked(RecyclerView recyclerView, int i, View view) {
-//                if (messagesModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
-//                    builder.setTitle("Delete Message ?");
-//                    builder.setMessage("Are you sure you want to delete this message ?");
-//                    builder.setIcon(getResources().getDrawable(R.drawable.delete));
-//                    builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialogInterface, int iq) {
-//                            groupsRef.child(key).child("messages").child(messagesModelList.get(i).getKey()).
-//                                    removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    Toast.makeText(ChatActivity.this, "Deleted !", Toast.LENGTH_SHORT).show();
-//                                    dialogInterface.dismiss();
-//                                }
-//                            });
-//                        }
-//                    });
-//                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialogInterface, int i) {
-//                            dialogInterface.dismiss();
-//                        }
-//                    });
-//                    AlertDialog alertDialog = builder.create();
-//                    alertDialog.show();
-//                }
-//                return false;
-//            }
-//        });
-//
-//        DatabaseReference newRef = groupsRef.child(key).child("messages");
-////        Query messagesQuery = newRef.limitToLast(currentPage*TOTAL_ITEMS_TO_LOAD);
-//        Query messageQuery = newRef.limitToFirst(TOTAL_ITEMS_TO_LOAD)
-//                .startAt(currentPage*TOTAL_ITEMS_TO_LOAD);
-//
-//        newRef.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//                try {
-//                    if(!snapshot.hasChildren()){
-//                        currentPage--;
-//                    }
-//                    MessagesModel messagesModel = snapshot.getValue(MessagesModel.class);
-//                    messagesModel.setKey(snapshot.getKey());
-//                    messagesModelList.add(messagesModel);
-//                    messagesKeys.add(snapshot.getKey());
-//                    adapter.notifyDataSetChanged();
-//                    if (scrollToEnd){
-//                        linearLayoutManager.scrollToPosition(messagesModelList.size()-1);
-//                    }else {
-//                        linearLayoutManager.scrollToPosition(scrollPosition);
-//                    }
-//                    progressBar.setVisibility(View.GONE);
-//                    swipeRefreshLayout.setRefreshing(false);
-//
-//                }catch (Exception e){
-//                    Toast.makeText(ChatActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
+    private void getMessages(){
+        DatabaseReference messagesRef = groupsRef.child(key).child("messages");
+        FirebaseRecyclerOptions<MessagesModel> options = new FirebaseRecyclerOptions.Builder<MessagesModel>()
+                .setQuery(messagesRef, MessagesModel.class)
+            .build();
+        adapter = new ChatRecyclerAdapter(options, ChatRecyclerActivity.this, messagesModelList);
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setStackFromEnd(true);
+        recycler_chat.setLayoutManager(manager);
+        recycler_chat.setAdapter(adapter);
+        adapter.registerAdapterDataObserver(new MyScrollToBottomObserver(recycler_chat, adapter, manager));
+    }
 
     private void getChat(){
         if (thisgroupsModel==null){
@@ -513,7 +376,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         thisgroupsModel = groupsModel;
                         tvGroupName.setText(groupsModel.getName());
                     }catch (Exception e){
-                        Toast.makeText(ChatActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -554,7 +416,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-
         if (view.getId()==R.id.btnCloseReply){
 
             if (replyId!=null){
@@ -568,7 +429,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             View view1 = LayoutInflater.from(this).inflate(R.layout.group_info_dialog, null);
             TextView tvName = view1.findViewById(R.id.etName);
             RecyclerView recyclerPdfs = view1.findViewById(R.id.recycler_items);
-            recyclerPdfs.setLayoutManager(new LinearLayoutManager(ChatActivity.this, RecyclerView.HORIZONTAL, false));
+            recyclerPdfs.setLayoutManager(new LinearLayoutManager(ChatRecyclerActivity.this, RecyclerView.HORIZONTAL, false));
             ImageButton btnGroupMembers = view1.findViewById(R.id.btnGroupMembers);
             TextView tvAccomodation = view1.findViewById(R.id.tvAccomodation);
 
@@ -576,11 +437,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onClick(View view) {
                     if (thisgroupsModel!=null){
-                        AlertDialog.Builder builder1 = new AlertDialog.Builder(ChatActivity.this);
-                        View v = LayoutInflater.from(ChatActivity.this).inflate(R.layout.users_list_dialog, null);
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(ChatRecyclerActivity.this);
+                        View v = LayoutInflater.from(ChatRecyclerActivity.this).inflate(R.layout.users_list_dialog, null);
                         RecyclerView recyclerUsers = v.findViewById(R.id.recycler_users);
                         TextView tvNoData = v.findViewById(R.id.tvNoData);
-                        recyclerUsers.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
+                        recyclerUsers.setLayoutManager(new LinearLayoutManager(ChatRecyclerActivity.this));
                         List<UserModel> usersList = new ArrayList<>();
                         for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
                             if (thisgroupsModel.getApprovedMembers()!=null){
@@ -593,7 +454,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         }
                         if (usersList.size()>0){
                             tvNoData.setVisibility(View.GONE);
-                            UsersAdapter adapter = new UsersAdapter(usersList, ChatActivity.this);
+                            UsersAdapter adapter = new UsersAdapter(usersList, ChatRecyclerActivity.this);
                             recyclerUsers.setAdapter(adapter);
                             RecycleClick.addTo(recyclerUsers).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
                                 @Override
@@ -625,12 +486,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             }
                             if (groupsModel.getFileUrls()!=null){
 
-                                StringPdfsAdapter adapter = new StringPdfsAdapter(groupsModel.getFileUrls(), ChatActivity.this);
+                                StringPdfsAdapter adapter = new StringPdfsAdapter(groupsModel.getFileUrls(), ChatRecyclerActivity.this);
                                 recyclerPdfs.setAdapter(adapter);
                                 RecycleClick.addTo(recyclerPdfs).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
                                     @Override
                                     public void onItemClicked(RecyclerView recyclerView, int i, View view) {
-                                        Intent intent = new Intent(ChatActivity.this, LoadPdfActivity.class);
+                                        Intent intent = new Intent(ChatRecyclerActivity.this, LoadPdfActivity.class);
                                         intent.putExtra("url", groupsModel.getFileUrls().get(i));
                                         startActivity(intent);
                                     }
@@ -703,7 +564,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 adapter.stopPlayers();
             finish();
         }else if (view.getId()==R.id.btnAdd){
-            AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ChatRecyclerActivity.this);
             LayoutInflater inflater = getLayoutInflater();
             View view1 = inflater.inflate(R.layout.image_video_location_dialog, null);
             Button video = view1.findViewById(R.id.video);
@@ -739,7 +600,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             location.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(ChatActivity.this);
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(ChatRecyclerActivity.this);
                     builder1.setTitle("Current Location");
                     builder1.setMessage("Do you want to share your current location ?");
                     builder1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -819,7 +680,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getVideosMedia(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChatRecyclerActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.select_camera_action_dialog, null);
         Button camera = view.findViewById(R.id.camera);
@@ -845,7 +706,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getMedia(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChatRecyclerActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.select_camera_action_dialog, null);
         Button camera = view.findViewById(R.id.camera);
@@ -855,9 +716,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ((ContextCompat.checkSelfPermission(ChatActivity.this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-                        && ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(ChatActivity.this, new String[]{
+                if ((ContextCompat.checkSelfPermission(ChatRecyclerActivity.this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                        && ContextCompat.checkSelfPermission(ChatRecyclerActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(ChatRecyclerActivity.this, new String[]{
                                     WRITE_EXTERNAL_STORAGE,
                                     Manifest.permission.CAMERA},
                             1919);
@@ -871,9 +732,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
 
-                if ((ContextCompat.checkSelfPermission(ChatActivity.this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-                        && ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(ChatActivity.this, new String[]{
+                if ((ContextCompat.checkSelfPermission(ChatRecyclerActivity.this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                        && ContextCompat.checkSelfPermission(ChatRecyclerActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(ChatRecyclerActivity.this, new String[]{
                                     WRITE_EXTERNAL_STORAGE,
                                     Manifest.permission.CAMERA},
                             REQUEST_CAMERA_WRITE_EXTERNAL_STORAGE);
@@ -900,7 +761,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 // Error occurred while creating the File
             }
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(ChatActivity.this,
+                Uri photoURI = FileProvider.getUriForFile(ChatRecyclerActivity.this,
                         "com.fahad.android.fileprovider",
                         photoFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -935,7 +796,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }else if (requestCode == GALLERY){
             if (data != null) {
                 Uri contentURI = data.getData();
-                String selectedVideoPath = HelperClass.getPath(contentURI, ChatActivity.this);
+                String selectedVideoPath = HelperClass.getPath(contentURI, ChatRecyclerActivity.this);
                 Log.d("path",selectedVideoPath);
                 File file1 = new File(selectedVideoPath);
                 sendMessageWithVideo(contentURI, file1);
@@ -976,8 +837,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         this.sendBroadcast(mediaScanIntent);
 
         try {
-            Bitmap bmp = HelperClass.handleSamplingAndRotationBitmap(ChatActivity.this, contentUri);
-            Uri uri = HelperClass.getImageUri(ChatActivity.this, bmp);
+            Bitmap bmp = HelperClass.handleSamplingAndRotationBitmap(ChatRecyclerActivity.this, contentUri);
+            Uri uri = HelperClass.getImageUri(ChatRecyclerActivity.this, bmp);
             sendMessageWithAttachment(uri);
         } catch (IOException e) {
             e.printStackTrace();
@@ -986,7 +847,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sendMessageWithAttachment(Uri uri){
-        final ProgressDialog progressDialog = new ProgressDialog(ChatActivity.this);
+        final ProgressDialog progressDialog = new ProgressDialog(ChatRecyclerActivity.this);
         progressDialog.setMessage("Please wait....");
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
@@ -1025,7 +886,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sendMessageWithDoc(Uri uri){
-        final ProgressDialog progressDialog = new ProgressDialog(ChatActivity.this);
+        final ProgressDialog progressDialog = new ProgressDialog(ChatRecyclerActivity.this);
         progressDialog.setMessage("Please wait....");
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
@@ -1064,7 +925,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void sendMessageWithVideo(Uri uri, File file){
-        final ProgressDialog progressDialog = new ProgressDialog(ChatActivity.this);
+        final ProgressDialog progressDialog = new ProgressDialog(ChatRecyclerActivity.this);
         progressDialog.setMessage("Please wait....");
         progressDialog.setCancelable(false);
         progressDialog.setCanceledOnTouchOutside(false);
@@ -1186,7 +1047,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showUsersData(String uid){
-        Context context = ChatActivity.this;
+        Context context = ChatRecyclerActivity.this;
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
         View view = LayoutInflater.from(context).inflate(R.layout.users_info_dialog, null);
         CircleImageView profilePic = view.findViewById(R.id.profilePic);
@@ -1419,7 +1280,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         StringBuilder stringBuilder = new StringBuilder();
         try {
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(ChatActivity.this, uri);
+            mmr.setDataSource(ChatRecyclerActivity.this, uri);
             String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             int millSecond = Integer.parseInt(duration);
             if (millSecond < 0) return String.valueOf(0); // if some error then we say duration is zero
@@ -1444,7 +1305,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         if (fileName!=null){
 
-            ProgressDialog progressDialog = new ProgressDialog(ChatActivity.this);
+            ProgressDialog progressDialog = new ProgressDialog(ChatRecyclerActivity.this);
             progressDialog.setMessage("Please wait....");
             progressDialog.setCancelable(false);
             progressDialog.setCanceledOnTouchOutside(false);
@@ -1523,7 +1384,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
     private void setupRecyclerView(){
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,  ItemTouchHelper.RIGHT) {
@@ -1556,19 +1416,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         replyImage.setImageBitmap(null);
                     }else if (messagesModel.getAudio()!=null){
                         tvReplyMessageType.setText("Audio");
-                        Glide.with(ChatActivity.this).load(getResources().getDrawable(R.drawable.mic)).override(100,100).into(replyImage);
+                        Glide.with(ChatRecyclerActivity.this).load(getResources().getDrawable(R.drawable.mic)).override(100,100).into(replyImage);
                     }else if (messagesModel.getLatitude()>0&&messagesModel.getLongitude()>0){
                         tvReplyMessageType.setText("Location");
-                        Glide.with(ChatActivity.this).load(getResources().getDrawable(R.drawable.google_maps)).into(replyImage);
+                        Glide.with(ChatRecyclerActivity.this).load(getResources().getDrawable(R.drawable.google_maps)).into(replyImage);
                     }else if (messagesModel.getImage()!=null){
                         tvReplyMessageType.setText("Image");
-                        Glide.with(ChatActivity.this).load(messagesModel.getImage()).fitCenter().placeholder(R.drawable.default_image).into(replyImage);
+                        Glide.with(ChatRecyclerActivity.this).load(messagesModel.getImage()).fitCenter().placeholder(R.drawable.default_image).into(replyImage);
                     }else if (messagesModel.getDocument()!=null){
                         tvReplyMessageType.setText("Document");
-                        Glide.with(ChatActivity.this).load(getResources().getDrawable(R.drawable.doc)).into(replyImage);
+                        Glide.with(ChatRecyclerActivity.this).load(getResources().getDrawable(R.drawable.doc)).into(replyImage);
                     }else if (messagesModel.getVideo()!=null){
                         tvReplyMessageType.setText("Video");
-                        Glide.with(ChatActivity.this).load(getResources().getDrawable(android.R.drawable.presence_video_online)).into(replyImage);
+                        Glide.with(ChatRecyclerActivity.this).load(getResources().getDrawable(android.R.drawable.presence_video_online)).into(replyImage);
                     }
                 }
                 adapter.notifyItemChanged(viewHolder.getAdapterPosition());

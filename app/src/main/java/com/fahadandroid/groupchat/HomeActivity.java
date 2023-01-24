@@ -72,7 +72,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private NavigationView nv;
     FirebaseAuth mAuth;
     TextView tvCordinatorsCountry;
-    GroupsModel myGroupModel;
     CardView progress;
     CompanyModel myCompany;
     String cordinatorCountry;
@@ -494,7 +493,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void manageGroupChats(){
         if (EUGroupChat.currentUser.getUserType()!=null){
-            if (EUGroupChat.currentUser.getUserType().toLowerCase().equals("student")){
+            if (EUGroupChat.currentUser.getUserType().equalsIgnoreCase("student")){
                 if (EUGroupChat.currentUser.isJoined()){
                     Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
                     if (matchedGroup!=null){
@@ -619,8 +618,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     });
                     alertDialog.show();
                 }
-            }else if (EUGroupChat.currentUser.getUserType().toLowerCase().equals("teacher")){
-                if (!EUGroupChat.currentUser.isJoined()){
+            }else if (EUGroupChat.currentUser.getUserType().equalsIgnoreCase("teacher")){
+//                if (!EUGroupChat.currentUser.isJoined()){
                     if (EUGroupChat.currentUser.getSelectedCountry()!=null){
                         AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
                         View view = LayoutInflater.from(HomeActivity.this).inflate(R.layout.pincode_dialog_layout, null);
@@ -692,11 +691,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         Intent intent = new Intent(HomeActivity.this, SelectCountryActivity.class);
                         startActivity(intent);
                     }
-                }else {
-                    Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
-//                    intent.putExtra("group", matchedGroup.getKey());
-                    startActivity(intent);
-                }
 
             }else if (EUGroupChat.currentUser.getUserType().toLowerCase().equals("cordinator")){
 
@@ -705,35 +699,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     intent.putExtra("cordinatorCountry", true);
                     startActivity(intent);
                 }
-//                if (EUGroupChat.currentUser.getSelectedCountry()!=null){
-//                    countriesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-//                                try {
-//                                    CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
-//                                    countryModel.setKey(dataSnapshot.getKey());
-//                                    if (EUGroupChat.currentUser.getSelectedCountry()!=null){
-//                                        if (countryModel.getCountryName().equals(EUGroupChat.currentUser.getSelectedCountry())){
-//                                            Intent intent = new Intent(HomeActivity.this, SelectBusinessListActivity.class);
-//                                            intent.putExtra("country", countryModel.getKey());
-//                                            startActivity(intent);
-//                                        }
-//                                    }else {
-//                                        Intent intent = new Intent(HomeActivity.this, SelectCountryActivity.class);
-//                                        startActivity(intent);
-//                                    }
-//
-//                                }catch (Exception e){}
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError error) {
-//
-//                        }
-//                    });
-//                }
+
             }else {
                 getSharedPreferences("Cordinator_Country", Context.MODE_PRIVATE).edit().clear().apply();
                 mAuth.signOut();

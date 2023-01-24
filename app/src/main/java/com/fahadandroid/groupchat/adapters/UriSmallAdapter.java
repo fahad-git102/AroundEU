@@ -1,7 +1,9 @@
 package com.fahadandroid.groupchat.adapters;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +39,15 @@ public class UriSmallAdapter extends RecyclerView.Adapter<UriSmallAdapter.USHold
     @Override
     public void onBindViewHolder(@NonNull USHolder holder, int position) {
         int i = position+1;
-        holder.fileName.setText("File "+ i);
+        try{
+            Cursor returnCursor = context.getContentResolver().query(uriList.get(position), null, null, null, null);
+            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            returnCursor.moveToFirst();
+            holder.fileName.setText(returnCursor.getString(nameIndex));
+        }catch (Exception e){
+            holder.fileName.setText("File " + i);
+        }
+
         holder.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

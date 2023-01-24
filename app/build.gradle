@@ -89,6 +89,11 @@ dependencies {
     implementation 'com.github.rygelouv:android-audio-sensei:0.1.2'
     implementation 'androidx.work:work-runtime:2.7.1'
 
+    //firebase ui
+    // Firebase UI
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
+    implementation 'com.firebaseui:firebase-ui-database:8.0.2'
+
     //places
     implementation 'com.google.android.libraries.places:places:2.4.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'

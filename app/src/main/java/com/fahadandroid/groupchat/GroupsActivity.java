@@ -214,42 +214,6 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
                     String name = etName.getText().toString();
                     String pincodeSting = etPincode.getText().toString();
                     saveNewGroup(name, pincodeSting, selectedItems, alertDialog);
-//                    if (!name.isEmpty()&&!pincodeSting.isEmpty()&&selectedItems.size()>0&&uriList!=null){
-//                        final ProgressDialog progressDialog = new ProgressDialog(GroupsActivity.this);
-//                        progressDialog.setMessage("Please wait....");
-//                        progressDialog.setCancelable(false);
-//                        progressDialog.setCanceledOnTouchOutside(false);
-//                        progressDialog.show();
-//
-//                        File file = new File(fileUri.toString());
-//                        storageReference.child(file.getName()).putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                            @Override
-//                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                                storageReference.child(file.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                    @Override
-//                                    public void onSuccess(Uri uri) {
-//                                        progressDialog.dismiss();
-//                                        String url = uri.toString();
-//                                        int pincode = Integer.parseInt(pincodeSting);
-//                                        GroupsModel groupsModel = new GroupsModel(System.currentTimeMillis(), businessList.getKey(),
-//                                                name, mAuth.getCurrentUser().getUid(), String.valueOf(pincode), selectedItems);
-//                                        groupsModel.setFileUrl(url);
-//                                        groupsModel.setCategory(selectedCategory);
-//                                        String key = groupsRef.push().getKey();
-//                                        groupsModel.setKey(key);
-//                                        groupsRef.child(key).setValue(groupsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                            @Override
-//                                            public void onComplete(@NonNull Task<Void> task) {
-//                                                alertDialog.dismiss();
-//                                            }
-//                                        });
-//                                    }
-//                                });
-//                            }
-//                        });
-//                    }else {
-//                        Toast.makeText(GroupsActivity.this, "Full Data required", Toast.LENGTH_SHORT).show();
-//                    }
                 }
             });
             alertDialog.show();

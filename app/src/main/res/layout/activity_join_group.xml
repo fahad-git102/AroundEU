@@ -56,4 +56,21 @@
         android:layout_marginEnd="15dp"
         android:id="@+id/recycler_groups"/>
 
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/progress"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Groups in this country"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:textColor="@color/colorDarkGrey"
+        android:textSize="16sp"
+        android:id="@+id/tvNoData"/>
+
 </RelativeLayout>
