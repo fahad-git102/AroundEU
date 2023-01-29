@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/main_background"
-    tools:context=".MakeCordinatorActivity">
+    tools:context=".activities.MakeCordinatorActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

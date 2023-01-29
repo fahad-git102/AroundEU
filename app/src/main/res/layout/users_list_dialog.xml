@@ -21,6 +21,16 @@
             android:textColor="@color/colorDarkGrey"
             android:id="@+id/heading"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:id="@+id/tv_members_count"
+            android:visibility="gone"
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/colorDarkGrey"
+            android:layout_centerVertical="true" />
+
     </RelativeLayout>
 
     <View

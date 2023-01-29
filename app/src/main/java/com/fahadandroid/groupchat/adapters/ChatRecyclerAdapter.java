@@ -22,8 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.fahadandroid.groupchat.LoadPdfActivity;
-import com.fahadandroid.groupchat.OpenAttachmentActivity;
+import com.fahadandroid.groupchat.activities.LoadPdfActivity;
+import com.fahadandroid.groupchat.activities.OpenAttachmentActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;

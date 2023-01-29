@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chootdev.recycleclick.RecycleClick;
-import com.fahadandroid.groupchat.PdfsListActivity;
+import com.fahadandroid.groupchat.activities.PdfsListActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.StringSelectAdapter;
 

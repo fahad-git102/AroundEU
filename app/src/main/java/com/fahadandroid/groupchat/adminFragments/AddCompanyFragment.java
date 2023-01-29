@@ -18,7 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.fahadandroid.groupchat.ExploreInternshipActivity;
+import com.fahadandroid.groupchat.activities.ExploreInternshipActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.models.CompanyModel;

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="@drawable/main_background"
     android:layout_height="match_parent"
-    tools:context=".SelectCountryActivity">
+    tools:context=".activities.SelectCountryActivity">
 
     <ImageButton
         android:layout_width="30dp"

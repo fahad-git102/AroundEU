@@ -22,7 +22,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.chootdev.recycleclick.RecycleClick;
-import com.fahadandroid.groupchat.GroupsActivity;
+import com.fahadandroid.groupchat.activities.GroupsActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.BusinessListAdapter;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;

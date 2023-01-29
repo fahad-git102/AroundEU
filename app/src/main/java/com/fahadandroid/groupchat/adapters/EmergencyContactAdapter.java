@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.telephony.emergency.EmergencyNumber;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fahadandroid.groupchat.ManageRequestsActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.models.EmergencyContact;
 import com.google.android.gms.tasks.OnCompleteListener;

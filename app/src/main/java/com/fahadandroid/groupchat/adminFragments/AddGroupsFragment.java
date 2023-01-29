@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +25,7 @@ import com.androidbuts.multispinnerfilter.KeyPairBoolData;
 import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
 import com.androidbuts.multispinnerfilter.MultiSpinnerSearch;
 import com.chootdev.recycleclick.RecycleClick;
-import com.fahadandroid.groupchat.GroupsActivity;
+import com.fahadandroid.groupchat.activities.GroupsActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.BusinessListAdapter;
 import com.fahadandroid.groupchat.adapters.UriSmallAdapter;

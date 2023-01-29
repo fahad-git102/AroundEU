@@ -31,70 +31,70 @@
         android:theme="@style/Theme.GroupChat"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ChatRecyclerActivity"
+            android:name=".activities.ChatRecyclerActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".MapsActivity"
+            android:name=".activities.MapsActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".PrivacyPolicyActivity"
+            android:name=".activities.PrivacyPolicyActivity"
             android:exported="false" />
         <activity
-            android:name=".EditCompanyActivity"
+            android:name=".activities.EditCompanyActivity"
             android:exported="false" />
         <activity
-            android:name=".PdfsListActivity"
+            android:name=".activities.PdfsListActivity"
             android:exported="false" />
         <activity
-            android:name=".MakeCordinatorActivity"
+            android:name=".activities.MakeCordinatorActivity"
             android:exported="false" />
         <activity
-            android:name=".AddEmergencyActivity"
+            android:name=".activities.AddEmergencyActivity"
             android:exported="false" />
-        <activity android:name=".LoadPdfActivity" />
-        <activity android:name=".ApprovedPlacesAdminActivity" />
-        <activity android:name=".PlacesDetailsActivity" />
-        <activity android:name=".CompanySettingsActivity" />
-        <activity android:name=".CompanyDetailActivity" />
-        <activity android:name=".ExploreInternshipActivity" />
-        <activity android:name=".NewsDetailActivity" />
+        <activity android:name=".activities.LoadPdfActivity" />
+        <activity android:name=".activities.ApprovedPlacesAdminActivity" />
+        <activity android:name=".activities.PlacesDetailsActivity" />
+        <activity android:name=".activities.CompanySettingsActivity" />
+        <activity android:name=".activities.CompanyDetailActivity" />
+        <activity android:name=".activities.ExploreInternshipActivity" />
+        <activity android:name=".activities.NewsDetailActivity" />
         <activity
-            android:name=".AddCoordinatorActivity"
+            android:name=".activities.AddCoordinatorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".ContactsInfoActivity" />
-        <activity android:name=".CategoriesActivity" />
-        <activity android:name=".WebViewActivity" />
-        <activity android:name=".NotificationsActivity" />
-        <activity android:name=".PlacesActivity" />
-        <activity android:name=".PdfViewerActivity" />
-        <activity android:name=".NewsActivity" />
-        <activity android:name=".OpenAttachmentActivity" />
-        <activity android:name=".ManageRequestsActivity" />
-        <activity android:name=".JoinGroupActivity" />
-        <activity android:name=".SelectBusinessListActivity" />
-        <activity android:name=".ChatActivity" />
-        <activity android:name=".GroupsActivity" />
-        <activity android:name=".AdminHomeActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".MyDocumentsActivity" />
-        <activity android:name=".PersonalInfoActivity" />
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".SelectCountryActivity" />
-        <activity android:name=".HomeActivity" />
+        <activity android:name=".activities.ContactsInfoActivity" />
+        <activity android:name=".activities.CategoriesActivity" />
+        <activity android:name=".activities.WebViewActivity" />
+        <activity android:name=".activities.NotificationsActivity" />
+        <activity android:name=".activities.PlacesActivity" />
+        <activity android:name=".activities.PdfViewerActivity" />
+        <activity android:name=".activities.NewsActivity" />
+        <activity android:name=".activities.OpenAttachmentActivity" />
+        <activity android:name=".activities.ManageRequestsActivity" />
+        <activity android:name=".activities.JoinGroupActivity" />
+        <activity android:name=".activities.SelectBusinessListActivity" />
+        <activity android:name=".activities.ChatActivity" />
+        <activity android:name=".activities.GroupsActivity" />
+        <activity android:name=".activities.AdminHomeActivity" />
+        <activity android:name=".activities.SettingsActivity" />
+        <activity android:name=".activities.MyDocumentsActivity" />
+        <activity android:name=".activities.PersonalInfoActivity" />
+        <activity android:name=".activities.ProfileActivity" />
+        <activity android:name=".activities.SelectCountryActivity" />
+        <activity android:name=".activities.HomeActivity" />
         <activity
-            android:name=".SplashActivity"
+            android:name=".activities.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="MOBILE_NOTIFICATION_CLICK" />
@@ -107,9 +107,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".activities.ForgotPasswordActivity" />
+        <activity android:name=".activities.SignUpActivity" />
+        <activity android:name=".activities.LoginActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

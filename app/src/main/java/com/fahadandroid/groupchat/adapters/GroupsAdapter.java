@@ -17,8 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.fahadandroid.groupchat.ChatActivity;
-import com.fahadandroid.groupchat.JoinGroupActivity;
+import com.fahadandroid.groupchat.activities.ChatActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.models.GroupsModel;

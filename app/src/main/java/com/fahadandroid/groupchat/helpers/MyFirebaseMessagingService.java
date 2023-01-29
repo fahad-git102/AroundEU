@@ -11,7 +11,7 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.fahadandroid.groupchat.R;
-import com.fahadandroid.groupchat.SplashActivity;
+import com.fahadandroid.groupchat.activities.SplashActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

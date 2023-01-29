@@ -15,8 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.chootdev.recycleclick.RecycleClick;
-import com.fahadandroid.groupchat.ApprovedPlacesAdminActivity;
-import com.fahadandroid.groupchat.PlacesDetailsActivity;
+import com.fahadandroid.groupchat.activities.ApprovedPlacesAdminActivity;
+import com.fahadandroid.groupchat.activities.PlacesDetailsActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.PlacesAdapter;
 import com.fahadandroid.groupchat.models.PlacesModel;

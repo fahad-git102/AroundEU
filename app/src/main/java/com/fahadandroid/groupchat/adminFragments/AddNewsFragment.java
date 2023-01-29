@@ -30,17 +30,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fahadandroid.groupchat.HomeActivity;
-import com.fahadandroid.groupchat.NewsActivity;
+import com.fahadandroid.groupchat.activities.NewsActivity;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.NewsModel;
 import com.fahadandroid.groupchat.models.NotificationsModel;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -48,7 +45,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -60,18 +56,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.app.Activity.RESULT_OK;
-import static com.fahadandroid.groupchat.ChatActivity.PICK_IMAGE;
-import static com.fahadandroid.groupchat.ChatActivity.REQUEST_CAMERA_WRITE_EXTERNAL_STORAGE;
-import static com.fahadandroid.groupchat.ChatActivity.TAKE_PHOTO;
+import static com.fahadandroid.groupchat.activities.ChatActivity.PICK_IMAGE;
+import static com.fahadandroid.groupchat.activities.ChatActivity.REQUEST_CAMERA_WRITE_EXTERNAL_STORAGE;
+import static com.fahadandroid.groupchat.activities.ChatActivity.TAKE_PHOTO;
 
 public class AddNewsFragment extends Fragment implements View.OnClickListener{
 

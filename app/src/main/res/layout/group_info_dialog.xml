@@ -21,15 +21,32 @@
             android:textColor="@color/colorDarkGrey"
             android:id="@+id/heading"/>
 
-        <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
-            android:src="@drawable/group_members"
-            android:padding="2dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnGroupMembers"
             android:layout_alignParentEnd="true"
-            android:id="@+id/btnGroupMembers"/>
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:clickable="false"
+                android:src="@drawable/group_members"
+                android:padding="2dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvMembersCount"
+                android:text="20"
+                android:textColor="@color/colorDarkGrey"
+                android:textSize="13sp"
+                android:layout_marginStart="4dp"/>
+
+        </LinearLayout>
 
     </RelativeLayout>
 
