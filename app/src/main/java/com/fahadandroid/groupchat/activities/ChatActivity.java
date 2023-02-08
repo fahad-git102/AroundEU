@@ -359,6 +359,54 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         recycler_chat.setLayoutManager(manager);
         recycler_chat.setAdapter(adapter);
         adapter.registerAdapterDataObserver(new MyScrollToBottomObserver(recycler_chat, adapter, manager));
+
+        RecycleClick.addTo(recycler_chat).setOnItemLongClickListener(new RecycleClick.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(RecyclerView recyclerView, int i, View view) {
+                deleteMessage(adapter.getItem(i));
+                return false;
+            }
+        });
+    }
+
+    private void deleteMessage(MessagesModel messagesModel){
+        if (messagesModel.getUid().equals(mAuth.getCurrentUser().getUid())){
+            AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+            builder.setTitle("Delete Message ?");
+            builder.setMessage("Are you sure you want to delete this message ?");
+            builder.setIcon(getResources().getDrawable(R.drawable.delete));
+            builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int iq) {
+                    if (messagesModel.getKey()==null){
+                        Toast.makeText(ChatActivity.this, "You cannot delete this message",
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    try {
+                        groupsRef.child(key).child("messages").child(messagesModel.getKey()).
+                                removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText(ChatActivity.this, "Deleted !", Toast.LENGTH_SHORT).show();
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+                    }catch (Exception e){
+                        Toast.makeText(ChatActivity.this, "You cannot delete this message",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+        }
     }
 
     @Override
@@ -566,15 +614,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             if (!message.isEmpty()){
+                String mkey = chatRef.push().getKey();
                 final Map<String, Object> map = new HashMap<>();
                 map.put("timeStamp", ServerValue.TIMESTAMP);
                 map.put("uid", mAuth.getCurrentUser().getUid());
                 map.put("message", message);
+                map.put("key", mkey);
                 if (replyId!=null){
                     map.put("replyId", replyId);
                 }
                 etTypeHere.setText("");
-                chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                chatRef.child(mkey).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         cardReply.setVisibility(View.GONE);
@@ -913,13 +963,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     public void onSuccess(Uri uri) {
                         String url = uri.toString();
                         Map<String, Object> map = new HashMap<>();
+                        String mkey = chatRef.push().getKey();
                         map.put("timeStamp", ServerValue.TIMESTAMP);
                         map.put("uid", mAuth.getCurrentUser().getUid());
                         map.put("image", url);
+                        map.put("key", mkey);
                         if (replyId!=null){
                             map.put("replyId", replyId);
                         }
-                        chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        chatRef.child(mkey).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 cardReply.setVisibility(View.GONE);
@@ -952,13 +1004,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     public void onSuccess(Uri uri) {
                         String url = uri.toString();
                         Map<String, Object> map = new HashMap<>();
+                        String mkey = chatRef.push().getKey();
                         map.put("timeStamp", ServerValue.TIMESTAMP);
                         map.put("uid", mAuth.getCurrentUser().getUid());
                         map.put("document", url);
+                        map.put("key", mkey);
                         if (replyId!=null){
                             map.put("replyId", replyId);
                         }
-                        chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        chatRef.child(mkey).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 cardReply.setVisibility(View.GONE);
@@ -990,13 +1044,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     public void onSuccess(Uri uri) {
                         String url = uri.toString();
                         Map<String, Object> map = new HashMap<>();
+                        String mKey = chatRef.push().getKey();
                         map.put("timeStamp", ServerValue.TIMESTAMP);
                         map.put("uid", mAuth.getCurrentUser().getUid());
                         map.put("video", url);
+                        map.put("key", mKey);
                         if (replyId!=null){
                             map.put("replyId", replyId);
                         }
-                        chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        chatRef.child(mKey).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 cardReply.setVisibility(View.GONE);
@@ -1375,14 +1431,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         public void onSuccess(Uri uri) {
                             String url = uri.toString();
                             Map<String, Object> map = new HashMap<>();
+                            String mKey = chatRef.push().getKey();
                             map.put("timeStamp", ServerValue.TIMESTAMP);
                             map.put("uid", mAuth.getCurrentUser().getUid());
                             map.put("audio", url);
                             map.put("audioTime", seconds);
+                            map.put("key", mKey);
                             if (replyId!=null){
                                 map.put("replyId", replyId);
                             }
-                            chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            chatRef.child(mKey).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     cardReply.setVisibility(View.GONE);
@@ -1413,15 +1471,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             double userLong = lastKnownLocation.getLongitude();
 
             final Map<String, Object> map = new HashMap<>();
+            String mKey = chatRef.push().getKey();
             map.put("timeStamp", ServerValue.TIMESTAMP);
             map.put("uid", mAuth.getCurrentUser().getUid());
             map.put("longitude", userLong);
             map.put("latitude", userLat);
+            map.put("key", mKey);
             if (replyId!=null){
                 map.put("replyId", replyId);
             }
 
-            chatRef.push().setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+            chatRef.child(mKey).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){

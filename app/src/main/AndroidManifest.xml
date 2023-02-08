@@ -31,13 +31,6 @@
         android:theme="@style/Theme.GroupChat"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".activities.ChatRecyclerActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".activities.MapsActivity"
             android:exported="false">
             <meta-data

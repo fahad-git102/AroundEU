@@ -9,7 +9,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
         app:civ_border_width="1dp"
         app:civ_border_color="@color/colorDarkGrey"
         android:id="@+id/profile_pic"
@@ -20,10 +20,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="30dp"
         android:layout_marginBottom="10dp"
-        android:layout_toRightOf="@id/profile_pic"
+        android:layout_toEndOf="@id/profile_pic"
         android:background="@drawable/border_rectangle_2"
         android:orientation="vertical"
         android:backgroundTint="@color/colorSilverLightest"
@@ -145,29 +145,6 @@
             android:layout_height="wrap_content"
             android:outlineSpotShadowColor="@android:color/transparent"
             android:visibility="gone" />
-
-        <!--        <me.jagar.chatvoiceplayerlibrary.VoicePlayerView-->
-        <!--            android:id="@+id/audioPlayerUser"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:soundEffectsEnabled="true"-->
-        <!--            android:visibility="gone"-->
-        <!--            app:enableVisualizer="false"-->
-        <!--            app:playPauseBackgroundColor="@color/colorMain"-->
-        <!--            app:playPauseCornerRadius="100"-->
-        <!--            app:playProgressbarColor="#009688"-->
-        <!--            app:progressTimeColor="#6C0573"-->
-        <!--            app:seekBarProgressColor="@color/colorMain"-->
-        <!--            app:seekBarThumbColor="#FFC107"-->
-        <!--            app:shareBackgroundColor="#90A808"-->
-        <!--            app:shareCornerRadius="100"-->
-        <!--            app:showShareButton="false"-->
-        <!--            app:showTiming="true"-->
-        <!--            app:timingBackgroundColor="#6AFF7700"-->
-        <!--            app:viewBackground="@android:color/transparent"-->
-        <!--            app:viewCornerRadius="100"-->
-        <!--            app:visualizationNotPlayedColor="#F62727"-->
-        <!--            app:visualizationPlayedColor="@color/colorGreen" />-->
 
         <LinearLayout
             android:id="@+id/linear_documents_others"
@@ -339,29 +316,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
-
-<!--        <me.jagar.chatvoiceplayerlibrary.VoicePlayerView-->
-<!--            android:id="@+id/audioPlayerMy"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:soundEffectsEnabled="true"-->
-<!--            android:visibility="gone"-->
-<!--            app:enableVisualizer="false"-->
-<!--            app:playPauseBackgroundColor="@color/colorDarkGrey"-->
-<!--            app:playPauseCornerRadius="100"-->
-<!--            app:playProgressbarColor="#009688"-->
-<!--            app:progressTimeColor="#6C0573"-->
-<!--            app:seekBarProgressColor="@color/colorDarkGrey"-->
-<!--            app:seekBarThumbColor="@color/colorLightGrey"-->
-<!--            app:shareBackgroundColor="#90A808"-->
-<!--            app:shareCornerRadius="100"-->
-<!--            app:showShareButton="false"-->
-<!--            app:showTiming="true"-->
-<!--            app:timingBackgroundColor="#6AFF7700"-->
-<!--            app:viewBackground="@android:color/transparent"-->
-<!--            app:viewCornerRadius="100"-->
-<!--            app:visualizationNotPlayedColor="#F62727"-->
-<!--            app:visualizationPlayedColor="@color/colorGreen" />-->
 
         <LinearLayout
             android:id="@+id/linear_documents_me"

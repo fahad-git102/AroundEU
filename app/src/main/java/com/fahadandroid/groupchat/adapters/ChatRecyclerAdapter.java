@@ -68,286 +68,331 @@ public class ChatRecyclerAdapter extends FirebaseRecyclerAdapter<
 
     @Override
     protected void onBindViewHolder(@NonNull MessageViewHolder holder, int position, @NonNull MessagesModel model) {
-        mAuth = FirebaseAuth.getInstance();
-        if (model.getUid().equals(mAuth.getCurrentUser().getUid())){
+        try{
+            mAuth = FirebaseAuth.getInstance();
+            if (model.getUid().equals(mAuth.getCurrentUser().getUid())){
 
-            holder.tvMyMessage.setMovementMethod(LinkMovementMethod.getInstance());
-            Linkify.addLinks(holder.tvMyMessage, Linkify.WEB_URLS);
-
-            holder.linearUser.setVisibility(View.GONE);
-            holder.linearMe.setVisibility(View.VISIBLE);
-            holder.profilePic.setVisibility(View.GONE);
-            holder.tvMyTime.setText(HelperClass.getFormattedDateTime(model.getTimeStamp(), "MMM dd, yyyy hh:mm a"));
-
-            for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
-                if (EUGroupChat.userModelList.get(i).getUid().equals(model.getUid())){
-                    holder.tvMyName.setText(EUGroupChat.userModelList.get(i).getFirstName() +" "+EUGroupChat.userModelList.get(i).getSurName());
-                }
-            }
-
-            if (model.getReplyId()!=null){
-                holder.cardMyReply.setVisibility(View.VISIBLE);
-                for (int a = 0 ; a<messageModelList.size(); a++){
-                    if (messageModelList.get(a).getKey().equals(model.getReplyId())){
-                        for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
-                            if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
-                                holder.tvMyReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
-                            }
-                        }
-                        if (messageModelList.get(a).getMessage()!=null&&!messageModelList.get(a).getMessage().isEmpty()){
-                            holder.tvMyReplyMessageType.setText(Html.fromHtml(messageModelList.get(a).getMessage()));
-                        }else if (messageModelList.get(a).getAudio()!=null){
-                            holder.tvMyReplyMessageType.setText("Audio");
-                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.myReplyImage);
-                        }else if (messageModelList.get(a).getLatitude()>0&&messageModelList.get(a).getLongitude()>0){
-                            holder.tvMyReplyMessageType.setText("Location");
-                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.myReplyImage);
-                        }else if (messageModelList.get(a).getImage()!=null){
-                            holder.tvMyReplyMessageType.setText("Image");
-                            Glide.with(context).load(messageModelList.get(a).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.myReplyImage);
-                        }else if (messageModelList.get(a).getDocument()!=null){
-                            holder.tvMyReplyMessageType.setText("Document");
-                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.myReplyImage);
-                        }else if (messageModelList.get(a).getVideo()!=null){
-                            holder.tvMyReplyMessageType.setText("Video");
-                            Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.myReplyImage);
-                        }
-                    }
-                }
-            }else {
-                holder.cardMyReply.setVisibility(View.GONE);
-            }
-
-            if (model.getMessage()!=null){
-                holder.tvMyMessage.setVisibility(View.VISIBLE);
-                holder.audioPlayerMy.setVisibility(View.GONE);
-                holder.tvMyMessage.setText(Html.fromHtml(model.getMessage()));
                 holder.tvMyMessage.setMovementMethod(LinkMovementMethod.getInstance());
                 Linkify.addLinks(holder.tvMyMessage, Linkify.WEB_URLS);
-            }else if (model.getImage()!=null){
-                holder.myImageView.setVisibility(View.VISIBLE);
-                holder.tvMyMessage.setVisibility(View.GONE);
-                holder.audioPlayerMy.setVisibility(View.GONE);
-                holder.btnPlayMe.setVisibility(View.GONE);
-                Glide.with(context).load(model.getImage()).override(150,150).placeholder(R.drawable.default_image).into(holder.myImageView);
-                holder.myImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(context, OpenAttachmentActivity.class);
-                        intent.putExtra("url", model.getImage());
-                        context.startActivity(intent);
-                    }
-                });
-            }else if (model.getVideo()!=null){
-                holder.myImageView.setVisibility(View.VISIBLE);
-                holder.tvMyMessage.setVisibility(View.GONE);
-                holder.btnPlayMe.setVisibility(View.VISIBLE);
-                holder.audioPlayerMy.setVisibility(View.GONE);
-                Glide.with(context).load(model.getVideo()).override(150,150).placeholder(R.drawable.default_image).into(holder.myImageView);
-                holder.btnPlayMe.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(context, OpenAttachmentActivity.class);
-                        intent.putExtra("isVideo", true);
-                        intent.putExtra("url", model.getVideo());
-                        context.startActivity(intent);
-                    }
-                });
-            }else if (model.getDocument()!=null){
-                holder.linear_documents_Me.setVisibility(View.VISIBLE);
-                holder.btnPlayMe.setVisibility(View.GONE);
-                holder.myImageView.setVisibility(View.GONE);
-                holder.tvMyMessage.setVisibility(View.GONE);
-                holder.audioPlayerMy.setVisibility(View.GONE);
-                holder.linear_documents_Me.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(context, LoadPdfActivity.class);
-                        intent.putExtra("url", model.getDocument());
-                        context.startActivity(intent);
-                    }
-                });
-            }else if (model.getAudio()!=null){
-                holder.linear_documents_Me.setVisibility(View.GONE);
-                holder.btnPlayMe.setVisibility(View.GONE);
-                holder.myImageView.setVisibility(View.GONE);
-                holder.tvMyMessage.setVisibility(View.GONE);
-                holder.audioPlayerMy.setVisibility(View.VISIBLE);
-                holder.audioPlayerMy.setAudioTarget(model.getAudio());
 
-            }else if (model.getLatitude()>0&&model.getLongitude()>0){
-                holder.myImageView.setVisibility(View.VISIBLE);
-                holder.tvMyMessage.setVisibility(View.GONE);
-                holder.btnPlayMe.setVisibility(View.GONE);
-                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).placeholder(R.drawable.default_image).into(holder.myImageView);
-                holder.myImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String uri = "http://maps.google.com/maps?q=loc:" + model.getLatitude()
-                                + "," + model.getLongitude();
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                        intent.setPackage("com.google.android.apps.maps");
-                        context.startActivity(intent);
-                    }
-                });
-            }else {
-                holder.btnPlayMe.setVisibility(View.GONE);
-                holder.myImageView.setVisibility(View.GONE);
-                holder.tvMyMessage.setVisibility(View.VISIBLE);
-                holder.audioPlayerMy.setVisibility(View.GONE);
-            }
+                holder.linearUser.setVisibility(View.GONE);
+                holder.linearMe.setVisibility(View.VISIBLE);
+                holder.profilePic.setVisibility(View.GONE);
+                holder.tvMyTime.setText(HelperClass.getFormattedDateTime(model.getTimeStamp(), "MMM dd, yyyy hh:mm a"));
 
-        }else {
-
-            holder.linearMe.setVisibility(View.GONE);
-            holder.linearUser.setVisibility(View.VISIBLE);
-            holder.profilePic.setVisibility(View.VISIBLE);
-            holder.tvUserTime.setText(HelperClass.getFormattedDateTime(model.getTimeStamp(), "MMM dd, yyyy hh:mm a"));
-            for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
-                if (EUGroupChat.userModelList.get(i).getUid().equals(model.getUid())){
-                    holder.tvUserName.setText(EUGroupChat.userModelList.get(i).getFirstName()+" "+EUGroupChat.userModelList.get(i).getSurName());
-                    if (EUGroupChat.userModelList.get(i).isAdmin()){
-                        Glide.with(context).load(R.drawable.project_consult).placeholder(R.drawable.default_user_img).override(150, 150).into(holder.profilePic);
-                    }else {
-                        if (EUGroupChat.userModelList.get(i).getProfileUrl()!=null){
-                            Glide.with(context).load(EUGroupChat.userModelList.get(i).getProfileUrl()).placeholder(R.drawable.default_user_img).override(150, 150).into(holder.profilePic);
-                        }
+                for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
+                    if (EUGroupChat.userModelList.get(i).getUid().equals(model.getUid())){
+                        holder.tvMyName.setText(EUGroupChat.userModelList.get(i).getFirstName() +" "+EUGroupChat.userModelList.get(i).getSurName());
                     }
                 }
-            }
 
-            if (model.getReplyId()!=null){
-                holder.cardOtherReply.setVisibility(View.VISIBLE);
-                for (int a = 0 ; a<messageModelList.size(); a++){
-                    if (messageModelList.get(a).getKey().equals(model.getReplyId())){
-                        for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
-                            if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
-                                holder.tvOtherReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
+                if (model.getReplyId()!=null){
+                    holder.cardMyReply.setVisibility(View.VISIBLE);
+                    for (int a = 0 ; a<messageModelList.size(); a++){
+                        if (messageModelList.get(a).getKey().equals(model.getReplyId())){
+                            for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
+                                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
+                                    holder.tvMyReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
+                                }
+                            }
+                            if (messageModelList.get(a).getMessage()!=null&&!messageModelList.get(a).getMessage().isEmpty()){
+                                holder.tvMyReplyMessageType.setText(Html.fromHtml(messageModelList.get(a).getMessage()));
+                            }else if (messageModelList.get(a).getAudio()!=null){
+                                holder.tvMyReplyMessageType.setText("Audio");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.myReplyImage);
+                            }else if (messageModelList.get(a).getLatitude()>0&&messageModelList.get(a).getLongitude()>0){
+                                holder.tvMyReplyMessageType.setText("Location");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.myReplyImage);
+                            }else if (messageModelList.get(a).getImage()!=null){
+                                holder.tvMyReplyMessageType.setText("Image");
+                                Glide.with(context).load(messageModelList.get(a).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.myReplyImage);
+                            }else if (messageModelList.get(a).getDocument()!=null){
+                                holder.tvMyReplyMessageType.setText("Document");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.myReplyImage);
+                            }else if (messageModelList.get(a).getVideo()!=null){
+                                holder.tvMyReplyMessageType.setText("Video");
+                                Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.myReplyImage);
                             }
                         }
-                        if (messageModelList.get(a).getMessage()!=null&&!messageModelList.get(a).getMessage().isEmpty()){
-                            holder.tvOtherReplyMessageType.setText(Html.fromHtml(messageModelList.get(a).getMessage()));
-                        }else if (messageModelList.get(a).getAudio()!=null){
-                            holder.tvMyReplyMessageType.setText("Audio");
-                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.otherReplyImage);
-                        }else if (messageModelList.get(a).getLatitude()>0&&messageModelList.get(a).getLongitude()>0){
-                            holder.tvOtherReplyMessageType.setText("Location");
-                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.otherReplyImage);
-                        }else if (messageModelList.get(a).getImage()!=null){
-                            holder.tvOtherReplyMessageType.setText("Image");
-                            Glide.with(context).load(messageModelList.get(a).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.otherReplyImage);
-                        }else if (messageModelList.get(a).getDocument()!=null){
-                            holder.tvOtherReplyMessageType.setText("Document");
-                            Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.otherReplyImage);
-                        }else if (messageModelList.get(a).getVideo()!=null){
-                            holder.tvOtherReplyMessageType.setText("Video");
-                            Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.otherReplyImage);
+                    }
+                }else {
+                    holder.cardMyReply.setVisibility(View.GONE);
+                }
+
+                if (model.getMessage()!=null){
+
+                    holder.tvMyMessage.setVisibility(View.VISIBLE);
+                    holder.myImageView.setVisibility(View.GONE);
+                    holder.btnPlayMe.setVisibility(View.GONE);
+                    holder.audioPlayerMy.setVisibility(View.GONE);
+                    holder.linear_documents_Me.setVisibility(View.GONE);
+
+                    holder.tvMyMessage.setText(Html.fromHtml(model.getMessage()));
+                    holder.tvMyMessage.setMovementMethod(LinkMovementMethod.getInstance());
+                    Linkify.addLinks(holder.tvMyMessage, Linkify.WEB_URLS);
+                }else if (model.getImage()!=null){
+
+                    holder.tvMyMessage.setVisibility(View.GONE);
+                    holder.myImageView.setVisibility(View.VISIBLE);
+                    holder.btnPlayMe.setVisibility(View.GONE);
+                    holder.audioPlayerMy.setVisibility(View.GONE);
+                    holder.linear_documents_Me.setVisibility(View.GONE);
+
+                    Glide.with(context).load(model.getImage()).override(150,150).placeholder(R.drawable.default_image).into(holder.myImageView);
+                    holder.myImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(context, OpenAttachmentActivity.class);
+                            intent.putExtra("url", model.getImage());
+                            context.startActivity(intent);
+                        }
+                    });
+                }else if (model.getVideo()!=null){
+
+                    holder.tvMyMessage.setVisibility(View.VISIBLE);
+                    holder.myImageView.setVisibility(View.VISIBLE);
+                    holder.btnPlayMe.setVisibility(View.VISIBLE);
+                    holder.audioPlayerMy.setVisibility(View.GONE);
+                    holder.linear_documents_Me.setVisibility(View.GONE);
+
+                    Glide.with(context).load(model.getVideo()).override(150,150).placeholder(R.drawable.default_image).into(holder.myImageView);
+                    holder.btnPlayMe.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(context, OpenAttachmentActivity.class);
+                            intent.putExtra("isVideo", true);
+                            intent.putExtra("url", model.getVideo());
+                            context.startActivity(intent);
+                        }
+                    });
+                }else if (model.getDocument()!=null){
+
+                    holder.tvMyMessage.setVisibility(View.GONE);
+                    holder.myImageView.setVisibility(View.GONE);
+                    holder.btnPlayMe.setVisibility(View.GONE);
+                    holder.audioPlayerMy.setVisibility(View.GONE);
+                    holder.linear_documents_Me.setVisibility(View.VISIBLE);
+
+                    holder.linear_documents_Me.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(context, LoadPdfActivity.class);
+                            intent.putExtra("url", model.getDocument());
+                            context.startActivity(intent);
+                        }
+                    });
+                }else if (model.getAudio()!=null){
+
+                    holder.tvMyMessage.setVisibility(View.GONE);
+                    holder.myImageView.setVisibility(View.GONE);
+                    holder.btnPlayMe.setVisibility(View.GONE);
+                    holder.audioPlayerMy.setVisibility(View.VISIBLE);
+                    holder.linear_documents_Me.setVisibility(View.GONE);
+
+                    holder.audioPlayerMy.setAudioTarget(model.getAudio());
+
+                }else if (model.getLatitude()!=0&&model.getLongitude()!=0){
+
+                    holder.tvMyMessage.setVisibility(View.GONE);
+                    holder.myImageView.setVisibility(View.VISIBLE);
+                    holder.btnPlayMe.setVisibility(View.GONE);
+                    holder.audioPlayerMy.setVisibility(View.GONE);
+                    holder.linear_documents_Me.setVisibility(View.GONE);
+
+                    Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).placeholder(R.drawable.default_image).into(holder.myImageView);
+                    holder.myImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String uri = "http://maps.google.com/maps?q=loc:" + model.getLatitude()
+                                    + "," + model.getLongitude();
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                            intent.setPackage("com.google.android.apps.maps");
+                            context.startActivity(intent);
+                        }
+                    });
+                }else {
+                    if (model.getMessage()==null)
+                        holder.tvMyMessage.setText("Null");
+                    holder.tvMyMessage.setVisibility(View.VISIBLE);
+                    holder.myImageView.setVisibility(View.GONE);
+                    holder.btnPlayMe.setVisibility(View.GONE);
+                    holder.audioPlayerMy.setVisibility(View.GONE);
+                    holder.linear_documents_Me.setVisibility(View.GONE);
+
+                }
+
+            }else {
+
+                holder.linearMe.setVisibility(View.GONE);
+                holder.linearUser.setVisibility(View.VISIBLE);
+                holder.profilePic.setVisibility(View.VISIBLE);
+                holder.tvUserTime.setText(HelperClass.getFormattedDateTime(model.getTimeStamp(), "MMM dd, yyyy hh:mm a"));
+                for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
+                    if (EUGroupChat.userModelList.get(i).getUid().equals(model.getUid())){
+                        holder.tvUserName.setText(EUGroupChat.userModelList.get(i).getFirstName()+" "+EUGroupChat.userModelList.get(i).getSurName());
+                        if (EUGroupChat.userModelList.get(i).isAdmin()){
+                            Glide.with(context).load(R.drawable.project_consult).placeholder(R.drawable.default_user_img).override(150, 150).into(holder.profilePic);
+                        }else {
+                            if (EUGroupChat.userModelList.get(i).getProfileUrl()!=null){
+                                Glide.with(context).load(EUGroupChat.userModelList.get(i).getProfileUrl()).placeholder(R.drawable.default_user_img).override(150, 150).into(holder.profilePic);
+                            }
                         }
                     }
                 }
-            }else {
-                holder.cardOtherReply.setVisibility(View.GONE);
-            }
-            if (model.getMessage()!=null){
-                holder.tvUserMessage.setVisibility(View.VISIBLE);
-                holder.audioPlayerUser.setVisibility(View.GONE);
-                holder.tvUserMessage.setText(Html.fromHtml(model.getMessage()));
-                holder.tvUserMessage.setMovementMethod(LinkMovementMethod.getInstance());
-                Linkify.addLinks(holder.tvUserMessage, Linkify.WEB_URLS);
-            }else if (model.getImage()!=null){
-                holder.usersImageView.setVisibility(View.VISIBLE);
-                holder.tvUserMessage.setVisibility(View.GONE);
-                holder.btnPlayUsers.setVisibility(View.GONE);
-                holder.audioPlayerUser.setVisibility(View.GONE);
-                Glide.with(context).load(model.getImage()).placeholder(R.drawable.default_image).override(150,150).into(holder.usersImageView);
-                holder.usersImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(context, OpenAttachmentActivity.class);
-                        intent.putExtra("url", model.getImage());
-                        context.startActivity(intent);
-                    }
-                });
-            }else if (model.getVideo()!=null){
-                holder.usersImageView.setVisibility(View.VISIBLE);
-                holder.tvUserMessage.setVisibility(View.GONE);
-                holder.audioPlayerUser.setVisibility(View.GONE);
-                holder.btnPlayUsers.setVisibility(View.VISIBLE);
-                Glide.with(context).load(model.getVideo()).override(150,150).placeholder(R.drawable.default_image).into(holder.usersImageView);
-                holder.btnPlayUsers.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(context, OpenAttachmentActivity.class);
-                        intent.putExtra("isVideo", true);
-                        intent.putExtra("url", model.getVideo());
-                        context.startActivity(intent);
-                    }
-                });
 
-            }else if (model.getDocument()!=null){
-                holder.linear_documents_other.setVisibility(View.VISIBLE);
-                holder.btnPlayUsers.setVisibility(View.GONE);
-                holder.usersImageView.setVisibility(View.GONE);
-                holder.tvUserMessage.setVisibility(View.GONE);
-                holder.audioPlayerUser.setVisibility(View.GONE);
-                holder.linear_documents_other.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-//                        downloadPdfFromUrl(messageModelList.get(position).getDocument());
-                        Intent intent = new Intent(context, LoadPdfActivity.class);
-                        intent.putExtra("url", model.getDocument());
-                        context.startActivity(intent);
+                if (model.getReplyId()!=null){
+                    holder.cardOtherReply.setVisibility(View.VISIBLE);
+                    for (int a = 0 ; a<messageModelList.size(); a++){
+                        if (messageModelList.get(a).getKey().equals(model.getReplyId())){
+                            for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
+                                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
+                                    holder.tvOtherReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
+                                }
+                            }
+                            if (messageModelList.get(a).getMessage()!=null&&!messageModelList.get(a).getMessage().isEmpty()){
+                                holder.tvOtherReplyMessageType.setText(Html.fromHtml(messageModelList.get(a).getMessage()));
+                            }else if (messageModelList.get(a).getAudio()!=null){
+                                holder.tvMyReplyMessageType.setText("Audio");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.otherReplyImage);
+                            }else if (messageModelList.get(a).getLatitude()>0&&messageModelList.get(a).getLongitude()>0){
+                                holder.tvOtherReplyMessageType.setText("Location");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.otherReplyImage);
+                            }else if (messageModelList.get(a).getImage()!=null){
+                                holder.tvOtherReplyMessageType.setText("Image");
+                                Glide.with(context).load(messageModelList.get(a).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.otherReplyImage);
+                            }else if (messageModelList.get(a).getDocument()!=null){
+                                holder.tvOtherReplyMessageType.setText("Document");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.otherReplyImage);
+                            }else if (messageModelList.get(a).getVideo()!=null){
+                                holder.tvOtherReplyMessageType.setText("Video");
+                                Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.otherReplyImage);
+                            }
+                        }
                     }
-                });
-            }else if (model.getAudio()!=null){
-                holder.linear_documents_other.setVisibility(View.GONE);
-                holder.btnPlayUsers.setVisibility(View.GONE);
-                holder.usersImageView.setVisibility(View.GONE);
-                holder.tvUserMessage.setVisibility(View.GONE);
-                holder.audioPlayerUser.setVisibility(View.VISIBLE);
-                holder.audioPlayerUser.setAudioTarget(model.getAudio());
-
-            }else if (model.getLatitude()>0&&model.getLongitude()>0){
-                holder.usersImageView.setVisibility(View.VISIBLE);
-                holder.tvUserMessage.setVisibility(View.GONE);
-                holder.btnPlayUsers.setVisibility(View.GONE);
-                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).
-                        placeholder(R.drawable.default_image).override(150,150).into(holder.usersImageView);
-                holder.usersImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String uri = "http://maps.google.com/maps?q=loc:" + model.getLatitude()
-                                + "," + model.getLongitude();
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                        intent.setPackage("com.google.android.apps.maps");
-                        context.startActivity(intent);
-                    }
-                });
-            } else {
-                holder.tvUserMessage.setVisibility(View.VISIBLE);
-                holder.usersImageView.setVisibility(View.GONE);
-                holder.btnPlayUsers.setVisibility(View.GONE);
-                holder.audioPlayerUser.setVisibility(View.GONE);
-            }
-
-        }
-
-        if (holder.tvMyName!=null){
-            holder.tvMyName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showUsersData(model.getUid());
+                }else {
+                    holder.cardOtherReply.setVisibility(View.GONE);
                 }
-            });
-        }
-        if (holder.tvUserName!=null){
-            holder.tvUserName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showUsersData(model.getUid());
+                if (model.getMessage()!=null){
+
+                    holder.tvUserMessage.setVisibility(View.VISIBLE);
+                    holder.usersImageView.setVisibility(View.GONE);
+                    holder.btnPlayUsers.setVisibility(View.GONE);
+                    holder.audioPlayerUser.setVisibility(View.GONE);
+                    holder.linear_documents_other.setVisibility(View.GONE);
+
+                    holder.tvUserMessage.setText(Html.fromHtml(model.getMessage()));
+                    holder.tvUserMessage.setMovementMethod(LinkMovementMethod.getInstance());
+                    Linkify.addLinks(holder.tvUserMessage, Linkify.WEB_URLS);
+                }else if (model.getImage()!=null){
+
+                    holder.tvUserMessage.setVisibility(View.GONE);
+                    holder.usersImageView.setVisibility(View.VISIBLE);
+                    holder.btnPlayUsers.setVisibility(View.GONE);
+                    holder.audioPlayerUser.setVisibility(View.GONE);
+                    holder.linear_documents_other.setVisibility(View.GONE);
+
+                    Glide.with(context).load(model.getImage()).placeholder(R.drawable.default_image).override(150,150).into(holder.usersImageView);
+                    holder.usersImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(context, OpenAttachmentActivity.class);
+                            intent.putExtra("url", model.getImage());
+                            context.startActivity(intent);
+                        }
+                    });
+                }else if (model.getVideo()!=null){
+
+                    holder.tvUserMessage.setVisibility(View.GONE);
+                    holder.usersImageView.setVisibility(View.VISIBLE);
+                    holder.btnPlayUsers.setVisibility(View.VISIBLE);
+                    holder.audioPlayerUser.setVisibility(View.GONE);
+                    holder.linear_documents_other.setVisibility(View.GONE);
+
+                    Glide.with(context).load(model.getVideo()).override(150,150).placeholder(R.drawable.default_image).into(holder.usersImageView);
+                    holder.btnPlayUsers.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(context, OpenAttachmentActivity.class);
+                            intent.putExtra("isVideo", true);
+                            intent.putExtra("url", model.getVideo());
+                            context.startActivity(intent);
+                        }
+                    });
+
+                }else if (model.getDocument()!=null){
+                    holder.tvUserMessage.setVisibility(View.GONE);
+                    holder.usersImageView.setVisibility(View.GONE);
+                    holder.btnPlayUsers.setVisibility(View.GONE);
+                    holder.audioPlayerUser.setVisibility(View.GONE);
+                    holder.linear_documents_other.setVisibility(View.VISIBLE);
+
+                    holder.linear_documents_other.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(context, LoadPdfActivity.class);
+                            intent.putExtra("url", model.getDocument());
+                            context.startActivity(intent);
+                        }
+                    });
+                }else if (model.getAudio()!=null){
+
+                    holder.tvUserMessage.setVisibility(View.GONE);
+                    holder.usersImageView.setVisibility(View.GONE);
+                    holder.btnPlayUsers.setVisibility(View.GONE);
+                    holder.audioPlayerUser.setVisibility(View.VISIBLE);
+                    holder.linear_documents_other.setVisibility(View.GONE);
+
+                    holder.audioPlayerUser.setAudioTarget(model.getAudio());
+
+                }else if (model.getLatitude()!=0&&model.getLongitude()!=0){
+
+                    holder.tvUserMessage.setVisibility(View.GONE);
+                    holder.usersImageView.setVisibility(View.VISIBLE);
+                    holder.btnPlayUsers.setVisibility(View.GONE);
+                    holder.audioPlayerUser.setVisibility(View.GONE);
+                    holder.linear_documents_other.setVisibility(View.GONE);
+
+                    Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).
+                            placeholder(R.drawable.default_image).override(150,150).into(holder.usersImageView);
+                    holder.usersImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String uri = "http://maps.google.com/maps?q=loc:" + model.getLatitude()
+                                    + "," + model.getLongitude();
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                            intent.setPackage("com.google.android.apps.maps");
+                            context.startActivity(intent);
+                        }
+                    });
+                } else {
+                    if (model.getMessage()==null)
+                        holder.tvUserMessage.setText("Null");
+                    holder.tvUserMessage.setVisibility(View.VISIBLE);
+                    holder.usersImageView.setVisibility(View.GONE);
+                    holder.btnPlayUsers.setVisibility(View.GONE);
+                    holder.audioPlayerUser.setVisibility(View.GONE);
+                    holder.linear_documents_other.setVisibility(View.GONE);
                 }
-            });
-        }
+
+            }
+
+            if (holder.tvMyName!=null){
+                holder.tvMyName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showUsersData(model.getUid());
+                    }
+                });
+            }
+            if (holder.tvUserName!=null){
+                holder.tvUserName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showUsersData(model.getUid());
+                    }
+                });
+            }
+        }catch (Exception e){}
     }
 
     @NonNull
