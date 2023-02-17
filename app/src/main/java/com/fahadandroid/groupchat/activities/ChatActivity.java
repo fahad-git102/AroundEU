@@ -353,7 +353,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         FirebaseRecyclerOptions<MessagesModel> options = new FirebaseRecyclerOptions.Builder<MessagesModel>()
                 .setQuery(messagesRef, MessagesModel.class)
                 .build();
-        adapter = new ChatRecyclerAdapter(options, ChatActivity.this, messagesModelList);
+        adapter = new ChatRecyclerAdapter(options, ChatActivity.this, key);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setStackFromEnd(true);
         recycler_chat.setLayoutManager(manager);
@@ -502,6 +502,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if (replyId!=null){
                 cardReply.setVisibility(View.GONE);
                 replyId = null;
+            }else {
+                cardReply.setVisibility(View.GONE);
             }
 
         }else if (view.getId()==R.id.btnInfo){
@@ -1516,7 +1518,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 if (direction == ItemTouchHelper.RIGHT) {
-                    MessagesModel messagesModel = messagesModelList.get(viewHolder.getAdapterPosition());
+                    MessagesModel messagesModel = adapter.getItem(viewHolder.getAdapterPosition());
                     replyId = messagesModel.getKey();
                     cardReply.setVisibility(View.VISIBLE);
                     for (int i = 0; i< EUGroupChat.userModelList.size(); i++){

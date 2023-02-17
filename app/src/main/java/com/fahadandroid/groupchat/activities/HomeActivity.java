@@ -35,6 +35,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,7 +67,8 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
 
-    LinearLayout btnProfile, btnJoinGroup, btnNews, btnPlaces, btnCategories, btnSearch;
+    LinearLayout btnProfile, btnNews, btnPlaces, btnCategories, btnSearch;
+    RelativeLayout btnJoinGroup;
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
     private NavigationView nv;

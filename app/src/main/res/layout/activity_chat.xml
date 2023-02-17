@@ -67,28 +67,22 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_chat"
         android:padding="5dp"
-        android:id="@+id/swipe_refresh"
-        android:layout_marginTop="10dp"
         android:layout_below="@id/toolbar"
-        android:layout_height="match_parent"
-        android:layout_above="@id/linear">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_chat"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        android:layout_marginTop="10dp"
+        android:layout_above="@id/card_reply"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_reply"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         app:cardElevation="0dp"
         android:visibility="gone"
+        android:layout_marginEnd="103dp"
         android:layout_above="@id/linear"
         android:layout_marginStart="56dp"
         android:layout_marginTop="3dp"

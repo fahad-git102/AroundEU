@@ -39,6 +39,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.rygelouv.audiosensei.player.AudioSenseiPlayerView;
 
@@ -55,13 +56,13 @@ public class ChatRecyclerAdapter extends FirebaseRecyclerAdapter<
     DatabaseReference companyTimeModelRef;
     ComapnyTimeScheduledModel myCompanySchedule ;
     FirebaseAuth mAuth;
-    List<MessagesModel> messageModelList;
+    String groupId;
 
     public ChatRecyclerAdapter(@NonNull FirebaseRecyclerOptions<MessagesModel> options, Context context,
-                               List<MessagesModel> messageModelList) {
+                               String groupId) {
         super(options);
         this.context = context;
-        this.messageModelList = messageModelList;
+        this.groupId = groupId;
         mpList = new ArrayList<>();
         companyTimeModelRef = FirebaseDatabase.getInstance().getReference("companyTimeScheduled");
     }
@@ -88,33 +89,7 @@ public class ChatRecyclerAdapter extends FirebaseRecyclerAdapter<
 
                 if (model.getReplyId()!=null){
                     holder.cardMyReply.setVisibility(View.VISIBLE);
-                    for (int a = 0 ; a<messageModelList.size(); a++){
-                        if (messageModelList.get(a).getKey().equals(model.getReplyId())){
-                            for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
-                                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
-                                    holder.tvMyReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
-                                }
-                            }
-                            if (messageModelList.get(a).getMessage()!=null&&!messageModelList.get(a).getMessage().isEmpty()){
-                                holder.tvMyReplyMessageType.setText(Html.fromHtml(messageModelList.get(a).getMessage()));
-                            }else if (messageModelList.get(a).getAudio()!=null){
-                                holder.tvMyReplyMessageType.setText("Audio");
-                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.myReplyImage);
-                            }else if (messageModelList.get(a).getLatitude()>0&&messageModelList.get(a).getLongitude()>0){
-                                holder.tvMyReplyMessageType.setText("Location");
-                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.myReplyImage);
-                            }else if (messageModelList.get(a).getImage()!=null){
-                                holder.tvMyReplyMessageType.setText("Image");
-                                Glide.with(context).load(messageModelList.get(a).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.myReplyImage);
-                            }else if (messageModelList.get(a).getDocument()!=null){
-                                holder.tvMyReplyMessageType.setText("Document");
-                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.myReplyImage);
-                            }else if (messageModelList.get(a).getVideo()!=null){
-                                holder.tvMyReplyMessageType.setText("Video");
-                                Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.myReplyImage);
-                            }
-                        }
-                    }
+                    getReplyMessageData(model.getReplyId(), holder, true);
                 }else {
                     holder.cardMyReply.setVisibility(View.GONE);
                 }
@@ -242,33 +217,7 @@ public class ChatRecyclerAdapter extends FirebaseRecyclerAdapter<
 
                 if (model.getReplyId()!=null){
                     holder.cardOtherReply.setVisibility(View.VISIBLE);
-                    for (int a = 0 ; a<messageModelList.size(); a++){
-                        if (messageModelList.get(a).getKey().equals(model.getReplyId())){
-                            for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
-                                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModelList.get(a).getUid())){
-                                    holder.tvOtherReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
-                                }
-                            }
-                            if (messageModelList.get(a).getMessage()!=null&&!messageModelList.get(a).getMessage().isEmpty()){
-                                holder.tvOtherReplyMessageType.setText(Html.fromHtml(messageModelList.get(a).getMessage()));
-                            }else if (messageModelList.get(a).getAudio()!=null){
-                                holder.tvMyReplyMessageType.setText("Audio");
-                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.otherReplyImage);
-                            }else if (messageModelList.get(a).getLatitude()>0&&messageModelList.get(a).getLongitude()>0){
-                                holder.tvOtherReplyMessageType.setText("Location");
-                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.otherReplyImage);
-                            }else if (messageModelList.get(a).getImage()!=null){
-                                holder.tvOtherReplyMessageType.setText("Image");
-                                Glide.with(context).load(messageModelList.get(a).getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.otherReplyImage);
-                            }else if (messageModelList.get(a).getDocument()!=null){
-                                holder.tvOtherReplyMessageType.setText("Document");
-                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.otherReplyImage);
-                            }else if (messageModelList.get(a).getVideo()!=null){
-                                holder.tvOtherReplyMessageType.setText("Video");
-                                Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.otherReplyImage);
-                            }
-                        }
-                    }
+                    getReplyMessageData(model.getReplyId(), holder, false);
                 }else {
                     holder.cardOtherReply.setVisibility(View.GONE);
                 }
@@ -675,6 +624,78 @@ public class ChatRecyclerAdapter extends FirebaseRecyclerAdapter<
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
+    }
+
+    private void getReplyMessageData(String msgId, MessageViewHolder holder, boolean myMessage){
+        DatabaseReference msgRef = FirebaseDatabase.getInstance().getReference("groups")
+                .child(groupId).child("messages");
+        Query query = msgRef.orderByChild("key").equalTo(msgId);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try{
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        MessagesModel messageModel = snapshot.getValue(MessagesModel.class);
+                        if (myMessage){
+                            for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
+                                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModel.getUid())){
+                                    holder.tvMyReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
+                                }
+                            }
+                            if (messageModel.getMessage()!=null&&!messageModel.getMessage().isEmpty()){
+                                holder.tvMyReplyMessageType.setText(Html.fromHtml(messageModel.getMessage()));
+                            }else if (messageModel.getAudio()!=null){
+                                holder.tvMyReplyMessageType.setText("Audio");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.myReplyImage);
+                            }else if (messageModel.getLatitude()>0&&messageModel.getLongitude()>0){
+                                holder.tvMyReplyMessageType.setText("Location");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.myReplyImage);
+                            }else if (messageModel.getImage()!=null){
+                                holder.tvMyReplyMessageType.setText("Image");
+                                Glide.with(context).load(messageModel.getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.myReplyImage);
+                            }else if (messageModel.getDocument()!=null){
+                                holder.tvMyReplyMessageType.setText("Document");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.myReplyImage);
+                            }else if (messageModel.getVideo()!=null){
+                                holder.tvMyReplyMessageType.setText("Video");
+                                Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.myReplyImage);
+                            }
+                        }else {
+                            for (int i = 0; i< EUGroupChat.userModelList.size(); i++){
+                                if (EUGroupChat.userModelList.get(i).getUid().equals(messageModel.getUid())){
+                                    holder.tvOtherReplyUserName.setText(EUGroupChat.userModelList.get(i).getFirstName());
+                                }
+                            }
+                            if (messageModel.getMessage()!=null&&!messageModel.getMessage().isEmpty()){
+                                holder.tvOtherReplyMessageType.setText(Html.fromHtml(messageModel.getMessage()));
+                            }else if (messageModel.getAudio()!=null){
+                                holder.tvMyReplyMessageType.setText("Audio");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.mic)).override(100,100).into(holder.otherReplyImage);
+                            }else if (messageModel.getLatitude()>0&&messageModel.getLongitude()>0){
+                                holder.tvOtherReplyMessageType.setText("Location");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.google_maps)).into(holder.otherReplyImage);
+                            }else if (messageModel.getImage()!=null){
+                                holder.tvOtherReplyMessageType.setText("Image");
+                                Glide.with(context).load(messageModel.getImage()).fitCenter().placeholder(R.drawable.default_image).into(holder.otherReplyImage);
+                            }else if (messageModel.getDocument()!=null){
+                                holder.tvOtherReplyMessageType.setText("Document");
+                                Glide.with(context).load(context.getResources().getDrawable(R.drawable.doc)).into(holder.otherReplyImage);
+                            }else if (messageModel.getVideo()!=null){
+                                holder.tvOtherReplyMessageType.setText("Video");
+                                Glide.with(context).load(context.getResources().getDrawable(android.R.drawable.presence_video_online)).into(holder.otherReplyImage);
+                            }
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 }

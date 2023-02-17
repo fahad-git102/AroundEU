@@ -103,10 +103,8 @@
 
                 </LinearLayout>
 
-                <LinearLayout android:layout_width="0dp"
+                <RelativeLayout android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
                     android:foreground="?selectableItemBackground"
                     android:clickable="true"
                     android:id="@+id/btnJoinGroup"
@@ -114,9 +112,10 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
                         android:padding="4dp"
+                        android:adjustViewBounds="true"
+                        android:id="@+id/chat_icon"
                         android:background="@android:color/transparent"
                         android:scaleType="fitCenter"
                         android:src="@drawable/chat"/>
@@ -126,10 +125,12 @@
                         android:layout_height="wrap_content"
                         android:text="Chat"
                         android:textSize="14sp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@id/chat_icon"
                         android:textStyle="bold"
                         android:textColor="@color/colorDarkGrey"/>
 
-                </LinearLayout>
+                </RelativeLayout>
 
                 <LinearLayout android:layout_width="0dp"
                     android:layout_weight="1"

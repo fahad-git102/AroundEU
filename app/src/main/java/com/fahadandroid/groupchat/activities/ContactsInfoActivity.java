@@ -49,13 +49,9 @@ public class ContactsInfoActivity extends AppCompatActivity {
         goback = findViewById(R.id.goBack);
         tvTitle = findViewById(R.id.tvTitle);
         tvPhoneNo = findViewById(R.id.phone_no);
-//        tvCarabinieri = findViewById(R.id.tvCarabinieri);
         recyclerEmergencyContacts = findViewById(R.id.recycler_contacts);
         recyclerEmergencyContacts.setLayoutManager(new LinearLayoutManager(this));
         emergencyContactList = new ArrayList<>();
-//        tvStatePolice = findViewById(R.id.tvStatePolice);
-//        tvFireDep = findViewById(R.id.tvFireDep);
-//        tvMedicalAid = findViewById(R.id.tvMedicalAid);
         linear_office_contacts = findViewById(R.id.linear_office_contact);
         recyclerCoordinators = findViewById(R.id.recycler_contacts_coordinators);
         recyclerCoordinators.setLayoutManager(new LinearLayoutManager(this));
@@ -93,14 +89,6 @@ public class ContactsInfoActivity extends AppCompatActivity {
             recyclerCoordinators.setVisibility(View.GONE);
             linear_office_contacts.setVisibility(View.GONE);
             getEmergencyContacts();
-//            tvCarabinieri.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Intent intent = new Intent(Intent.ACTION_DIAL);
-//                    intent.setData(Uri.parse("tel:112"));
-//                    startActivity(intent);
-//                }
-//            });
         }else if (from.equals("office")){
             linear_emergency.setVisibility(View.GONE);
             recyclerCoordinators.setVisibility(View.GONE);

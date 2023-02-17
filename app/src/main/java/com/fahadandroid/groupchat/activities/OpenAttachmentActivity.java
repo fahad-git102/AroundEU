@@ -167,36 +167,40 @@ public class OpenAttachmentActivity extends AppCompatActivity implements View.On
     }
 
     private void showNotification(int id){
-        builder =
-                new NotificationCompat.Builder(getApplicationContext(), "notify_001");
-        Intent ii = new Intent(getApplicationContext(), SplashActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, 0);
+        try {
+            builder =
+                    new NotificationCompat.Builder(getApplicationContext(), "notify_001");
+            Intent ii = new Intent(getApplicationContext(), SplashActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, 0);
 
-        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
-        bigText.bigText("Download Started...");
-        bigText.setBigContentTitle("Download Started");
-        bigText.setSummaryText("Text in detail");
+            NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+            bigText.bigText("Download Started...");
+            bigText.setBigContentTitle("Download Started");
+            bigText.setSummaryText("Text in detail");
 
-        builder.setContentIntent(pendingIntent);
-        builder.setSmallIcon(R.mipmap.ic_launcher_round);
-        builder.setContentTitle("Downloading Started...");
-        builder.setContentText("File is being downloaded in your external memory.");
-        builder.setPriority(Notification.PRIORITY_MAX);
-        builder.setStyle(bigText);
-        builder.setProgress(100,0,false);
+            builder.setContentIntent(pendingIntent);
+            builder.setSmallIcon(R.mipmap.ic_launcher_round);
+            builder.setContentTitle("Downloading Started...");
+            builder.setContentText("File is being downloaded in your external memory.");
+            builder.setPriority(Notification.PRIORITY_MAX);
+            builder.setStyle(bigText);
+            builder.setProgress(100,0,false);
 
-        mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String channelId = "Your_channel_id";
-            NotificationChannel channel = new NotificationChannel(
-                    channelId, "Channel human readable title",
+            mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                String channelId = "Your_channel_id";
+                NotificationChannel channel = new NotificationChannel(
+                        channelId, "Channel human readable title",
                         NotificationManager.IMPORTANCE_HIGH);
                 mNotificationManager.createNotificationChannel(channel);
                 builder.setChannelId(channelId);
             }
 
             mNotificationManager.notify(id, builder.build());
+        }catch (Exception e){
+            Toast.makeText(this, "Downloading started...", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -212,14 +216,14 @@ public class OpenAttachmentActivity extends AppCompatActivity implements View.On
     @Override
     public void onCompleted(@NonNull Download download) {
         Toast.makeText(this, "Downloaded successfully !", Toast.LENGTH_SHORT).show();
-
-        if (builder!=null){
-            builder.setContentTitle("Download completed !");
-            builder.setContentText("File is downloaded successfully in your external storage.");
-            builder.setProgress(0,0, false);
-            mNotificationManager.notify(download.getId(), builder.build());
-        }
-
+        try {
+            if (builder!=null){
+                builder.setContentTitle("Download completed !");
+                builder.setContentText("File is downloaded successfully in your external storage.");
+                builder.setProgress(0,0, false);
+                mNotificationManager.notify(download.getId(), builder.build());
+            }
+        }catch (Exception e){}
     }
 
     @Override
@@ -244,12 +248,15 @@ public class OpenAttachmentActivity extends AppCompatActivity implements View.On
 
     @Override
     public void onProgress(@NonNull Download download, long l, long l1) {
-        int progress = download.getProgress();
-        if (builder!=null){
-            builder.setProgress(100,progress,false);
-            mNotificationManager.notify(download.getId(), builder.build());
-        }
+        try {
+            int progress = download.getProgress();
+            if (builder!=null){
+                builder.setProgress(100,progress,false);
+                mNotificationManager.notify(download.getId(), builder.build());
+            }
+        }catch (Exception e){
 
+        }
     }
 
     @Override

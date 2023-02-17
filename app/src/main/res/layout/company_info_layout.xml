@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:id="@+id/linear_office_contact"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Address: "
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorDarkGrey"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/comapny_address"
+            android:layout_marginTop="5dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:id="@+id/tv_address"
+            android:textColor="@color/colorBlue"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tel: "
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorDarkGrey"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+39 0902130696"
+            android:layout_marginTop="5dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:id="@+id/phone_no"
+            android:textColor="@color/colorBlue"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Email: "
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorDarkGrey"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="info@eprojectconsult.com"
+            android:layout_marginTop="5dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:id="@+id/email"
+            android:textColor="@color/colorBlue"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WhatsApp no: "
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorDarkGrey"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+39 3899012051"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp"
+            android:id="@+id/whatsapp_no"
+            android:textColor="@color/colorBlue"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="25dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Timings: "
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorDarkGrey"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="9:30am- 1:00pm"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorDarkGrey"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3:00pm- 6:00pm"
+                android:layout_marginTop="5dp"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorDarkGrey"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
