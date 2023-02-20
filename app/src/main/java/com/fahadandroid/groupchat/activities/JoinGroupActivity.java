@@ -1,6 +1,7 @@
 package com.fahadandroid.groupchat.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,7 @@ import com.fahadandroid.groupchat.adapters.GroupsAdapter;
 import com.fahadandroid.groupchat.models.BusinessList;
 import com.fahadandroid.groupchat.models.GroupsModel;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,7 +61,146 @@ public class JoinGroupActivity extends AppCompatActivity implements View.OnClick
         recyclerGroups.setLayoutManager(new LinearLayoutManager(this));
         goBack = findViewById(R.id.goBack);
         goBack.setOnClickListener(this);
-        getGroupsList();
+        getGroups();
+    }
+
+    private void getGroups(){
+        groupsModelList = new ArrayList<>();
+        groupKeys = new ArrayList<>();
+        GroupsAdapter adapter = new GroupsAdapter(groupsModelList,
+                JoinGroupActivity.this, true);
+        recyclerGroups.setAdapter(adapter);
+        RecycleClick.addTo(recyclerGroups).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+                if (isCoountryCordinator){
+                    Intent intent = new Intent(JoinGroupActivity.this, ChatActivity.class);
+                    intent.putExtra("group",groupsModelList.get(i).getKey());
+                    startActivity(intent);
+                }else {
+                    if (groupsModelList.get(i).getJoined()!=null){
+                        if (groupsModelList.get(i).getJoined().equals("yes")){
+                            Intent intent = new Intent(JoinGroupActivity.this,
+                                    ChatActivity.class);
+                            intent.putExtra("group",groupsModelList.get(i).getKey());
+                            startActivity(intent);
+                        }
+                    }
+                }
+
+            }
+        });
+        Query query = groupsRef.orderByChild("businessKey").equalTo(businessList.getKey());
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                try {
+                    GroupsModel groupsModel = snapshot.getValue(GroupsModel.class);
+                    if (groupsModel.getKey()==null){
+                        groupsModel.setKey(snapshot.getKey());
+                    }
+                    if (!groupsModel.isDeleted()){
+                        boolean alreadyApplied = false;
+                        boolean alreadyJoined = false;
+                        if (groupsModel.getKey()==null){
+                            groupsModel.setKey(snapshot.getKey());
+                        }
+                        List<String> pendingMembers = new ArrayList<>();
+                        List<String> approvedMembers = new ArrayList<>();
+                        if (groupsModel.getPendingMembers()!=null){
+                            pendingMembers = groupsModel.getPendingMembers();
+                            if (pendingMembers.contains(mAuth.getCurrentUser().getUid())){
+                                alreadyApplied = true;
+                            }else {
+                                alreadyApplied = false;
+                            }
+                        }
+                        if (groupsModel.getApprovedMembers()!=null){
+                            approvedMembers = groupsModel.getApprovedMembers();
+                            if (approvedMembers.contains(mAuth.getCurrentUser().getUid())){
+                                alreadyJoined = true;
+                            }else {
+                                alreadyJoined = false;
+                            }
+                        }
+                        if (alreadyJoined){
+                            groupsModel.setJoined("yes");
+                        }else if (alreadyApplied&&!alreadyJoined){
+                            groupsModel.setJoined("pending");
+                        }else {
+                            groupsModel.setJoined("no");
+                        }
+                        groupsModelList.add(groupsModel);
+                        groupKeys.add(groupsModel.getKey());
+                        adapter.notifyDataSetChanged();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                try {
+                    GroupsModel groupsModel = snapshot.getValue(GroupsModel.class);
+                    if (groupsModel.getKey()==null){
+                        groupsModel.setKey(snapshot.getKey());
+                    }
+                    if (!groupsModel.isDeleted()){
+                        boolean alreadyApplied = false;
+                        boolean alreadyJoined = false;
+                        if (groupsModel.getKey()==null){
+                            groupsModel.setKey(snapshot.getKey());
+                        }
+                        List<String> pendingMembers = new ArrayList<>();
+                        List<String> approvedMembers = new ArrayList<>();
+                        if (groupsModel.getPendingMembers()!=null){
+                            pendingMembers = groupsModel.getPendingMembers();
+                            if (pendingMembers.contains(mAuth.getCurrentUser().getUid())){
+                                alreadyApplied = true;
+                            }else {
+                                alreadyApplied = false;
+                            }
+                        }
+                        if (groupsModel.getApprovedMembers()!=null){
+                            approvedMembers = groupsModel.getApprovedMembers();
+                            if (approvedMembers.contains(mAuth.getCurrentUser().getUid())){
+                                alreadyJoined = true;
+                            }else {
+                                alreadyJoined = false;
+                            }
+                        }
+                        if (alreadyJoined){
+                            groupsModel.setJoined("yes");
+                        }else if (alreadyApplied&&!alreadyJoined){
+                            groupsModel.setJoined("pending");
+                        }else {
+                            groupsModel.setJoined("no");
+                        }
+                        int index = groupKeys.indexOf(groupsModel.getKey());
+                        groupsModelList.set(index, groupsModel);
+                        adapter.notifyDataSetChanged();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void getGroupsList(){

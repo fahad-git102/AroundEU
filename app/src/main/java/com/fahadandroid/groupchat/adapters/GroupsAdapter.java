@@ -32,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -74,6 +75,23 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GHolder> {
             holder.imageView.setImageDrawable(drawable);
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+        if (groupsModelList.get(position).getUnReadCounts()!=null){
+            String myUid = mAuth.getCurrentUser().getUid();
+            HashMap<String, Long> map = groupsModelList.get(position).getUnReadCounts();
+            Iterator myVeryOwnIterator = map.keySet().iterator();
+            while(myVeryOwnIterator.hasNext()) {
+                String key=(String)myVeryOwnIterator.next();
+                long value=(Long)map.get(key);
+                if (key.equals(myUid)){
+                    if (value>0){
+                        holder.tvMessagesCount.setVisibility(View.VISIBLE);
+                        holder.tvMessagesCount.setText(value+"");
+                    }else {
+                        holder.tvMessagesCount.setVisibility(View.GONE);
+                    }
+                }
+            }
         }
         if (showButton){
 
@@ -272,7 +290,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GHolder> {
     public class GHolder extends RecyclerView.ViewHolder{
 
         ImageView imageView, pending;
-        TextView tvGroupName, tvLastMessage;
+        TextView tvGroupName, tvLastMessage, tvMessagesCount;
         Button btnJoin;
 
         public GHolder(@NonNull View itemView) {
@@ -282,6 +300,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GHolder> {
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
             btnJoin = itemView.findViewById(R.id.btnJoin);
             pending = itemView.findViewById(R.id.pending);
+            tvMessagesCount = itemView.findViewById(R.id.tvMessagesCount);
         }
     }
 }

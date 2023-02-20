@@ -71,6 +71,20 @@
             android:visibility="gone"
             android:id="@+id/pending"/>
 
+        <TextView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:text="11"
+            android:textStyle="bold"
+            android:id="@+id/tvMessagesCount"
+            android:visibility="gone"
+            android:gravity="center"
+            android:background="@drawable/circle_gray"
+            android:backgroundTint="@color/colorMain"
+            android:textColor="@color/colorDarkGrey"
+            android:maxLines="1"
+            android:textSize="11sp"/>
+
     </LinearLayout>
 
 </RelativeLayout>

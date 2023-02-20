@@ -67,8 +67,7 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
 
-    LinearLayout btnProfile, btnNews, btnPlaces, btnCategories, btnSearch;
-    RelativeLayout btnJoinGroup;
+    LinearLayout btnProfile, btnNews, btnPlaces, btnCategories, btnSearch, btnJoinGroup;
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
     private NavigationView nv;

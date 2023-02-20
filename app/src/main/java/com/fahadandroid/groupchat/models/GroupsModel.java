@@ -15,6 +15,7 @@ public class GroupsModel implements Parcelable {
     HashMap<String, MessagesModel> messages;
     boolean deleted;
     List<String> approvedMembers, pendingMembers;
+    HashMap<String, Long> unReadCounts;
 
     protected GroupsModel(Parcel in) {
         createdOn = in.readLong();
@@ -32,6 +33,28 @@ public class GroupsModel implements Parcelable {
         pendingMembers = in.createStringArrayList();
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(createdOn);
+        dest.writeString(joined);
+        dest.writeString(key);
+        dest.writeString(businessKey);
+        dest.writeString(name);
+        dest.writeString(createdBy);
+        dest.writeString(category);
+        dest.writeString(pincode);
+        dest.writeStringList(categoryList);
+        dest.writeStringList(fileUrls);
+        dest.writeByte((byte) (deleted ? 1 : 0));
+        dest.writeStringList(approvedMembers);
+        dest.writeStringList(pendingMembers);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     public static final Creator<GroupsModel> CREATOR = new Creator<GroupsModel>() {
         @Override
         public GroupsModel createFromParcel(Parcel in) {
@@ -43,6 +66,14 @@ public class GroupsModel implements Parcelable {
             return new GroupsModel[size];
         }
     };
+
+    public HashMap<String, Long> getUnReadCounts() {
+        return unReadCounts;
+    }
+
+    public void setUnReadCounts(HashMap<String, Long> unReadCounts) {
+        this.unReadCounts = unReadCounts;
+    }
 
     public List<String> getCategoryList() {
         return categoryList;
@@ -168,25 +199,4 @@ public class GroupsModel implements Parcelable {
         this.name = name;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(createdOn);
-        parcel.writeString(joined);
-        parcel.writeString(key);
-        parcel.writeString(businessKey);
-        parcel.writeString(name);
-        parcel.writeString(createdBy);
-        parcel.writeString(category);
-        parcel.writeString(pincode);
-        parcel.writeStringList(categoryList);
-        parcel.writeStringList(fileUrls);
-        parcel.writeByte((byte) (deleted ? 1 : 0));
-        parcel.writeStringList(approvedMembers);
-        parcel.writeStringList(pendingMembers);
-    }
 }

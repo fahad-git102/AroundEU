@@ -88,8 +88,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -105,10 +107,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public static final int TAKE_PHOTO = 1000;
     private List<UserModel> membersList;
     ImageButton goBack, btnRecord;
-    GroupsModel thisgroupsModel;
+    GroupsModel thisGroupsModel;
     ItemTouchHelper itemTouchHelper;
     String key;
     UserModel mentionedUser;
+    HashMap<String, Long> messagesCountMap;
     MediaRecorder recorder;
     String fileName;
     ProgressBar progressBar;
@@ -147,6 +150,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         messagesModelList = new ArrayList<>();
         goBack = findViewById(R.id.goBack);
         btnInfo = findViewById(R.id.btnInfo);
+        messagesCountMap = new HashMap<>();
         membersList = new ArrayList<>();
         btnInfo.setOnClickListener(this);
         recycler_chat = findViewById(R.id.recycler_chat);
@@ -162,7 +166,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         storageReference = FirebaseStorage.getInstance().getReference().child("media");
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
         companyTimeModelRef = FirebaseDatabase.getInstance().getReference("companyTimeScheduled");
-        thisgroupsModel = getIntent().getParcelableExtra("groupModel");
+        thisGroupsModel = getIntent().getParcelableExtra("groupModel");
         getMembers();
         linearLayoutManager = new LinearLayoutManager(this);
         recycler_chat.setLayoutManager(linearLayoutManager);
@@ -240,12 +244,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         if (key == null) {
             progressBar.setVisibility(View.VISIBLE);
-            if (thisgroupsModel!=null){
+            if (thisGroupsModel !=null){
                 boolean isFound = false;
-                if (thisgroupsModel.getApprovedMembers()!=null){
-                    if (thisgroupsModel.getApprovedMembers().contains(mAuth.getCurrentUser().getUid())){
+                if (thisGroupsModel.getApprovedMembers()!=null){
+                    if (thisGroupsModel.getApprovedMembers().contains(mAuth.getCurrentUser().getUid())){
 
-                        if (thisgroupsModel.isDeleted()){
+                        if (thisGroupsModel.isDeleted()){
                             AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
                             builder.setTitle("Chat Unavailable");
                             builder.setMessage("This group is unavailable.");
@@ -267,7 +271,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             alertDialog.show();
                         }else {
                             isFound = true;
-                            key = thisgroupsModel.getKey();
+                            key = thisGroupsModel.getKey();
                             chatRef = firebaseDatabase.getReference("groups").child(key).child("messages");
                             getChat();
                             getMessages();
@@ -297,6 +301,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
             }
+        }else {
+            getMessagesCount();
+            readAllMessages();
         }
     }
 
@@ -305,8 +312,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         List<UserModel> refinedUsers = new ArrayList<>();
 
         for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
-            for (int i = 0; i<thisgroupsModel.getApprovedMembers().size(); i++){
-                if (thisgroupsModel.getApprovedMembers().get(i).equals(EUGroupChat.userModelList.get(a).getUid())){
+            for (int i = 0; i< thisGroupsModel.getApprovedMembers().size(); i++){
+                if (thisGroupsModel.getApprovedMembers().get(i).equals(EUGroupChat.userModelList.get(a).getUid())){
                     approvedMembers.add(EUGroupChat.userModelList.get(a));
                 }
             }
@@ -427,7 +434,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getChat(){
-        if (thisgroupsModel==null){
+        if (thisGroupsModel ==null){
             Query query = groupsRef.orderByChild("key").equalTo(key);
             query.addChildEventListener(new ChildEventListener() {
                 @Override
@@ -437,7 +444,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         if(groupsModel.getKey()==null){
                             groupsModel.setKey(snapshot.getKey());
                         }
-                        thisgroupsModel = groupsModel;
+                        thisGroupsModel = groupsModel;
                         tvGroupName.setText(groupsModel.getName());
                         getMembers();
                     }catch (Exception e){
@@ -452,7 +459,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         if(groupsModel.getKey()==null){
                             groupsModel.setKey(snapshot.getKey());
                         }
-                        thisgroupsModel = groupsModel;
+                        thisGroupsModel = groupsModel;
                         tvGroupName.setText(groupsModel.getName());
                         getMembers();
                     }catch (Exception e){
@@ -476,17 +483,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
         }else {
-            tvGroupName.setText(thisgroupsModel.getName());
+            tvGroupName.setText(thisGroupsModel.getName());
         }
 
     }
 
     private void getMembers(){
         membersList = new ArrayList<>();
-        if (thisgroupsModel!=null){
-            if (thisgroupsModel.getApprovedMembers()!=null){
+        if (thisGroupsModel !=null){
+            if (thisGroupsModel.getApprovedMembers()!=null){
                 for (UserModel item : EUGroupChat.userModelList){
-                    if (thisgroupsModel.getApprovedMembers().contains(item.getUid())){
+                    if (thisGroupsModel.getApprovedMembers().contains(item.getUid())){
                         membersList.add(item);
                     }
                 }
@@ -522,7 +529,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             btnGroupMembers.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (thisgroupsModel!=null){
+                    if (thisGroupsModel !=null){
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(ChatActivity.this);
                         View v = LayoutInflater.from(ChatActivity.this).inflate(R.layout.users_list_dialog, null);
                         RecyclerView recyclerUsers = v.findViewById(R.id.recycler_users);
@@ -633,6 +640,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         replyId = null;
                         if (task.isSuccessful()){
                             manageNotifications();
+                            manageMessagesCounts();
                         }
                     }
                 });
@@ -707,6 +715,113 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void readAllMessages(){
+        DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
+                child(key).child("unReadCounts");
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(mAuth.getCurrentUser().getUid(), 0L);
+        countsRef.updateChildren(map);
+    }
+
+    private void getMessagesCount(){
+        DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
+                child(key).child("unReadCounts");
+        countsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                try {
+                    String key = snapshot.getKey();
+                    long value = snapshot.getValue(Long.class);
+                    messagesCountMap.put(key, value);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                try {
+                    String key = snapshot.getKey();
+                    long value = snapshot.getValue(Long.class);
+                    messagesCountMap.put(key, value);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                try {
+                    String key = snapshot.getKey();
+                    messagesCountMap.put(key, 0L);
+                }catch (Exception e){}
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void manageMessagesCounts(){
+        List<String> idsList = new ArrayList<>();
+        List<UserModel> membersList = new ArrayList<>();
+        if (thisGroupsModel !=null){
+            if (thisGroupsModel.getApprovedMembers()!=null){
+                for(int i = 0; i< thisGroupsModel.getApprovedMembers().size(); i++){
+                    for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
+                        if (thisGroupsModel.getApprovedMembers().get(i).
+                                equals(EUGroupChat.userModelList.get(a).getUid())){
+                            if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
+                                membersList.add(EUGroupChat.userModelList.get(a));
+                            }
+                        }
+                    }
+                }
+                if (membersList.size()>0){
+                    for (int a = 0; a<membersList.size(); a++){
+                        if (!membersList.get(a).getUid().equals(EUGroupChat.currentUser.getUid())){
+                            if (membersList.get(a).getUserType()!=null){
+                                if (!membersList.get(a).getUserType().toLowerCase().equals("student")){
+                                    idsList.add(membersList.get(a).getUid());
+                                }
+                            }
+                        }
+
+                    }
+
+                    Set<String> keySet = messagesCountMap.keySet();
+                    ArrayList<String> listOfKeys
+                            = new ArrayList<String>(keySet);
+                    for (int i = 0; i < idsList.size(); i++){
+                        if (!listOfKeys.contains(idsList.get(i))){
+                            messagesCountMap.put(idsList.get(i), 1L);
+                        }
+                    }
+
+                    if (messagesCountMap.size()>0){
+                        Iterator myVeryOwnIterator = messagesCountMap.keySet().iterator();
+                        while(myVeryOwnIterator.hasNext()) {
+                            String key=(String)myVeryOwnIterator.next();
+                            long value=messagesCountMap.get(key);
+                            messagesCountMap.put(key, value+1);
+
+                        }
+                    }
+                    DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
+                            child(key).child("unReadCounts");
+                    countsRef.setValue(messagesCountMap);
+                }
+            }
+        }
+    }
+
     private void manageNotifications() {
         try {
             List<String> list = new ArrayList<>();
@@ -746,25 +861,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
             }
-
-//            if (thisgroupsModel.getApprovedMembers()!=null){
-//
-//                for (int a = 0; a<thisgroupsModel.getApprovedMembers().size(); a++){
-//                    for (int i = 0; i<EUGroupChat.userModelList.size(); i++){
-//                        if (EUGroupChat.userModelList.get(i).getUid()!=null){
-//                            if (!EUGroupChat.userModelList.get(i).getUid().equals(mAuth.getCurrentUser().getUid())){
-//                                if (!EUGroupChat.userModelList.get(i).isAdmin()&&!EUGroupChat.userModelList.get(i).getUserType().equals("Cordinator")){
-//                                    if (EUGroupChat.userModelList.get(i).getUid().equals(thisgroupsModel.getApprovedMembers().get(a))){
-//                                        if (EUGroupChat.userModelList.get(i).getDeviceTokens()!=null)
-//                                            list.addAll(EUGroupChat.userModelList.get(i).getDeviceTokens());
-//                                    }
-//                                }
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            }
             if (list!=null){
                 sendNotification(list, key);
             }
@@ -883,20 +979,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
         }else if (requestCode == PICK_IMAGE && resultCode == RESULT_OK  && data != null){
             if(data.getClipData() != null){
-
                 int count = data.getClipData().getItemCount();
                 for (int i=0; i<count; i++){
-
                     Uri imageUri = data.getClipData().getItemAt(i).getUri();
                     sendMessageWithAttachment(imageUri);
                 }
             }
             else if(data.getData() != null){
-
                 Uri imgUri = data.getData();
                 sendMessageWithAttachment(imgUri);
             }
-
         }else if (requestCode == GALLERY){
             if (data != null) {
                 Uri contentURI = data.getData();
@@ -919,7 +1011,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -928,7 +1019,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 ".jpg",
                 storageDir
         );
-
         picturepath = image.getAbsolutePath();
         return image;
     }
@@ -982,6 +1072,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 if (task.isSuccessful()){
                                     etTypeHere.setText("");
                                     manageNotifications();
+                                    manageMessagesCounts();
                                 }
                             }
                         });
@@ -1023,6 +1114,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 if (task.isSuccessful()){
                                     etTypeHere.setText("");
                                     manageNotifications();
+                                    manageMessagesCounts();
                                 }
                             }
                         });
@@ -1063,6 +1155,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                 if (task.isSuccessful()){
                                     etTypeHere.setText("");
                                     manageNotifications();
+                                    manageMessagesCounts();
                                 }
                             }
                         });
@@ -1116,7 +1209,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         Map<String, Object> map = new HashMap<>();
 
-        String title = thisgroupsModel.getName();
+        String title = thisGroupsModel.getName();
         String message = EUGroupChat.currentUser.getFirstName()+" sent a message in your group";
         map.put("title", title);
         map.put("message", message);
@@ -1147,7 +1240,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     private void sendMentionNotification(){
         Map<String, Object> map = new HashMap<>();
-        String title = thisgroupsModel.getName();
+        String title = thisGroupsModel.getName();
         String message = mentionedUser.getFirstName()+ " "+ mentionedUser.getSurName() + " mentioned you in a message.";
         map.put("title", title);
         map.put("message", message);
@@ -1451,6 +1544,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                     if (task.isSuccessful()) {
                                         etTypeHere.setText("");
                                         manageNotifications();
+                                        manageMessagesCounts();
                                     }
                                 }
                             });
@@ -1491,6 +1585,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         replyId = null;
                         etTypeHere.setText("");
                         manageNotifications();
+                        manageMessagesCounts();
                     }
                 }
             });
