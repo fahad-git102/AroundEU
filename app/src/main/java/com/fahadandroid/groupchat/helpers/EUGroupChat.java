@@ -31,7 +31,7 @@ public class EUGroupChat extends Application {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference usersRef, countriesRef, companiesRef;
     public static List<CompanyModel> barcelonaCompanyList, cataniaCompanyList, allCompanyList;
-    public static UserModel currentUser;
+    public static UserModel currentUser, admin;
     public static List<String> countryNamesList;
     public static List<CountryModel> countryModelList;
     FirebaseAuth mAuth;
@@ -68,6 +68,9 @@ public class EUGroupChat extends Application {
                                 currentUser = userModel;
                             }
                         }
+                        if (userModel.isAdmin()){
+                            admin = userModel;
+                        }
                     }
 
                 }catch (Exception e){}
@@ -84,6 +87,9 @@ public class EUGroupChat extends Application {
                             if (userModel.getUid().equals(mAuth.getCurrentUser().getUid())){
                                 currentUser = userModel;
                             }
+                        }
+                        if (userModel.isAdmin()){
+                            admin = userModel;
                         }
                     }
 

@@ -778,9 +778,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
                         if (thisGroupsModel.getApprovedMembers().get(i).
                                 equals(EUGroupChat.userModelList.get(a).getUid())){
-                            if (!EUGroupChat.userModelList.get(a).getUid().equals(mAuth.getCurrentUser().getUid())){
-                                membersList.add(EUGroupChat.userModelList.get(a));
-                            }
+                            membersList.add(EUGroupChat.userModelList.get(a));
                         }
                     }
                 }
@@ -799,11 +797,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     Set<String> keySet = messagesCountMap.keySet();
                     ArrayList<String> listOfKeys
                             = new ArrayList<String>(keySet);
-                    for (int i = 0; i < idsList.size(); i++){
-                        if (!listOfKeys.contains(idsList.get(i))){
-                            messagesCountMap.put(idsList.get(i), 1L);
-                        }
-                    }
 
                     if (messagesCountMap.size()>0){
                         Iterator myVeryOwnIterator = messagesCountMap.keySet().iterator();
@@ -811,8 +804,23 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             String key=(String)myVeryOwnIterator.next();
                             long value=messagesCountMap.get(key);
                             messagesCountMap.put(key, value+1);
-
+                            if (!listOfKeys.contains(key)){
+                                listOfKeys.add(key);
+                            }
                         }
+                    }
+                    for (int i = 0; i < idsList.size(); i++){
+                        if (!listOfKeys.contains(idsList.get(i))){
+                            messagesCountMap.put(idsList.get(i), 1L);
+                            listOfKeys.add(idsList.get(i));
+                        }
+                    }
+                    if (!listOfKeys.contains(EUGroupChat.admin.getUid())){
+                        messagesCountMap.put(EUGroupChat.admin.getUid(), 1L);
+                        listOfKeys.add(EUGroupChat.admin.getUid());
+                    }
+                    if (listOfKeys.contains(mAuth.getCurrentUser().getUid())){
+                        messagesCountMap.remove(mAuth.getCurrentUser().getUid());
                     }
                     DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
                             child(key).child("unReadCounts");
