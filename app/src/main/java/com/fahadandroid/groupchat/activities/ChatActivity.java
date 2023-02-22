@@ -815,10 +815,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             listOfKeys.add(idsList.get(i));
                         }
                     }
-                    if (!listOfKeys.contains(EUGroupChat.admin.getUid())){
-                        messagesCountMap.put(EUGroupChat.admin.getUid(), 1L);
-                        listOfKeys.add(EUGroupChat.admin.getUid());
+                    if (EUGroupChat.admin!=null){
+                        if (!listOfKeys.contains(EUGroupChat.admin.getUid())){
+                            messagesCountMap.put(EUGroupChat.admin.getUid(), 1L);
+                            listOfKeys.add(EUGroupChat.admin.getUid());
+                        }
                     }
+
                     if (listOfKeys.contains(mAuth.getCurrentUser().getUid())){
                         messagesCountMap.remove(mAuth.getCurrentUser().getUid());
                     }
