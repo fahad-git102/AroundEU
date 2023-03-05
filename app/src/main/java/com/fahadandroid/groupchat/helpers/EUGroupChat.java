@@ -133,7 +133,7 @@ public class EUGroupChat extends Application {
                     countryKeys.add(countryModel.getKey());
                     countryNamesList.add(countryModel.getCountryName());
                 }catch (Exception e){
-
+                    e.printStackTrace();
                 }
             }
 
@@ -145,7 +145,9 @@ public class EUGroupChat extends Application {
                     int index = countryKeys.indexOf(countryModel.getKey());
                     countryModelList.set(index, countryModel);
                     countryNamesList.set(index, countryModel.getCountryName());
-                }catch (Exception e){}
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
 
             @Override

@@ -717,141 +717,147 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void readAllMessages(){
-        DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
-                child(key).child("unReadCounts");
-        HashMap<String, Object> map = new HashMap<>();
-        map.put(mAuth.getCurrentUser().getUid(), 0L);
-        countsRef.updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                try {
-                    if (key != null){
-                        FirebaseDatabase.getInstance().getReference("unReadMessages")
-                                .child(mAuth.getCurrentUser().getUid()).child(key).setValue(false);
-                    }else if (thisGroupsModel!=null&&thisGroupsModel.getKey()!=null){
-                        FirebaseDatabase.getInstance().getReference("unReadMessages")
-                                .child(mAuth.getCurrentUser().getUid()).child(thisGroupsModel.getKey()).setValue(false);
-                    }
-                }catch (Exception e){}
-            }
-        });
+        try {
+            DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
+                    child(key).child("unReadCounts");
+            HashMap<String, Object> map = new HashMap<>();
+            map.put(mAuth.getCurrentUser().getUid(), 0L);
+            countsRef.updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    try {
+                        if (key != null){
+                            FirebaseDatabase.getInstance().getReference("unReadMessages")
+                                    .child(mAuth.getCurrentUser().getUid()).child(key).setValue(false);
+                        }else if (thisGroupsModel!=null&&thisGroupsModel.getKey()!=null){
+                            FirebaseDatabase.getInstance().getReference("unReadMessages")
+                                    .child(mAuth.getCurrentUser().getUid()).child(thisGroupsModel.getKey()).setValue(false);
+                        }
+                    }catch (Exception e){}
+                }
+            });
+        }catch (Exception e){}
     }
 
     private void getMessagesCount(){
-        DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
-                child(key).child("unReadCounts");
-        countsRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                try {
-                    String key = snapshot.getKey();
-                    long value = snapshot.getValue(Long.class);
-                    messagesCountMap.put(key, value);
-                }catch(Exception e){
-                    e.printStackTrace();
+        try {
+            DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
+                    child(key).child("unReadCounts");
+            countsRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    try {
+                        String key = snapshot.getKey();
+                        long value = snapshot.getValue(Long.class);
+                        messagesCountMap.put(key, value);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                try {
-                    String key = snapshot.getKey();
-                    long value = snapshot.getValue(Long.class);
-                    messagesCountMap.put(key, value);
-                }catch(Exception e){
-                    e.printStackTrace();
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    try {
+                        String key = snapshot.getKey();
+                        long value = snapshot.getValue(Long.class);
+                        messagesCountMap.put(key, value);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                try {
-                    String key = snapshot.getKey();
-                    messagesCountMap.put(key, 0L);
-                }catch (Exception e){}
-            }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                    try {
+                        String key = snapshot.getKey();
+                        messagesCountMap.put(key, 0L);
+                    }catch (Exception e){}
+                }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-            }
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){}
     }
 
     private void manageMessagesCounts(){
-        List<String> idsList = new ArrayList<>();
-        List<UserModel> membersList = new ArrayList<>();
-        if (thisGroupsModel !=null){
-            if (thisGroupsModel.getApprovedMembers()!=null){
-                for(int i = 0; i< thisGroupsModel.getApprovedMembers().size(); i++){
-                    for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
-                        if (thisGroupsModel.getApprovedMembers().get(i).
-                                equals(EUGroupChat.userModelList.get(a).getUid())){
-                            membersList.add(EUGroupChat.userModelList.get(a));
+        try {
+            List<String> idsList = new ArrayList<>();
+            List<UserModel> membersList = new ArrayList<>();
+            if (thisGroupsModel !=null){
+                if (thisGroupsModel.getApprovedMembers()!=null){
+                    for(int i = 0; i< thisGroupsModel.getApprovedMembers().size(); i++){
+                        for (int a = 0; a<EUGroupChat.userModelList.size(); a++){
+                            if (thisGroupsModel.getApprovedMembers().get(i).
+                                    equals(EUGroupChat.userModelList.get(a).getUid())){
+                                membersList.add(EUGroupChat.userModelList.get(a));
+                            }
                         }
                     }
-                }
-                if (membersList.size()>0){
-                    for (int a = 0; a<membersList.size(); a++){
-                        if (!membersList.get(a).getUid().equals(EUGroupChat.currentUser.getUid())){
-                            if (membersList.get(a).getUserType()!=null){
-                                if (!membersList.get(a).getUserType().toLowerCase().equals("student")){
-                                    idsList.add(membersList.get(a).getUid());
+                    if (membersList.size()>0){
+                        for (int a = 0; a<membersList.size(); a++){
+                            if (!membersList.get(a).getUid().equals(EUGroupChat.currentUser.getUid())){
+                                if (membersList.get(a).getUserType()!=null){
+                                    if (!membersList.get(a).getUserType().toLowerCase().equals("student")){
+                                        idsList.add(membersList.get(a).getUid());
+                                    }
+                                }
+                            }
+
+                        }
+
+                        Set<String> keySet = messagesCountMap.keySet();
+                        ArrayList<String> listOfKeys
+                                = new ArrayList<String>(keySet);
+
+                        if (messagesCountMap.size()>0){
+                            Iterator myVeryOwnIterator = messagesCountMap.keySet().iterator();
+                            while(myVeryOwnIterator.hasNext()) {
+                                String key=(String)myVeryOwnIterator.next();
+                                long value=messagesCountMap.get(key);
+                                messagesCountMap.put(key, value+1);
+                                if (!listOfKeys.contains(key)){
+                                    listOfKeys.add(key);
                                 }
                             }
                         }
-
-                    }
-
-                    Set<String> keySet = messagesCountMap.keySet();
-                    ArrayList<String> listOfKeys
-                            = new ArrayList<String>(keySet);
-
-                    if (messagesCountMap.size()>0){
-                        Iterator myVeryOwnIterator = messagesCountMap.keySet().iterator();
-                        while(myVeryOwnIterator.hasNext()) {
-                            String key=(String)myVeryOwnIterator.next();
-                            long value=messagesCountMap.get(key);
-                            messagesCountMap.put(key, value+1);
-                            if (!listOfKeys.contains(key)){
-                                listOfKeys.add(key);
+                        for (int i = 0; i < idsList.size(); i++){
+                            if (!listOfKeys.contains(idsList.get(i))){
+                                messagesCountMap.put(idsList.get(i), 1L);
+                                listOfKeys.add(idsList.get(i));
                             }
                         }
-                    }
-                    for (int i = 0; i < idsList.size(); i++){
-                        if (!listOfKeys.contains(idsList.get(i))){
-                            messagesCountMap.put(idsList.get(i), 1L);
-                            listOfKeys.add(idsList.get(i));
+                        if (EUGroupChat.admin!=null){
+                            if (!listOfKeys.contains(EUGroupChat.admin.getUid())){
+                                messagesCountMap.put(EUGroupChat.admin.getUid(), 1L);
+                                listOfKeys.add(EUGroupChat.admin.getUid());
+                            }
                         }
-                    }
-                    if (EUGroupChat.admin!=null){
-                        if (!listOfKeys.contains(EUGroupChat.admin.getUid())){
-                            messagesCountMap.put(EUGroupChat.admin.getUid(), 1L);
-                            listOfKeys.add(EUGroupChat.admin.getUid());
+
+                        if (listOfKeys.contains(mAuth.getCurrentUser().getUid())){
+                            messagesCountMap.remove(mAuth.getCurrentUser().getUid());
+                            listOfKeys.remove(mAuth.getCurrentUser().getUid());
                         }
-                    }
 
-                    if (listOfKeys.contains(mAuth.getCurrentUser().getUid())){
-                        messagesCountMap.remove(mAuth.getCurrentUser().getUid());
-                        listOfKeys.remove(mAuth.getCurrentUser().getUid());
-                    }
+                        for (String item : listOfKeys){
+                            FirebaseDatabase.getInstance().getReference("unReadMessages")
+                                    .child(item).child(thisGroupsModel.getKey()).setValue(true);
+                        }
 
-                    for (String item : listOfKeys){
-                        FirebaseDatabase.getInstance().getReference("unReadMessages")
-                                .child(item).child(thisGroupsModel.getKey()).setValue(true);
+                        DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
+                                child(key).child("unReadCounts");
+                        countsRef.setValue(messagesCountMap);
                     }
-
-                    DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
-                            child(key).child("unReadCounts");
-                    countsRef.setValue(messagesCountMap);
                 }
             }
-        }
+        }catch (Exception e){}
     }
 
     private void manageNotifications() {

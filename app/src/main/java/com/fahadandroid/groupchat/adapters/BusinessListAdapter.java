@@ -39,6 +39,7 @@ public class BusinessListAdapter extends RecyclerView.Adapter<BusinessListAdapte
     Context context;
     boolean showMenu=false;
     DatabaseReference businessListRef;
+    List<String> unReadList;
 
     public BusinessListAdapter(List<BusinessList> businessLists, Context context, boolean showMenu) {
         this.businessLists = businessLists;
@@ -47,11 +48,24 @@ public class BusinessListAdapter extends RecyclerView.Adapter<BusinessListAdapte
         businessListRef = FirebaseDatabase.getInstance().getReference("businessList");
     }
 
+    public BusinessListAdapter(List<BusinessList> businessLists, Context context, boolean showMenu, List<String> unReadList) {
+        this.businessLists = businessLists;
+        this.context = context;
+        this.showMenu = showMenu;
+        this.unReadList = unReadList;
+        businessListRef = FirebaseDatabase.getInstance().getReference("businessList");
+    }
+
     @NonNull
     @Override
     public BHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.string_list_item, parent, false);
         return new BHolder(view);
+    }
+
+    public void updateUnReadList(List<String> unReadList){
+        this.unReadList = unReadList;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -71,6 +85,14 @@ public class BusinessListAdapter extends RecyclerView.Adapter<BusinessListAdapte
 
         if (showMenu){
             holder.btnMore.setVisibility(View.VISIBLE);
+        }
+
+        if (unReadList!=null){
+            if(unReadList.contains(businessLists.get(position).getKey())){
+                holder.unReadDot.setVisibility(View.VISIBLE);
+            }else {
+                holder.unReadDot.setVisibility(View.GONE);
+            }
         }
 
         holder.btnMore.setOnClickListener(new View.OnClickListener() {
@@ -192,11 +214,13 @@ public class BusinessListAdapter extends RecyclerView.Adapter<BusinessListAdapte
     public class BHolder extends RecyclerView.ViewHolder{
         TextView text, tvCountry;
         ImageButton btnMore;
+        View unReadDot;
         public BHolder(@NonNull View itemView) {
             super(itemView);
             tvCountry = itemView.findViewById(R.id.tvCountry);
             text = itemView.findViewById(R.id.text);
             btnMore = itemView.findViewById(R.id.btnMore);
+            unReadDot = itemView.findViewById(R.id.view_unread_list);
         }
     }
 }

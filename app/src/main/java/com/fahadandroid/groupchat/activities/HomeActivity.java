@@ -267,93 +267,103 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getGroup(){
-        progress.setVisibility(View.VISIBLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-        groupsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    try {
-                        GroupsModel groupsModel = dataSnapshot.getValue(GroupsModel.class);
-                        groupsModel.setKey(dataSnapshot.getKey());
-                        if (groupsModel.getApprovedMembers()!=null) {
-                            if (groupsModel.getApprovedMembers().contains(mAuth.getCurrentUser().getUid())) {
-                                matchedGroup = groupsModel;
+        try {
+            progress.setVisibility(View.VISIBLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            groupsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot dataSnapshot: snapshot.getChildren()){
+                        try {
+                            GroupsModel groupsModel = dataSnapshot.getValue(GroupsModel.class);
+                            groupsModel.setKey(dataSnapshot.getKey());
+                            if (groupsModel.getApprovedMembers()!=null) {
+                                if (groupsModel.getApprovedMembers().contains(mAuth.getCurrentUser().getUid())) {
+                                    matchedGroup = groupsModel;
+                                }
                             }
-                        }
-                    }catch (Exception e){}
+                        }catch (Exception e){}
+                    }
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    progress.setVisibility(View.GONE);
                 }
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                progress.setVisibility(View.GONE);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){}
     }
 
     private void checkUnreadMessages(){
-        unReadHome.setVisibility(View.GONE);
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("unReadMessages")
-                .child(mAuth.getCurrentUser().getUid());
-        ref.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                try {
-                    String key = snapshot.getKey();
-                    boolean value = snapshot.getValue(Boolean.class);
-                    if (value){
-                        unReadHome.setVisibility(View.VISIBLE);
-                        unreadGroupsList.add(key);
-                    }
-                }catch (Exception e){}
-            }
+        try {
+            unReadHome.setVisibility(View.GONE);
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("unReadMessages")
+                    .child(mAuth.getCurrentUser().getUid());
+            ref.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    try {
+                        String key = snapshot.getKey();
+                        boolean value = snapshot.getValue(Boolean.class);
+                        if (value){
+                            unReadHome.setVisibility(View.VISIBLE);
+                            unreadGroupsList.add(key);
+                        }else {
+                            unreadGroupsList.remove(key);
+                        }
+                    }catch (Exception e){}
+                }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                try {
-                    checkUnreadMessages();
-                }catch (Exception e){}
-            }
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    try {
+                        checkUnreadMessages();
+                    }catch (Exception e){}
+                }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                try {
-                    unreadGroupsList.clear();
-                }catch (Exception e){}
-            }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                    try {
+                        unreadGroupsList.clear();
+                    }catch (Exception e){}
+                }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-            }
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                }
+            });
+        }catch (Exception e){}
+
     }
 
     private void deleteDeviceToken(){
-        List<String> deviceTokens = new ArrayList<>();
-        if (EUGroupChat.currentUser!=null){
-            if (EUGroupChat.currentUser.getDeviceTokens()!=null){
-                deviceTokens = EUGroupChat.currentUser.getDeviceTokens();
-            }
-            String myToken = MyFirebaseMessagingService.getToken(this);
-            if (myToken!=null){
-                if (deviceTokens.contains(myToken)){
-                    deviceTokens.remove(myToken);
+        try {
+            List<String> deviceTokens = new ArrayList<>();
+            if (EUGroupChat.currentUser!=null){
+                if (EUGroupChat.currentUser.getDeviceTokens()!=null){
+                    deviceTokens = EUGroupChat.currentUser.getDeviceTokens();
                 }
+                String myToken = MyFirebaseMessagingService.getToken(this);
+                if (myToken!=null){
+                    if (deviceTokens.contains(myToken)){
+                        deviceTokens.remove(myToken);
+                    }
+                }
+                Map<String, Object> map = new HashMap<>();
+                map.put("deviceTokens", deviceTokens);
+                usersRef.child(EUGroupChat.currentUser.getUid()).updateChildren(map);
             }
-            Map<String, Object> map = new HashMap<>();
-            map.put("deviceTokens", deviceTokens);
-            usersRef.child(EUGroupChat.currentUser.getUid()).updateChildren(map);
-        }
+        }catch (Exception e){}
+
     }
 
     @Override
