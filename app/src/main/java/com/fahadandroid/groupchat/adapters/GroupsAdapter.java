@@ -92,6 +92,8 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GHolder> {
                     }
                 }
             }
+        }else {
+            holder.tvMessagesCount.setVisibility(View.GONE);
         }
         if (showButton){
 

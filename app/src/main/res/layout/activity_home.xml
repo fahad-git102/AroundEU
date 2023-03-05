@@ -103,33 +103,50 @@
 
                 </LinearLayout>
 
-                <LinearLayout android:layout_width="0dp"
+                <RelativeLayout android:layout_width="0dp"
                     android:layout_weight="1"
                     android:foreground="?selectableItemBackground"
                     android:clickable="true"
-                    android:orientation="vertical"
-                    android:gravity="center"
                     android:id="@+id/btnJoinGroup"
                     android:layout_height="wrap_content">
 
-                    <ImageView
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:padding="4dp"
-                        android:background="@android:color/transparent"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/chat"/>
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Chat"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorDarkGrey"/>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:padding="4dp"
+                            android:background="@android:color/transparent"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/chat"/>
 
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chat"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorDarkGrey"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="25dp"
+                        android:id="@+id/view_unread_home"
+                        android:layout_height="25dp"
+                        android:visibility="gone"
+                        android:background="@drawable/circle_gray"
+                        android:layout_alignParentEnd="true"
+                        android:backgroundTint="@color/colorRed"
+                        android:layout_marginTop="45dp"
+                        android:layout_marginEnd="18dp"/>
+
+                </RelativeLayout>
 
                 <LinearLayout android:layout_width="0dp"
                     android:layout_weight="1"

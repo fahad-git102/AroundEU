@@ -1,6 +1,9 @@
 package com.fahadandroid.groupchat.activities;
 
+import static com.fahadandroid.groupchat.helpers.Constants.unreadGroupsList;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,6 +56,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,7 +71,8 @@ import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
 
-    LinearLayout btnProfile, btnNews, btnPlaces, btnCategories, btnSearch, btnJoinGroup;
+    LinearLayout btnProfile, btnNews, btnPlaces, btnCategories, btnSearch;
+    RelativeLayout btnJoinGroup;
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
     private NavigationView nv;
@@ -75,6 +80,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     TextView tvCordinatorsCountry;
     CardView progress;
     CompanyModel myCompany;
+    View unReadHome;
     String cordinatorCountry;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference usersRef, groupsRef, countriesRef, companyTimeScheduledRef;
@@ -91,7 +97,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         openDrawer = findViewById(R.id.openDrawer);
         openDrawer.setOnClickListener(this);
         btnCategories = findViewById(R.id.btnCategories);
+        unreadGroupsList = new ArrayList<>();
         btnCategories.setOnClickListener(this);
+        unReadHome = findViewById(R.id.view_unread_home);
         progress = findViewById(R.id.progress);
         btnSearch = findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(this);
@@ -255,6 +263,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         requestAppPermissions();
+        checkUnreadMessages();
     }
 
     private void getGroup(){
@@ -277,6 +286,49 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 progress.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void checkUnreadMessages(){
+        unReadHome.setVisibility(View.GONE);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("unReadMessages")
+                .child(mAuth.getCurrentUser().getUid());
+        ref.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                try {
+                    String key = snapshot.getKey();
+                    boolean value = snapshot.getValue(Boolean.class);
+                    if (value){
+                        unReadHome.setVisibility(View.VISIBLE);
+                        unreadGroupsList.add(key);
+                    }
+                }catch (Exception e){}
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                try {
+                    checkUnreadMessages();
+                }catch (Exception e){}
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                try {
+                    unreadGroupsList.clear();
+                }catch (Exception e){}
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
             }
 
             @Override

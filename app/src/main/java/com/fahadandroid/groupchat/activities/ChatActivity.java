@@ -11,6 +11,7 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Database;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -720,7 +721,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 child(key).child("unReadCounts");
         HashMap<String, Object> map = new HashMap<>();
         map.put(mAuth.getCurrentUser().getUid(), 0L);
-        countsRef.updateChildren(map);
+        countsRef.updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                try {
+                    if (key != null){
+                        FirebaseDatabase.getInstance().getReference("unReadMessages")
+                                .child(mAuth.getCurrentUser().getUid()).child(key).setValue(false);
+                    }else if (thisGroupsModel!=null&&thisGroupsModel.getKey()!=null){
+                        FirebaseDatabase.getInstance().getReference("unReadMessages")
+                                .child(mAuth.getCurrentUser().getUid()).child(thisGroupsModel.getKey()).setValue(false);
+                    }
+                }catch (Exception e){}
+            }
+        });
     }
 
     private void getMessagesCount(){
@@ -824,7 +838,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                     if (listOfKeys.contains(mAuth.getCurrentUser().getUid())){
                         messagesCountMap.remove(mAuth.getCurrentUser().getUid());
+                        listOfKeys.remove(mAuth.getCurrentUser().getUid());
                     }
+
+                    for (String item : listOfKeys){
+                        FirebaseDatabase.getInstance().getReference("unReadMessages")
+                                .child(item).child(thisGroupsModel.getKey()).setValue(true);
+                    }
+
                     DatabaseReference countsRef= FirebaseDatabase.getInstance().getReference("groups").
                             child(key).child("unReadCounts");
                     countsRef.setValue(messagesCountMap);
