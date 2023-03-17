@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.StringHorizontalAdapter;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
@@ -436,7 +437,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements View.OnCl
         try {
             Bitmap bmp = HelperClass.handleSamplingAndRotationBitmap(PersonalInfoActivity.this, uri);
             contentUri = HelperClass.getImageUri(PersonalInfoActivity.this, bmp);
-            profilePic.setImageBitmap(bmp);
+            Glide.with(PersonalInfoActivity.this).asBitmap().load(bmp).fitCenter().into(profilePic);
         } catch (IOException e) {
             e.printStackTrace();
         }

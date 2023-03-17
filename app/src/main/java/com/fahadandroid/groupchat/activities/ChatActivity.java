@@ -244,6 +244,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         if (key == null) {
+            chatRef = firebaseDatabase.getReference("groups").child(key).child("messages");
             progressBar.setVisibility(View.VISIBLE);
             if (thisGroupsModel !=null){
                 boolean isFound = false;
@@ -349,10 +350,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-            permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-        }
-        if (!permissionToRecordAccepted ) finish();
+        try{
+            if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            }
+            if (!permissionToRecordAccepted ) finish();
+        }catch (Exception e){}
+
 
     }
 
@@ -490,16 +494,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getMembers(){
-        membersList = new ArrayList<>();
-        if (thisGroupsModel !=null){
-            if (thisGroupsModel.getApprovedMembers()!=null){
-                for (UserModel item : EUGroupChat.userModelList){
-                    if (thisGroupsModel.getApprovedMembers().contains(item.getUid())){
-                        membersList.add(item);
+        try {
+            membersList = new ArrayList<>();
+            if (thisGroupsModel !=null){
+                if (thisGroupsModel.getApprovedMembers()!=null){
+                    for (UserModel item : EUGroupChat.userModelList){
+                        if (thisGroupsModel.getApprovedMembers().contains(item.getUid())){
+                            membersList.add(item);
+                        }
                     }
                 }
             }
-        }
+        }catch (Exception e){}
     }
 
     @Override

@@ -41,6 +41,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.PlacesAdapter;
@@ -84,7 +85,7 @@ import static com.fahadandroid.groupchat.activities.ChatActivity.TAKE_PHOTO;
 
 public class PlacesActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private static final int AUTOCOMPLETE_REQUEST_CODE = 1001;
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1901;
     ImageButton goBack;
     RecyclerView recyclerPlaces;
     StorageReference storageReference;
@@ -401,7 +402,8 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
         try {
             Bitmap bmp = HelperClass.handleSamplingAndRotationBitmap(PlacesActivity.this, uri);
             contentUri = HelperClass.getImageUri(PlacesActivity.this, bmp);
-            add_image.setImageBitmap(bmp);
+            Toast.makeText(this, "new bmp", Toast.LENGTH_SHORT).show();
+            Glide.with(PlacesActivity.this).asBitmap().load(bmp).fitCenter().into(add_image);
         } catch (IOException e) {
             e.printStackTrace();
         }

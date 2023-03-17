@@ -32,8 +32,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.fahadandroid.groupchat.activities.NewsActivity;
 import com.fahadandroid.groupchat.R;
+import com.fahadandroid.groupchat.activities.PlacesActivity;
 import com.fahadandroid.groupchat.helpers.EUGroupChat;
 import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.models.NewsModel;
@@ -352,7 +354,7 @@ public class AddNewsFragment extends Fragment implements View.OnClickListener{
                 OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
                 os.close();
-                btnAddImage.setImageBitmap(bitmap);
+                Glide.with(requireContext()).asBitmap().load(bitmap).fitCenter().into(btnAddImage);
             } catch (IOException e) {
                 e.printStackTrace();
             }
