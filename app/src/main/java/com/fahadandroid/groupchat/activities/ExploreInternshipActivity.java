@@ -77,42 +77,44 @@ public class ExploreInternshipActivity extends AppCompatActivity implements View
         recycler_companies.setLayoutManager(new LinearLayoutManager(this));
         goBack = findViewById(R.id.goBack);
         goBack.setOnClickListener(this);
-        selectedCountry = EUGroupChat.countryNamesList.get(0);
-        String[] items = new String[EUGroupChat.countryNamesList.size()];
-        EUGroupChat.countryNamesList.toArray(items);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selectedCountry = items[i];
+        try {
+            selectedCountry = EUGroupChat.countryNamesList.get(0);
+            String[] items = new String[EUGroupChat.countryNamesList.size()];
+            EUGroupChat.countryNamesList.toArray(items);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    selectedCountry = items[i];
 
-                selectedCompanyModelList = new ArrayList<>();
-                selectedCompanyModelList.clear();
+                    selectedCompanyModelList = new ArrayList<>();
+                    selectedCompanyModelList.clear();
 
-                for (int a = 0; a<allCompanyList.size(); a++){
-                    if (allCompanyList.get(a).getSelectedCountry().equals(selectedCountry)||allCompanyList.get(a).getSelectedCountry().contains(selectedCountry)){
-                        selectedCompanyModelList.add(allCompanyList.get(a));
+                    for (int a = 0; a<allCompanyList.size(); a++){
+                        if (allCompanyList.get(a).getSelectedCountry().equals(selectedCountry)||allCompanyList.get(a).getSelectedCountry().contains(selectedCountry)){
+                            selectedCompanyModelList.add(allCompanyList.get(a));
+                        }
                     }
+                    recycler_companies.setAdapter(null);
+                    adapter = new CompanyAdapter(selectedCompanyModelList, ExploreInternshipActivity.this, fromAdmin);
+                    recycler_companies.setAdapter(adapter);
+                    RecycleClick.addTo(recycler_companies).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+                        @Override
+                        public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+                            Intent intent = new Intent(ExploreInternshipActivity.this, CompanyDetailActivity.class);
+                            intent.putExtra("company", selectedCompanyModelList.get(i));
+                            intent.putExtra("companyID", selectedCompanyModelList.get(i).getKey());
+                            intent.putExtra("fromAdmin", fromAdmin);
+                            startActivity(intent);
+                        }
+                    });
                 }
-                recycler_companies.setAdapter(null);
-                adapter = new CompanyAdapter(selectedCompanyModelList, ExploreInternshipActivity.this, fromAdmin);
-                recycler_companies.setAdapter(adapter);
-                RecycleClick.addTo(recycler_companies).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
-                    @Override
-                    public void onItemClicked(RecyclerView recyclerView, int i, View view) {
-                        Intent intent = new Intent(ExploreInternshipActivity.this, CompanyDetailActivity.class);
-                        intent.putExtra("company", selectedCompanyModelList.get(i));
-                        intent.putExtra("companyID", selectedCompanyModelList.get(i).getKey());
-                        intent.putExtra("fromAdmin", fromAdmin);
-                        startActivity(intent);
-                    }
-                });
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
-        });
-        ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,items);
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(aa);
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) { }
+            });
+            ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,items);
+            aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(aa);
+        }catch (Exception e){}
 
     }
 

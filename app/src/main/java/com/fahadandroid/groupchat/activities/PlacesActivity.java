@@ -363,12 +363,15 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                etLocation.setText(place.getAddress());
-                selectedLocation = new Location("");
-                selectedLocName = place.getAddress();
-                selectedLocation.setLatitude(place.getLatLng().latitude);
-                selectedLocation.setLongitude(place.getLatLng().longitude);
+                try {
+                    Place place = Autocomplete.getPlaceFromIntent(data);
+                    etLocation.setText(place.getAddress());
+                    selectedLocation = new Location("");
+                    selectedLocName = place.getAddress();
+                    selectedLocation.setLatitude(place.getLatLng().latitude);
+                    selectedLocation.setLongitude(place.getLatLng().longitude);
+                }catch(Exception e){}
+
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 // TODO: Handle the error.
                 Status status = Autocomplete.getStatusFromIntent(data);
@@ -383,12 +386,17 @@ public class PlacesActivity extends AppCompatActivity implements View.OnClickLis
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == TAKE_PHOTO){
             if (resultCode==RESULT_OK){
-                galleryAddPic();
+                try {
+                    galleryAddPic();
+                }catch (Exception e){}
             }
         }else if (requestCode == PICK_IMAGE){
             if (resultCode == RESULT_OK){
-                contentUri = data.getData();
-                add_image.setImageURI(contentUri);
+                try {
+                    contentUri = data.getData();
+                    add_image.setImageURI(contentUri);
+                }catch (Exception e){}
+
             }
         }
     }

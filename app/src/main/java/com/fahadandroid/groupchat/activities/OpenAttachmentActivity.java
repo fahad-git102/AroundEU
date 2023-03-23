@@ -171,7 +171,17 @@ public class OpenAttachmentActivity extends AppCompatActivity implements View.On
             builder =
                     new NotificationCompat.Builder(getApplicationContext(), "notify_001");
             Intent ii = new Intent(getApplicationContext(), SplashActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, 0);
+//            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, 0);
+            PendingIntent pendingIntent = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                pendingIntent = PendingIntent.getActivity
+                        (this, 0, ii, PendingIntent.FLAG_MUTABLE);
+            }
+            else
+            {
+                pendingIntent = PendingIntent.getActivity
+                        (this, 0, ii, PendingIntent.FLAG_ONE_SHOT);
+            }
 
             NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
             bigText.bigText("Download Started...");
