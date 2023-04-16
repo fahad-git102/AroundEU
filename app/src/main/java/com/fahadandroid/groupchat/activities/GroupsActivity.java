@@ -12,9 +12,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -186,25 +189,15 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
             recyclerItems.setLayoutManager(new LinearLayoutManager(GroupsActivity.this, LinearLayoutManager.HORIZONTAL, false));
             uriAdapter = new UriSmallAdapter(uriList, GroupsActivity.this);
             recyclerItems.setAdapter(uriAdapter);
-            MultiSpinnerSearch singleSpinnerSearch = view1.findViewById(R.id.singleItemSelectionSpinner);
             List<String> selectedItems = new ArrayList<>();
-            List<KeyPairBoolData> keyPairBoolDataList = new ArrayList<>();
-            keyPairBoolDataList.add(new KeyPairBoolData("Accommodation", false));
-            keyPairBoolDataList.add(new KeyPairBoolData("Food", false));
-            keyPairBoolDataList.add(new KeyPairBoolData("Classes", false));
-            keyPairBoolDataList.add(new KeyPairBoolData("Others", false));
-            singleSpinnerSearch.setItems(keyPairBoolDataList, new MultiSpinnerListener() {
+            TextView tvSelectCategories = view1.findViewById(R.id.selectedCategories);
+            tvSelectCategories.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onItemsSelected(List<KeyPairBoolData> items) {
-                    for (int i = 0; i < items.size(); i++) {
-                        if (items.get(i).isSelected()) {
-                            selectedItems.add(items.get(i).getName());
-                        }
-                    }
-                    selectedCategory = selectedItems.toString();
+                public void onClick(View view) {
+                    selectedItems.clear();
+                    openSelectionDialog(selectedItems, tvSelectCategories);
                 }
             });
-
             Button btnSave = view1.findViewById(R.id.btnSave);
             builder.setView(view1);
             AlertDialog alertDialog = builder.create();
@@ -219,6 +212,68 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
             alertDialog.show();
         }
     }
+
+    private void openSelectionDialog(List<String> selectedItems, TextView tvSelectCategories){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View v = LayoutInflater.from(this).inflate(R.layout.selection_dialog, null);
+        Button btnDone = v.findViewById(R.id.btnDone);
+        CheckBox checkFood = v.findViewById(R.id.checkBox_food);
+        CheckBox checkAccomodation = v.findViewById(R.id.checkBox_accomodation);
+        CheckBox checkOthers = v.findViewById(R.id.checkBox_others);
+        CheckBox checkClasses = v.findViewById(R.id.checkBox_classes);
+        checkFood.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    selectedItems.add("Food");
+                }else {
+                    selectedItems.remove("Food");
+                }
+            }
+        });
+        checkAccomodation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    selectedItems.add("Accommodation");
+                }else {
+                    selectedItems.remove("Accommodation");
+                }
+            }
+        });
+        checkClasses.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    selectedItems.add("Classes");
+                }else {
+                    selectedItems.remove("Classes");
+                }
+            }
+        });
+        checkOthers.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    selectedItems.add("Others");
+                }else {
+                    selectedItems.remove("Others");
+                }
+            }
+        });
+        builder.setView(v);
+        AlertDialog alertDialog = builder.create();
+        btnDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectedCategory = selectedItems.toString();
+                alertDialog.dismiss();
+                tvSelectCategories.setText(selectedCategory);
+            }
+        });
+        alertDialog.show();
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

@@ -18,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
@@ -164,14 +166,73 @@ public class ManageRequestsActivity extends AppCompatActivity implements View.On
                                 LinearLayoutManager.HORIZONTAL, false));
                         uriAdapter = new UriSmallAdapter(uriList, ManageRequestsActivity.this);
                         recyclerItems.setAdapter(uriAdapter);
-
-                        MultiSpinnerSearch singleSpinnerSearch = view.findViewById(R.id.singleItemSelectionSpinner);
                         List<String> selectedItems = new ArrayList<>();
-                        List<KeyPairBoolData> keyPairBoolDataList = new ArrayList<>();
-                        keyPairBoolDataList.add(new KeyPairBoolData("Accomodation", false));
-                        keyPairBoolDataList.add(new KeyPairBoolData("Food", false));
-                        keyPairBoolDataList.add(new KeyPairBoolData("Classes", false));
-                        keyPairBoolDataList.add(new KeyPairBoolData("Others", false));
+                        TextView tvSelectCategories = view.findViewById(R.id.selectedCategories);
+                        tvSelectCategories.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                selectedItems.clear();
+                                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(ManageRequestsActivity.this);
+                                View v = LayoutInflater.from(ManageRequestsActivity.this).inflate(R.layout.selection_dialog, null);
+                                Button btnDone = v.findViewById(R.id.btnDone);
+                                CheckBox checkFood = v.findViewById(R.id.checkBox_food);
+                                CheckBox checkAccomodation = v.findViewById(R.id.checkBox_accomodation);
+                                CheckBox checkOthers = v.findViewById(R.id.checkBox_others);
+                                CheckBox checkClasses = v.findViewById(R.id.checkBox_classes);
+                                checkFood.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                                        if (b){
+                                            selectedItems.add("Food");
+                                        }else {
+                                            selectedItems.remove("Food");
+                                        }
+                                    }
+                                });
+                                checkAccomodation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                                        if (b){
+                                            selectedItems.add("Accommodation");
+                                        }else {
+                                            selectedItems.remove("Accommodation");
+                                        }
+                                    }
+                                });
+                                checkClasses.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                                        if (b){
+                                            selectedItems.add("Classes");
+                                        }else {
+                                            selectedItems.remove("Classes");
+                                        }
+                                    }
+                                });
+                                checkOthers.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                                        if (b){
+                                            selectedItems.add("Others");
+                                        }else {
+                                            selectedItems.remove("Others");
+                                        }
+                                    }
+                                });
+                                builder.setView(v);
+                                android.app.AlertDialog alertDialog = builder.create();
+                                btnDone.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        alertDialog.dismiss();
+                                        selectedCategory[0] = selectedItems.toString();
+                                        String cats = "Selected Categories= "+selectedItems.toString().replace(", ", ",").replaceAll("[\\[.\\]]", "");
+                                        tvSelectedCategories.setText(cats);
+                                    }
+                                });
+                                alertDialog.show();
+                            }
+                        });
                         if (myGroup!=null){
                             etName.setText(myGroup.getName());
                             etPincode.setText(myGroup.getPincode()+"");
@@ -192,20 +253,6 @@ public class ManageRequestsActivity extends AppCompatActivity implements View.On
                                 uriAdapter.notifyDataSetChanged();
                             }
                         }
-                        singleSpinnerSearch.setItems(keyPairBoolDataList, new MultiSpinnerListener() {
-                            @Override
-                            public void onItemsSelected(List<KeyPairBoolData> items) {
-                                for (int i = 0; i < items.size(); i++) {
-                                    if (items.get(i).isSelected()) {
-                                        selectedItems.add(items.get(i).getName());
-                                    }
-                                }
-                                selectedCategory[0] = selectedItems.toString();
-                                String cats = "Selected Categories= "+selectedItems.toString().replace(", ", ",").replaceAll("[\\[.\\]]", "");
-                                tvSelectedCategories.setText(cats);
-                            }
-                        });
-
                         Button btnSave = view.findViewById(R.id.btnSave);
                         builder1.setView(view);
                         AlertDialog alertDialog1 = builder1.create();
