@@ -16,6 +16,7 @@ public class GroupsModel implements Parcelable {
     boolean deleted;
     List<String> approvedMembers, pendingMembers;
     HashMap<String, Long> unReadCounts;
+    List<FileUrl> fileUrlsWithNames;
 
     protected GroupsModel(Parcel in) {
         createdOn = in.readLong();
@@ -31,6 +32,7 @@ public class GroupsModel implements Parcelable {
         deleted = in.readByte() != 0;
         approvedMembers = in.createStringArrayList();
         pendingMembers = in.createStringArrayList();
+        fileUrlsWithNames = in.createTypedArrayList(FileUrl.CREATOR);
     }
 
     @Override
@@ -48,6 +50,7 @@ public class GroupsModel implements Parcelable {
         dest.writeByte((byte) (deleted ? 1 : 0));
         dest.writeStringList(approvedMembers);
         dest.writeStringList(pendingMembers);
+        dest.writeTypedList(fileUrlsWithNames);
     }
 
     @Override
@@ -66,6 +69,14 @@ public class GroupsModel implements Parcelable {
             return new GroupsModel[size];
         }
     };
+
+    public List<FileUrl> getFileUrlsWithNames() {
+        return fileUrlsWithNames;
+    }
+
+    public void setFileUrlsWithNames(List<FileUrl> fileUrlsWithNames) {
+        this.fileUrlsWithNames = fileUrlsWithNames;
+    }
 
     public HashMap<String, Long> getUnReadCounts() {
         return unReadCounts;

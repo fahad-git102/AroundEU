@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,7 @@ import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.GroupsAdapter;
 import com.fahadandroid.groupchat.adapters.UriSmallAdapter;
 import com.fahadandroid.groupchat.models.BusinessList;
+import com.fahadandroid.groupchat.models.FileUrl;
 import com.fahadandroid.groupchat.models.GroupsModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,7 +51,9 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GroupsActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -300,10 +305,11 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
             progressDialog.setCancelable(false);
             progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
-
+            List<FileUrl> fileUrlList = new ArrayList<>();
             List<String> urls = new ArrayList<>();
             for (int i = 0; i<uriList.size(); i++){
                 File file = new File(fileUri.toString());
+                Uri fileR = uriList.get(i);
                 storageReference.child(file.getName()).putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -311,6 +317,8 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
                             @Override
                             public void onSuccess(Uri uri) {
                                 String url = uri.toString();
+                                FileUrl fileUrl = new FileUrl(url, getUriName(fileR));
+                                fileUrlList.add(fileUrl);
                                 urls.add(url);
                                 if (urls.size()>=uriList.size()){
                                     int pincode = Integer.parseInt(pincodeSting);
@@ -319,6 +327,9 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
                                     groupsModel.setFileUrls(urls);
                                     groupsModel.setCategory(selectedCategory);
                                     String key = groupsRef.push().getKey();
+                                    if (fileUrlList.size()>0){
+                                        groupsModel.setFileUrlsWithNames(fileUrlList);
+                                    }
                                     groupsModel.setKey(key);
                                     groupsRef.child(key).setValue(groupsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
@@ -337,5 +348,14 @@ public class GroupsActivity extends AppCompatActivity implements View.OnClickLis
             Toast.makeText(GroupsActivity.this, "Full Data required", Toast.LENGTH_SHORT).show();
         }
     }
-
+    private String getUriName(Uri uri){
+        try{
+            Cursor returnCursor = getContentResolver().query(uri, null, null, null, null);
+            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            returnCursor.moveToFirst();
+            return returnCursor.getString(nameIndex);
+        }catch (Exception e){
+            return "File";
+        }
+    }
 }

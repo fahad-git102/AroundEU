@@ -58,6 +58,7 @@ import com.fahadandroid.groupchat.helpers.HelperClass;
 import com.fahadandroid.groupchat.helpers.MyScrollToBottomObserver;
 import com.fahadandroid.groupchat.models.ComapnyTimeScheduledModel;
 import com.fahadandroid.groupchat.models.CompanyModel;
+import com.fahadandroid.groupchat.models.FileUrl;
 import com.fahadandroid.groupchat.models.GroupsModel;
 import com.fahadandroid.groupchat.models.MessagesModel;
 import com.fahadandroid.groupchat.models.UserModel;
@@ -577,15 +578,27 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             if (groupsModel.getCategory()!=null){
                                 tvAccommodation.setText(groupsModel.getCategory());
                             }
-                            if (groupsModel.getFileUrls()!=null){
 
-                                StringPdfsAdapter adapter = new StringPdfsAdapter(groupsModel.getFileUrls(), ChatActivity.this);
+                            if (groupsModel.getFileUrlsWithNames()==null&&groupsModel.getFileUrls()!=null){
+                                List<FileUrl> fileUrlList = new ArrayList<>();
+                                for (int i = 0; i<groupsModel.getFileUrls().size(); i++){
+                                    FileUrl fileUrl = new FileUrl(groupsModel.getFileUrls().get(i), "File "+i);
+                                    fileUrlList.add(fileUrl);
+                                }
+                                if (fileUrlList.size()>0){
+                                    groupsModel.setFileUrlsWithNames(fileUrlList);
+                                }
+                            }
+
+                            if (groupsModel.getFileUrlsWithNames()!=null){
+
+                                StringPdfsAdapter adapter = new StringPdfsAdapter(groupsModel.getFileUrlsWithNames(), ChatActivity.this);
                                 recyclerPdfs.setAdapter(adapter);
                                 RecycleClick.addTo(recyclerPdfs).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
                                     @Override
                                     public void onItemClicked(RecyclerView recyclerView, int i, View view) {
                                         Intent intent = new Intent(ChatActivity.this, LoadPdfActivity.class);
-                                        intent.putExtra("url", groupsModel.getFileUrls().get(i));
+                                        intent.putExtra("url", groupsModel.getFileUrlsWithNames().get(i).getUrl());
                                         startActivity(intent);
                                     }
                                 });

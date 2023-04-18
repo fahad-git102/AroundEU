@@ -3,6 +3,7 @@ package com.fahadandroid.groupchat.adminFragments;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +34,7 @@ import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.BusinessListAdapter;
 import com.fahadandroid.groupchat.adapters.UriSmallAdapter;
 import com.fahadandroid.groupchat.models.BusinessList;
+import com.fahadandroid.groupchat.models.FileUrl;
 import com.fahadandroid.groupchat.models.GroupsModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,6 +51,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -368,10 +372,11 @@ public class AddGroupsFragment extends Fragment {
             progressDialog.setCancelable(false);
             progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
-
+            List<FileUrl> fileUrlList = new ArrayList<>();
             List<String> urls = new ArrayList<>();
             for (int i = 0; i<uriList.size(); i++){
                 File file = new File(fileUri.toString());
+                Uri fileR = uriList.get(i);
                 storageReference.child(file.getName()).putFile(fileUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -379,6 +384,8 @@ public class AddGroupsFragment extends Fragment {
                             @Override
                             public void onSuccess(Uri uri) {
                                 String url = uri.toString();
+                                FileUrl fileUrl = new FileUrl(url, getUriName(fileR));
+                                fileUrlList.add(fileUrl);
                                 urls.add(url);
                                 if (urls.size()>=uriList.size()){
                                     int pincode = Integer.parseInt(pincodeSting);
@@ -386,6 +393,9 @@ public class AddGroupsFragment extends Fragment {
                                             name, mAuth.getCurrentUser().getUid(), String.valueOf(pincode), selectedItems);
                                     groupsModel.setFileUrls(urls);
                                     groupsModel.setCategory(selectedCategory);
+                                    if (fileUrlList.size()>0){
+                                        groupsModel.setFileUrlsWithNames(fileUrlList);
+                                    }
                                     String key = groupsRef.push().getKey();
                                     groupsModel.setKey(key);
                                     groupsRef.child(key).setValue(groupsModel).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -408,5 +418,14 @@ public class AddGroupsFragment extends Fragment {
             Toast.makeText(requireContext(), "Full Data required", Toast.LENGTH_SHORT).show();
         }
     }
-
+    private String getUriName(Uri uri){
+        try{
+            Cursor returnCursor = requireContext().getContentResolver().query(uri, null, null, null, null);
+            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            returnCursor.moveToFirst();
+            return returnCursor.getString(nameIndex);
+        }catch (Exception e){
+            return "File";
+        }
+    }
 }

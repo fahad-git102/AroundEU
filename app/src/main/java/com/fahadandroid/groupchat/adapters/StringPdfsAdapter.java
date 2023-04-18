@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fahadandroid.groupchat.R;
+import com.fahadandroid.groupchat.models.FileUrl;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -21,14 +22,16 @@ import com.google.firebase.storage.StorageReference;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StringPdfsAdapter extends RecyclerView.Adapter<StringPdfsAdapter.SPHolder> {
 
-    List<String> stringList;
+    List<FileUrl> stringList;
     Context context;
 
-    public StringPdfsAdapter(List<String> stringList, Context context) {
+    public StringPdfsAdapter(List<FileUrl> stringList, Context context) {
         this.stringList = stringList;
         this.context = context;
     }
@@ -43,35 +46,17 @@ public class StringPdfsAdapter extends RecyclerView.Adapter<StringPdfsAdapter.SP
     @Override
     public void onBindViewHolder(@NonNull SPHolder holder, int position) {
         holder.btnCancel.setVisibility(View.GONE);
-        int i = position+1;
         try{
-            getFileNameFromUrl(stringList.get(position), holder.tvFileName);
+            if (stringList!=null){
+                holder.tvFileName.setText(stringList.get(position).getName());
+            }else {
+                holder.tvFileName.setText("File "+position);
+            }
 
         }catch (Exception e){
-            holder.tvFileName.setText("File "+i);
+            holder.tvFileName.setText("File "+position);
         }
 
-    }
-
-    public void getFileNameFromUrl(String url, TextView tvName) {
-
-        // Create a storage reference from our app
-        StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(url);
-
-        // Get reference to the file
-        storageRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-            @Override
-            public void onSuccess(StorageMetadata storageMetadata) {
-                String filename = storageMetadata.getName();
-                tvName.setText(filename);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Uh-oh, an error occurred!
-                Log.i("Faillll", "onFailure: "+exception.toString());
-            }
-        });
     }
 
     @Override
