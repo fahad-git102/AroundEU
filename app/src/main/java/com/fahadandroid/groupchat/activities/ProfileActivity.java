@@ -8,10 +8,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.chootdev.recycleclick.RecycleClick;
 import com.fahadandroid.groupchat.R;
 import com.fahadandroid.groupchat.adapters.StringSelectAdapter;
+import com.fahadandroid.groupchat.helpers.EUGroupChat;
+import com.fahadandroid.groupchat.helpers.HelperClass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +23,18 @@ public class ProfileActivity extends AppCompatActivity {
 
     ImageButton goBack;
     RecyclerView recyclerProfileOptions;
+    TextView tvJoiningDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         goBack = findViewById(R.id.goBack);
+        tvJoiningDate = findViewById(R.id.tvJoiningDate);
+        if (EUGroupChat.currentUser!=null){
+            tvJoiningDate.setText(HelperClass.getFormattedDateTime(EUGroupChat.currentUser.getJoinedOn(),
+                    "dd MMM, yyyy"));
+        }
         goBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -36,7 +45,6 @@ public class ProfileActivity extends AppCompatActivity {
         recyclerProfileOptions.setLayoutManager(new LinearLayoutManager(this));
         List<String> stringList = new ArrayList<>();
         stringList.add("Personal Information");
-//        stringList.add("My Accomodation and Food");
         stringList.add("My Documents");
         stringList.add("My Classes");
         stringList.add("Settings");
@@ -50,9 +58,6 @@ public class ProfileActivity extends AppCompatActivity {
                         Intent intent = new Intent(ProfileActivity.this, PersonalInfoActivity.class);
                         startActivity(intent);
                         break;
-//                    case 1:
-//
-//                        break;
                     case 1:
                         Intent intent1 = new Intent(ProfileActivity.this, MyDocumentsActivity.class);
                         startActivity(intent1);

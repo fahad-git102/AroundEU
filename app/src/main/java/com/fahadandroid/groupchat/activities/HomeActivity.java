@@ -780,26 +780,68 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         recyclerCountries.setLayoutManager(new LinearLayoutManager(this));
         builder.setView(view);
         AlertDialog alertDialog = builder.create();
-        List<String> countries = new ArrayList<>();
-        countries.addAll(EUGroupChat.countryNamesList);
-        StringSelectAdapter adapter = new StringSelectAdapter(countries, this);
-        recyclerCountries.setAdapter(adapter);
-        RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
-            @Override
-            public void onItemClicked(RecyclerView recyclerView, int i, View view) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("selectedCountry", countries.get(i));
-                usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        alertDialog.dismiss();
+        if (EUGroupChat.countryNamesList==null || EUGroupChat.countryNamesList.isEmpty()){
+            List<String> countries = new ArrayList<>();
+            countriesRef = firebaseDatabase.getReference("countries");
+            countriesRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    try {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                            CountryModel countryModel = dataSnapshot.getValue(CountryModel.class);
+                            countryModel.setKey(dataSnapshot.getKey());
+                            countries.add(countryModel.getCountryName());
+                        }
+                        StringSelectAdapter adapter = new StringSelectAdapter(countries, HomeActivity.this);
+                        recyclerCountries.setAdapter(adapter);
+                        RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+                            @Override
+                            public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("selectedCountry", countries.get(i));
+                                usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        alertDialog.dismiss();
+                                    }
+                                });
+                            }
+                        });
+                        alertDialog.setCanceledOnTouchOutside(false);
+                        alertDialog.setCancelable(false);
+                        alertDialog.show();
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
-                });
-            }
-        });
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.setCancelable(false);
-        alertDialog.show();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }else {
+            List<String> countries = new ArrayList<>(EUGroupChat.countryNamesList);
+            StringSelectAdapter adapter = new StringSelectAdapter(countries, this);
+            recyclerCountries.setAdapter(adapter);
+            RecycleClick.addTo(recyclerCountries).setOnItemClickListener(new RecycleClick.OnItemClickListener() {
+                @Override
+                public void onItemClicked(RecyclerView recyclerView, int i, View view) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("selectedCountry", countries.get(i));
+                    usersRef.child(mAuth.getCurrentUser().getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            alertDialog.dismiss();
+                        }
+                    });
+                }
+            });
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.setCancelable(false);
+            alertDialog.show();
+        }
+
     }
 
     private void  selectCountryForCordinator(){

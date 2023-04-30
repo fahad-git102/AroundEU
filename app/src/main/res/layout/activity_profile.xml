@@ -57,7 +57,7 @@
                 android:textStyle="bold"
                 android:textSize="15sp"
                 android:textColor="@color/colorBlue"
-                android:id="@+id/tv"/>
+                android:id="@+id/tvJoiningDate"/>
 
         </LinearLayout>
 
